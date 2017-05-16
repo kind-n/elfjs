@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "removeComments": false,
+        "sourceMap": false,
+        
+        "jsx": "react",
+        "jsxFactory": "Elf.createElement"
+    }
+}

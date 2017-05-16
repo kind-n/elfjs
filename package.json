@@ -1,0 +1,20 @@
+{
+    "name": "elf",
+    "version": "0.0.1",
+    "homepage": "http://www.elfjs.org",
+    "description": "Javascript Framework",
+    "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.1.2"
+    },
+    "scripts": {
+        "build": "gulp default"
+    },
+    "author": {
+        "name": "Wu Hu",
+        "email": "353047576@qq.com"
+    },
+    "main": "./lib/elf.js",
+    "license": "MIT"
+}

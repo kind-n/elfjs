@@ -1,0 +1,36 @@
+.elf-demo-login {
+    text-align: center;
+
+    .elf-demo-login-wrap {
+        width: 350px;
+        border: 1px solid #ddd;
+        margin: 100px auto 0;
+        padding: 30px 0;
+        font-size: 14px;
+
+        form {
+            padding: 0;
+        }
+
+        dl {
+            dt, dd {
+                display: inline;
+                line-height: 2.5;
+            }
+
+            dd::after {
+                white-space: pre;
+                content: "\A";
+            }
+        }
+
+        input {
+            outline: none;
+        }
+    }
+
+    .elf-demo-login-info {
+        margin: 30px auto 0;
+        color: #f00;
+    }
+}
