@@ -3,7 +3,7 @@
  * 
  * @copyright http://www.elfjs.org
  * 
- * @version 0.0.1
+ * @version 0.0.4
  * @license MIT
  * 
  */
@@ -91,13 +91,15 @@ declare namespace Elf {
      */
     export function createClass (proto: any): Function;
 
-    export function createEvent   <T extends HTMLElement | JSX.ElementClass> (type: string, bubbles?: boolean): Elf.Event<T>;
+    export function createEvent   <T extends HTMLElement | JSX.ElementClass> (type: string, bubbles?: boolean, value?: any): Elf.Event<T>;
     export function attachEvent   <T extends HTMLElement | JSX.ElementClass> (node: T, type: string, fn: ((event: Elf.Event<T>) => any)): void;
     export function detachEvent   <T extends HTMLElement | JSX.ElementClass> (node: T, type: string, fn: ((event: Elf.Event<T>) => any)): void;
     export function dispatchEvent <T extends HTMLElement | JSX.ElementClass> (node: T, event: Elf.Event<T>): void;
 
     export function createElement (type: string | Function, props?: any, ...children: any[]): JSX.Element;
     export function redactElement (temp: string, ...depends: any[]): () => JSX.Element;
+
+    export function forceUpdate   (duplex?: boolean): void;
 
     export function Component (name: string, redactor?: (() => JSX.Element)): Elf.ClassDecorator;
     export function Directive (name: string): Elf.ClassDecorator;
@@ -111,7 +113,7 @@ declare namespace Elf {
 
     export interface Radical extends Elf.Disposable {
 
-        forceUpdate(): void;
+        forceUpdate(props?: any): void;
     }
 
     export interface Options {
@@ -169,6 +171,7 @@ declare namespace Elf {
 
     export interface Event <T> {
         readonly type: string;
+        readonly value: any;
         readonly bubbles: boolean;
         readonly refresh: boolean;
         readonly cancelable: boolean;

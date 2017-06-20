@@ -10,7 +10,8 @@ const MIME_TYPE = {
     ".js"   : "text/javascript",
     ".ts"   : "text/typescript",
     ".html" : "text/html",
-    ".scss" : "text/scss"
+    ".scss" : "text/scss",
+    ".css"  : "text/css"
 };
 
 http.createServer(function (req, res) {
