@@ -12,7 +12,6 @@ const rename = require("gulp-rename");
 /* ============================= */
 
 gulp.task("default", function () {
-
     return gulp.src("./lib/elf.js")
         .pipe(
             uglify({
