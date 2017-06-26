@@ -3,7 +3,7 @@
  * 
  * @copyright http://www.elfjs.org
  * 
- * @version 0.0.4
+ * @version 0.0.6
  * @license MIT
  * 
  */
@@ -73,6 +73,11 @@ declare namespace Elf {
         static next <R> (value: R): Elf.Promise<R>;
         static loss (error: any): Elf.Promise<any>;
 
+        constructor (trustor: ((referee: {
+            next : Function;
+            loss : Function;
+        }) => Function | void));
+
         then <R> (fn: (value: T) => R | Elf.Promise<R>): Elf.Promise<R>;
         fail <R> (fn: (value: T) => R | Elf.Promise<R>): Elf.Promise<R>;
 
@@ -128,7 +133,7 @@ declare namespace Elf {
     export interface Request {
         url: string;
         body?: string;
-        method?: "GET" | "PUT" | "POST" | "HEAD" | "DELETE" | "OPTIONS",
+        method?: "GET" | "PUT" | "POST" | "HEAD" | "DELETE" | "OPTIONS";
         headers?: any;
     }
 
