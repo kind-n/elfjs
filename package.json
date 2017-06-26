@@ -8,6 +8,11 @@
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^2.1.2"
     },
+    "keywords": [
+        "virtual-dom",
+        "framework",
+        "mvvm"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/kind-n/elfjs.git"
