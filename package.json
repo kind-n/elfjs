@@ -1,12 +1,12 @@
 {
     "name": "elfjs",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "homepage": "http://www.elfjs.org",
     "description": "Javascript Framework",
     "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^2.1.2"
+        "gulp": "^3.9.1",
+        "gulp-rename": "^1.2.2",
+        "gulp-uglify": "^2.1.2"
     },
     "keywords": [
         "virtual-dom",
