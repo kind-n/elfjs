@@ -3,7 +3,7 @@
  * 
  * @copyright http://www.elfjs.org
  * 
- * @version 0.0.7
+ * @version 0.0.8
  * @license MIT
  * 
  */
