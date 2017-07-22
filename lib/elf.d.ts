@@ -5,7 +5,7 @@
  * 
  * @copyright (C) 2017 Wu Hu. All Rights Reserved.
  * 
- * @version 0.1.0
+ * @version 0.1.1
  * @license MIT
  * 
  */
