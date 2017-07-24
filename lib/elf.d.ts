@@ -5,7 +5,7 @@
  * 
  * @copyright (C) 2017 Wu Hu. All Rights Reserved.
  * 
- * @version 0.1.1
+ * @version 0.1.2
  * @license MIT
  * 
  */
@@ -114,9 +114,11 @@ declare namespace Elf {
     export function Directive (name: string): Elf.ClassDecorator;
     export function Component (name: string, redactor?: (() => JSX.Element)): Elf.ClassDecorator;
 
+
     export function depend (...depends: any[]): void;
     export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Elf.Application;
 
+    export function assign (target: any, ...sources: any[]): any;
     export function config (options: Elf.Options): void;
     export function set (name: string, value: any): void;
 
