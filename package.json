@@ -1,6 +1,6 @@
 {
     "name": "elfjs",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "homepage": "http://www.elfjs.org",
     "description": "Javascript Framework",
     "devDependencies": {
@@ -22,7 +22,7 @@
     },
     "author": {
         "name": "Wu Hu",
-        "email": "353047576@qq.com"
+        "email": "manager@elfjs.org"
     },
     "main": "./lib/elf.js",
     "license": "MIT"
