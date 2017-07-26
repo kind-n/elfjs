@@ -22,7 +22,7 @@
     },
     "author": {
         "name": "Wu Hu",
-        "email": "manager@elfjs.org"
+        "email": "master@elfjs.org"
     },
     "main": "./lib/elf.js",
     "license": "MIT"
