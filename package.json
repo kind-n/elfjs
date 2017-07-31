@@ -25,5 +25,11 @@
         "email": "master@elfjs.org"
     },
     "main": "./lib/elf.js",
+    "maintainers": [
+        {
+            "name": "Wu Hu",
+            "email": "master@elfjs.org"
+        }
+    ],
     "license": "MIT"
 }
