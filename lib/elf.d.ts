@@ -187,7 +187,7 @@ declare namespace Elf {
     }
 
     export interface Class <T> extends Function {
-        new (...args: []): T;
+        new (...args: any[]): T;
         readonly prototype: T;
     }
 
