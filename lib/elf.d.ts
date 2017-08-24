@@ -81,7 +81,7 @@ declare namespace Elf {
         static resolve <R> (value: R): Elf.Promise<R>;
         static reject (error: any): Elf.Promise<void>;
 
-        constructor (executor: ((resolve: ((value: T | Elf.Promise<T>) => void), reject: ((error: any) => void)) => Function | void)): Elf.Promise<T>;
+        constructor (executor: ((resolve: ((value: T | Elf.Promise<T>) => void), reject: ((error: any) => void)) => Function | void));
 
         then <R1, R2> (onresolved?: ((value: T) => R1 | Elf.Promise<R1>), onrejected?: ((error: any) => R2 | Elf.Promise<R2>)): Elf.Promise<R1 | R2>;
         catch <R> (onrejected?: ((error: any) => R | Elf.Promise<R>)): Elf.Promise<R | T>;
