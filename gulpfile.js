@@ -21,7 +21,9 @@ gulp.task("default", function () {
                     drop_console : true,
                     drop_debugger : true
                 },
-                preserveComments: "some"
+                output: {
+                    comments: "some"
+                }
             })
         )
         .pipe(
