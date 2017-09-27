@@ -1,8 +1,8 @@
 {
     "name": "elfjs",
-    "version": "0.1.8",
+    "version": "0.2.0",
     "homepage": "http://www.elfjs.org",
-    "description": "Javascript Framework",
+    "description": "A very concise modern javascript framework.",
     "devDependencies": {
         "gulp": "^3.9.1",
         "gulp-rename": "^1.2.2",
@@ -11,6 +11,7 @@
     "keywords": [
         "virtual-dom",
         "framework",
+        "elfjs",
         "mvvm"
     ],
     "repository": {

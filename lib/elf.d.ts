@@ -5,7 +5,7 @@
  * 
  * @copyright (C) 2017 Wu Hu. All Rights Reserved.
  * 
- * @version 0.1.8
+ * @version 0.2.0
  * @license MIT
  * 
  */
@@ -94,10 +94,6 @@ declare namespace Elf {
     export function setInterval (handler: ((...args: any[]) => boolean | void), duration?: number, ...args: any[]): Elf.Destruction;
     export function requestAnimationFrame (handler: ((...args: any[]) => boolean | void), ...args: any[]): Elf.Destruction;
 
-    /**
-     * 
-     * @deprecated Please use es6 'class'. 
-     */
     export function createClass   <T> (proto: T): Elf.Class<T>;
 
     export function createEvent   <T extends HTMLElement | JSX.ElementClass> (type: string, bubbles?: boolean, value?: any): Elf.Event<T>;
@@ -110,9 +106,9 @@ declare namespace Elf {
 
     export function forceUpdate (): boolean;
 
-    export function Transform (name: string): Elf.ClassDecorator;
-    export function Directive (name: string): Elf.ClassDecorator;
-    export function Component (name: string, redactor?: (() => JSX.Element)): Elf.ClassDecorator;
+    export function Transform <T> (name: string, proto: T): Elf.Class<Elf.ITransform & T>;
+    export function Directive <T> (name: string, proto: T): Elf.Class<Elf.IDirective & T>;
+    export function Component <T> (name: string, proto: T): Elf.Class<Elf.IComponent & T>;
 
 
     export function depend (...depends: any[]): void;
@@ -172,13 +168,15 @@ declare namespace Elf {
     }
 
     export interface IComponent extends Elf.ILifeCycle {
-        readonly props?: any;
         readonly refs?: any;
+        readonly props?: any;
+        render (): JSX.Element;
     }
 
     export interface Application extends Elf.Destruction {
-        refs: any;
-        duplex: boolean;
+        readonly refs: any;
+        private drawn: boolean;
+        private duplex: boolean;
         forceUpdate() : void;
     }
 
