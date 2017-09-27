@@ -175,8 +175,8 @@ declare namespace Elf {
 
     export interface Application extends Elf.Destruction {
         readonly refs: any;
-        private drawn: boolean;
-        private duplex: boolean;
+        readonly drawn: boolean;
+        readonly duplex: boolean;
         forceUpdate() : void;
     }
 
