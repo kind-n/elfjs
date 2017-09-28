@@ -204,7 +204,7 @@ declare namespace Elf {
     }
 
     export type ClassDecorator = <T extends Function> (target: T) => T;
-    export type CompilerMethod = (value: string, modname: string) => Elf.Promise<Elf.Provide>;
+    export type CompilerMethod = (value: string, modname: string) => Elf.Provide | Elf.Promise<Elf.Provide>;
 }
 
 declare namespace JSX {
