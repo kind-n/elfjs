@@ -21,7 +21,7 @@ declare namespace Elf {
         [extension: string]: CompilerMethod;
     };
 
-    export class Promise <T> implements Elf.Destruction {
+    export class Promise <T> implements Elf.Disposable {
         static all <R1, R2, R3, R4, R5, R6, R7, R8, R9> (values: [
             R1 | Elf.Promise<R1>,
             R2 | Elf.Promise<R2>,
@@ -90,9 +90,9 @@ declare namespace Elf {
 
     export function require <T> (modname: string): Elf.Promise<T>;
 
-    export function setTimeout  (handler: ((...args: any[]) => boolean | void), duration?: number, ...args: any[]): Elf.Destruction;
-    export function setInterval (handler: ((...args: any[]) => boolean | void), duration?: number, ...args: any[]): Elf.Destruction;
-    export function requestAnimationFrame (handler: ((...args: any[]) => boolean | void), ...args: any[]): Elf.Destruction;
+    export function setTimeout  (handler: ((...args: any[]) => boolean | void), duration?: number, ...args: any[]): Elf.Disposable;
+    export function setInterval (handler: ((...args: any[]) => boolean | void), duration?: number, ...args: any[]): Elf.Disposable;
+    export function requestAnimationFrame (handler: ((...args: any[]) => boolean | void), ...args: any[]): Elf.Disposable;
 
     export function createClass   <T> (proto: T): Elf.Class<T>;
 
@@ -112,7 +112,7 @@ declare namespace Elf {
 
 
     export function depend (...depends: any[]): void;
-    export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Elf.Application;
+    export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Elf.Individual;
 
     export function assign (target: any, ...sources: any[]): any;
     export function config (options: Elf.Options): void;
@@ -173,14 +173,14 @@ declare namespace Elf {
         render (): JSX.Element;
     }
 
-    export interface Application extends Elf.Destruction {
+    export interface Individual extends Elf.Disposable {
         readonly refs: any;
         readonly drawn: boolean;
         readonly duplex: boolean;
         forceUpdate() : void;
     }
 
-    export interface Destruction {
+    export interface Disposable {
         dispose (): void;
     }
 
