@@ -90,8 +90,8 @@ declare namespace Elf {
 
     export function require <T> (modname: string): Elf.Promise<T>;
 
-    export function setTimeout  (handler: ((...args: any[]) => boolean | void), duration?: number, ...args: any[]): Elf.Disposable;
-    export function setInterval (handler: ((...args: any[]) => boolean | void), duration?: number, ...args: any[]): Elf.Disposable;
+    export function setTimeout  (handler: ((...args: any[]) => boolean | void), delay?: number, ...args: any[]): Elf.Disposable;
+    export function setInterval (handler: ((...args: any[]) => boolean | void), delay?: number, ...args: any[]): Elf.Disposable;
     export function requestAnimationFrame (handler: ((...args: any[]) => boolean | void), ...args: any[]): Elf.Disposable;
 
     export function createClass   <T> (proto: T): Elf.Class<T>;
