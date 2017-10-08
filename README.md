@@ -1,5 +1,11 @@
 # elfjs
-Javascript Framework, MVVM, CMD Require, Promise, Virtual DOM, Event Model, HTML Template.
+
+Elf.js - Intuitive, Concise, Fast and Composable MVVM for building interactive interfaces.
 
 # homepage
-[http://www.elfjs.org](http://www.elfjs.org) (in construction)
+
+[http://www.elfjs.org](http://www.elfjs.org)
+
+# example
+
+[elfjs-official-website](https://github.com/kind-n/elfjs-official-website)
