@@ -5,7 +5,7 @@
  * 
  * @copyright (C) 2017 Wu Hu. All Rights Reserved.
  * 
- * @version 0.2.3
+ * @version 0.3.0
  * @license MIT
  * 
  */
@@ -16,8 +16,8 @@
 ///////////////////////////////////
 
 declare namespace Elf {
-
-    export const Trustor: {
+    
+    export const Compiler: {
         [extension: string]: CompilerMethod;
     };
 
@@ -82,6 +82,9 @@ declare namespace Elf {
         static reject (error: any): Elf.Promise<void>;
 
         constructor (executor: ((resolve: ((value: T | Elf.Promise<T>) => void), reject: ((error: any) => void)) => Function | void));
+
+        readonly status?: string;
+        readonly result?: any;
 
         then <R1, R2> (onresolved?: ((value: T) => R1 | Elf.Promise<R1>), onrejected?: ((error: any) => R2 | Elf.Promise<R2>)): Elf.Promise<R1 | R2>;
         catch <R> (onrejected?: ((error: any) => R | Elf.Promise<R>)): Elf.Promise<R | T>;
@@ -174,10 +177,8 @@ declare namespace Elf {
     }
 
     export interface Individual extends Elf.Disposable {
-        readonly refs: any;
-        readonly drawn: boolean;
         readonly duplex: boolean;
-        forceUpdate() : void;
+        forceUpdate (): void;
     }
 
     export interface Disposable {
@@ -192,15 +193,18 @@ declare namespace Elf {
     export interface Event <T> {
         readonly type: string;
         readonly bubbles: boolean;
-        readonly refresh: boolean;
         readonly cancelable: boolean;
+        readonly cancelBubble: boolean;
+        readonly cancelEntire: boolean;
         readonly defaultPrevented: boolean;
+        readonly refershPrevented: boolean;
         readonly currentTarget: T;
         readonly target: EventTarget;
-        value?: any;
-        preventDefault (): void;
-        preventRefresh (): void;
-        stopPropagation(): void;
+        readonly detail?: any;
+        preventDefault ()         : void;
+        preventRefresh ()         : void;
+        stopPropagation()         : void;
+        stopImmediatePropagation(): void;
     }
 
     export type ClassDecorator = <T extends Function> (target: T) => T;
@@ -211,6 +215,7 @@ declare namespace JSX {
 
     export interface Element {
         readonly type: string | Elf.Class<JSX.ElementClass>;
+        readonly owner: JSX.ElementClass;
         readonly props: any;
         readonly ref: string;
         readonly key: string;

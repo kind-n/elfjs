@@ -18,7 +18,6 @@ gulp.task("default", function () {
                 compress : {
                     evaluate : false,
                     keep_fargs : false,
-                    drop_console : true,
                     drop_debugger : true
                 },
                 output: {
