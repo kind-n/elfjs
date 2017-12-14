@@ -1,1 +1,1 @@
-/// <reference path="./lib/elf.d.ts" />
+/// <reference path="./src/elf.d.ts" />

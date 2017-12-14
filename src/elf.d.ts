@@ -3,9 +3,9 @@
  * 
  * http://www.elfjs.org
  * 
- * @copyright (C) 2017 Wu Hu. All Rights Reserved.
+ * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 0.3.0
+ * @version 1.0.0
  * @license MIT
  * 
  */
@@ -15,11 +15,10 @@
 /// Typings
 ///////////////////////////////////
 
+//
+// elf
+//
 declare namespace Elf {
-    
-    export const Compiler: {
-        [extension: string]: CompilerMethod;
-    };
 
     export class Promise <T> implements Elf.Disposable {
         static all <R1, R2, R3, R4, R5, R6, R7, R8, R9> (values: [
@@ -91,11 +90,9 @@ declare namespace Elf {
         dispose (): void;
     }
 
-    export function require <T> (modname: string): Elf.Promise<T>;
-
-    export function setTimeout  (handler: ((...args: any[]) => boolean | void), delay?: number, ...args: any[]): Elf.Disposable;
-    export function setInterval (handler: ((...args: any[]) => boolean | void), delay?: number, ...args: any[]): Elf.Disposable;
-    export function requestAnimationFrame (handler: ((...args: any[]) => boolean | void), ...args: any[]): Elf.Disposable;
+    export function setTimeout  (handler: ((event: Elf.Event<void>, ...args: any[]) => void), delay?: number, ...args: any[]): Elf.Disposable;
+    export function setInterval (handler: ((event: Elf.Event<void>, ...args: any[]) => void), delay?: number, ...args: any[]): Elf.Disposable;
+    export function requestAnimationFrame (handler: ((event: Elf.Event<void>, ...args: any[]) => void), ...args: any[]): Elf.Disposable;
 
     export function createClass   <T> (proto: T): Elf.Class<T>;
 
@@ -113,21 +110,9 @@ declare namespace Elf {
     export function Directive <T> (name: string, proto: T): Elf.Class<Elf.IDirective & T>;
     export function Component <T> (name: string, proto: T): Elf.Class<Elf.IComponent & T>;
 
-
     export function depend (...depends: any[]): void;
     export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Elf.Individual;
-
     export function assign (target: any, ...sources: any[]): any;
-    export function config (options: Elf.Options): void;
-    export function set (name: string, value: any): void;
-
-    export interface Options {
-        baseURL?: string;
-        mapping?: object;
-        routing?: (url: string) => string;
-        defaultExtension?: string;
-        module?: "commonjs" | "amd";
-    }
 
     export interface Provide {
         dirname?: string;
@@ -200,7 +185,7 @@ declare namespace Elf {
         readonly refershPrevented: boolean;
         readonly currentTarget: T;
         readonly target: EventTarget;
-        readonly detail?: any;
+        readonly detail: any;
         preventDefault ()         : void;
         preventRefresh ()         : void;
         stopPropagation()         : void;
@@ -211,6 +196,31 @@ declare namespace Elf {
     export type CompilerMethod = (value: string, modname: string) => Elf.Provide | Elf.Promise<Elf.Provide>;
 }
 
+//
+// elf-loader
+//
+declare namespace Elf {
+
+    export const Compiler: {
+        [extension: string]: CompilerMethod;
+    };
+
+    export function set (name: string, value: any): void;
+    export function config (options: Elf.Options): void;
+    export function require <T> (modname: string): Elf.Promise<T>;
+
+    export interface Options {
+        baseURL?: string;
+        mapping?: object;
+        routing?: (url: string) => string;
+        defaultExtension?: string;
+        module?: "commonjs" | "amd";
+    }
+}
+
+//
+// jsx
+//
 declare namespace JSX {
 
     export interface Element {
@@ -1153,12 +1163,10 @@ declare namespace JSX {
     }
     export interface TransitionEvent <T> extends JSX.Event<T> {
         readonly propertyName      : string;
-        readonly pseudoElement     : string;
         readonly elapsedTime       : number;
     }
     export interface AnimationEvent <T> extends JSX.Event<T> {
         readonly animationName     : string;
-        readonly pseudoElement     : string;
         readonly elapsedTime       : number;
     }
     export interface ClipboardEvent <T> extends JSX.Event<T> {
@@ -1221,7 +1229,6 @@ declare namespace JSX {
     }
     export interface Event <T> extends Elf.Event<T> {
         readonly eventPhase        : number;
-        readonly isTrusted         : boolean;
         readonly timeStamp         : number;
     }
 

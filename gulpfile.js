@@ -12,15 +12,13 @@ const rename = require("gulp-rename");
 /* ============================= */
 
 gulp.task("default", function () {
-    return gulp.src("./lib/elf.js")
+    return gulp.src("./src/**/*.js")
         .pipe(
             uglify({
                 compress : {
-                    evaluate : false,
-                    keep_fargs : false,
-                    drop_debugger : true
+                    keep_fargs: false
                 },
-                output: {
+                output : {
                     comments: "some"
                 }
             })
@@ -29,6 +27,6 @@ gulp.task("default", function () {
             rename({ suffix: ".min" })
         )
         .pipe(
-            gulp.dest("./lib")
+            gulp.dest("./dist")
         );
 });

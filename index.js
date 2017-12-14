@@ -1,1 +1,1 @@
-module.exports = require("./lib/elf").Elf;
+module.exports = require("./src/elf").Elf;
