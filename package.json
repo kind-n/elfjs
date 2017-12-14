@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "homepage": "http://www.elfjs.org",
     "description": "A very concise modern javascript framework.",
+    "dependencies": {
+        
+    },
     "devDependencies": {
         "gulp": "^3.9.1",
         "gulp-rename": "^1.2.2",
