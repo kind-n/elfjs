@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.0.0
+ * @version 1.0.1
  * @license MIT
  * 
  */
@@ -2671,7 +2671,6 @@ Elf.$html_analysis = function (html, filename) {
     var source = {
         version         : 3,
         sources         : [ filename ],
-        sourcesContent  : [ html ],
         mappings        : ""
     };
     var lineLength = Elf.$lineLength;
