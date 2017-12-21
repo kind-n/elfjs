@@ -4,7 +4,7 @@ Elf.js - Intuitive, Concise, Fast and Composable MVVM for building interactive i
 
 # homepage
 
-[http://www.elfjs.org](http://www.elfjs.org)
+[https://www.elfjs.org](https://www.elfjs.org)
 
 # example
 
