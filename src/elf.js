@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.0.1
+ * @version 1.0.2
  * @license MIT
  * 
  */
@@ -3126,7 +3126,7 @@ Elf.$html_analysis = function (html, filename) {
         } else {
             ASTDefaultParse(node);
         }
-        ASTAppendScript(")})");
+        ASTAppendScript(")},this)");
     }
     function ASTTernaryParse (node) {
         ASTAppendScript("((");
@@ -3154,7 +3154,7 @@ Elf.$html_analysis = function (html, filename) {
                 ASTAppendScript("function($event){");
                 ASTAppendSource(node.prime);
                 ASTAppendScript(node.prime.value);
-                ASTAppendScript("}");
+                ASTAppendScript("}.bind(this)");
             } else
             if (node.texts.length) {
                 if (node.token.value === "cmd") {
