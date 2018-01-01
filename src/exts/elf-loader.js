@@ -5376,7 +5376,7 @@ function LDLoader (dirname) {
                 return modulesCache[filename];
             } else {
                 return modulesCache[filename] = Promise.ajax({
-                    url : filename
+                    url : LDRouter (filename)
                 }).then(function (response) {
                     return (Compiler[extname(filename)] || provide)(response.text(), filename, modname);
                 });
@@ -5436,6 +5436,9 @@ function LDLaunch (provide) {
     } else {
         return Promise.resolve(provide.trustor);
     }
+}
+function LDRouter (modname) {
+    return optionsCache.routing ? optionsCache.routing(modname) : modname;
 }
 
 var Compiler = {
