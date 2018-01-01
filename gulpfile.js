@@ -16,7 +16,6 @@ gulp.task("default", function () {
         .pipe(
             uglify({
                 compress : {
-                    //ascii_only: true,
                     keep_fargs: false
                 },
                 output : {
