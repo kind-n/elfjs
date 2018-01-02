@@ -19,7 +19,7 @@ gulp.task("default", function () {
                     keep_fargs: false
                 },
                 output : {
-                    ascii_only : true,
+                    ascii_only: true,
                     comments: "some"
                 }
             })
