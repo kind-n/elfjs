@@ -1,7 +1,7 @@
 {
     "name": "elfjs",
     "version": "1.1.0",
-    "homepage": "http://www.elfjs.org",
+    "homepage": "https://www.elfjs.org",
     "description": "A very concise modern javascript framework.",
     "dependencies": {
         

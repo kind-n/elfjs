@@ -1,7 +1,7 @@
 /**
  * 
  * 
- * http://www.elfjs.org
+ * https://www.elfjs.org
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
