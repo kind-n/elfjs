@@ -5,13 +5,11 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.0.2
+ * @version 1.1.0
  * @license MIT
  * 
  */
 "use strict";
-
-/// <reference path="./elf.d.ts" />
 
 //////////////////////////////////////////////////
 /// TYPE
@@ -58,7 +56,11 @@
 /// CODE
 //////////////////////////////////////////////////
 
-! (function (Elf, window, document, Object, Array, Error, JSON, Math, NULL) {
+! (function (global, factory) {
+    (typeof module !== "undefined" && typeof exports === "object") ? factory(exports) :
+    (typeof define === "function" && define.amd) ? define(factory) :
+    (factory((global.Elf = global.Elf || {})))
+} (this, function (exports) {
 
 /**
  * Removes the leading and trailing white space and line terminator characters from a string.
@@ -175,7 +177,7 @@ function equals (target, origin) {
  * @returns {Object}
  */
 function create (target) {
-    return Object.create(NULL, target);
+    return Object.create(null, target);
 }
 /**
  * Adds a property to an object, or modifies attributes of an existing property.
@@ -289,7 +291,7 @@ function extrude (target, value) {
  */
 function observe (target, flags) {
     return function () {
-        var instance = Elf.createEvent("async", false);
+        var instance = exports.createEvent("async", false);
         target.apply(this, [instance].concat(flags));
         instance.refreshPrevented || broadcast();
     };
@@ -320,7 +322,7 @@ function objectify (target) {
  */
 function subscribe (target) {
     return intrude(collectivity, target), {
-        dispose : extrude.bind(NULL, collectivity, target)
+        dispose : extrude.bind(null, collectivity, target)
     };
 }
 /**
@@ -362,7 +364,7 @@ function isArray (target) {
  * @returns {Boolean}
  */
 function isValid (target) {
-    return target !== void 0 && target !== NULL;
+    return target !== void 0 && target !== null;
 }
 /**
  * Determines whether the passed value is an basic type.
@@ -391,7 +393,7 @@ function isString (target) {
  * @returns {Boolean}
  */
 function isObject (target) {
-    return typeof target === "object" && target !== NULL;
+    return typeof target === "object" && target !== null;
 }
 /**
  * Returns true if the sequence of elements of searchString converted to a String is the
@@ -458,7 +460,7 @@ function isVariableType (value) {
  * @returns {Boolean}
  */
 function isCycleAttribute (value) {
-    return Elf.$iteration === value;
+    return exports.$iteration === value;
 }
 /**
  * Determines whether the passed value is condition attrubute.
@@ -467,7 +469,7 @@ function isCycleAttribute (value) {
  * @returns {Boolean}
  */
 function isJudgeAttribute (value) {
-    return Elf.$condition === value;
+    return exports.$condition === value;
 }
 /**
  * Determines whether the passed value is event attrubute.
@@ -476,7 +478,7 @@ function isJudgeAttribute (value) {
  * @returns {Boolean}
  */
 function isEventAttribute (value) {
-    return startsWith(value, Elf.$eventStart);
+    return startsWith(value, exports.$eventStart);
 }
 /**
  * Determines whether the target is inheriting the class.
@@ -929,7 +931,7 @@ function MKFounder (product) {
  * @returns {String}
  */
 function VMRectifyEvent (target) {
-    return lower(tear(target, Elf.$eventStart.length));
+    return lower(tear(target, exports.$eventStart.length));
 }
 /**
  * Rectify trait attrubute.
@@ -1004,7 +1006,7 @@ function VMSetOffspring (members, product, manager, insider, namespace, collect)
  */
 function VMModOffspring (members, product, manager, insider, namespace, collect) {
     var deposit = new Array(insider.length);
-    var leaguer = insider.map(function (item) { return { element: item, product: NULL }; });
+    var leaguer = insider.map(function (item) { return { element: item, product: null }; });
 
     var oldTokenIndex;
     var oldTokenPairs;
@@ -1078,7 +1080,7 @@ function VMModOffspring (members, product, manager, insider, namespace, collect)
     reset(members, deposit);
 
     function VMModGetAuthenticElement (manager) {
-        return manager ? manager.draught ? VMModGetAuthenticElement(manager.draught) : manager.product : NULL;
+        return manager ? manager.draught ? VMModGetAuthenticElement(manager.draught) : manager.product : null;
     }
     function VMModCreateSingleElement (updated, number) {
         var draught = MKDraught(updated.element, manager);
@@ -1091,7 +1093,7 @@ function VMModOffspring (members, product, manager, insider, namespace, collect)
         if (isValid(oldTokenIndex)) {
             var ancient = members[oldTokenIndex];
             if (VMModCompareWithElements(ancient, updated)) {
-                members[oldTokenIndex] = NULL;
+                members[oldTokenIndex] = null;
                 return VMModInvokeUpdateElement(ancient, updated, number);
             }
         }
@@ -1424,7 +1426,7 @@ function DOMDelProperty (element, name) {
  * @param {HTMLElement} address 
  */
 function DOMInsertChild (product, element, address) {
-    product.insertBefore(element, address || NULL);
+    product.insertBefore(element, address || null);
 }
 /**
  * Native remove child.
@@ -1444,7 +1446,7 @@ function DOMRemoveChild (element) {
  */
 function DOMFormatStyle (product) {
     if (isObject(product)) {
-        return Elf.$map(product, function (value, token) {
+        return exports.$map(product, function (value, token) {
             return token.replace(/[A-Z]/g, function (value) {
                 return "-" + lower(value);
             }) + ":" + value;
@@ -1460,8 +1462,8 @@ function DOMFormatStyle (product) {
  */
 function DOMFormatClass (product) {
     if (isObject(product)) {
-        return flatten(Elf.$map(product, function (value, token) {
-            return value ? token : NULL;
+        return flatten(exports.$map(product, function (value, token) {
+            return value ? token : null;
         }));
     }
     return product;
@@ -1480,8 +1482,8 @@ function DOMMakeElement (trustor, namespace) {
 //
 // Constants.
 //
+var CODE;
 var NOOP = function () {};
-var CODE = DOMMakeElement("i");
 var RESOLVED = "resolved";
 var REJECTED = "rejected";
 var PENDING  = "pending";
@@ -1919,6 +1921,7 @@ var Promise         = Accomplish(function (executor) {
 // Prototypes of class.
 //
 CommentRenderer.prototype = create({
+    constructor : normal(CommentRenderer),
     initial     : normal(function (namespace, collect) {
         return MKRealtor(this.product = document.createComment(""), true);
     }),
@@ -1930,6 +1933,7 @@ CommentRenderer.prototype = create({
     })
 });
 ContentRenderer.prototype = create({
+    constructor : normal(ContentRenderer),
     initial     : normal(function (namespace, collect) {
         return MKRealtor(this.product = document.createTextNode(this.element), true);
     }),
@@ -1944,6 +1948,7 @@ ContentRenderer.prototype = create({
     })
 });
 ComplexRenderer.prototype = create({
+    constructor : normal(ComplexRenderer),
     initial     : normal(function (namespace, collect) {
         var manager = this;
         var element = manager.element;
@@ -2031,6 +2036,7 @@ ComplexRenderer.prototype = create({
     })
 });
 ElementRenderer.prototype = create({
+    constructor : normal(ElementRenderer),
     initial     : normal(function (namespace, collect) {
         var manager = this;
         var element = manager.element;
@@ -2122,6 +2128,7 @@ ElementRenderer.prototype = create({
     })
 });
 LibertyRenderer.prototype = create({
+    constructor : normal(LibertyRenderer),
     trigger     : normal(function (event, connate) {
         if (this.connate === connate) {
             this.emitter.trigger(event);
@@ -2144,6 +2151,7 @@ LibertyRenderer.prototype = create({
     })
 });
 SyntheticEvent.prototype  = create({
+    constructor : normal(SyntheticEvent),
     stopImmediatePropagation : normal(function () {
         this[EVENT_ORIGINAL_EVENT].stopImmediatePropagation();
         this[EVENT_STATUS_TRACKER].cancelEntire = true;
@@ -2201,7 +2209,7 @@ Promise.prototype         = create({
         }
     }),
     "catch"     : normal(function (onrejected) {
-        return this.then(NULL, onrejected);
+        return this.then(null, onrejected);
     }),
     then        : normal(function (onresolved, onrejected) {
         var success = onresolved || Accomplish;
@@ -2288,7 +2296,7 @@ Promise.all     = Accomplish(function (array) {
  * @returns {T}
  * @template    T
  */
-Elf.assign = function (target) {
+exports.assign = function (target) {
     target = Object(target);
     for (var i = 1; i < arguments.length; i++) {
         var ns = arguments[i];
@@ -2301,15 +2309,29 @@ Elf.assign = function (target) {
     return target;
 };
 /**
+ * Returns a new Class value.
+ * 
+ * @param   {*}        proto
+ * @returns {Function}
+ */
+exports.createClass = function (proto) {
+    return (function (constructor) {
+        return constructor.prototype = proto, constructor;
+    } (
+        (function (parent) {
+            return function () { parent.apply(this, arguments); };
+        } (proto.constructor || NOOP))
+    ));
+};
+/**
  * Wrapped native async function, Let it be tracked.
  * 
  * @param   {Function}       callback
- * @param   {Number}         delay
  * @returns {Elf.Disposable}
  */
-Elf.setTimeout = function (callback, delay) {
+exports.requestAnimationFrame = function (callback, delay) {
     return {
-        dispose : clearTimeout.bind(window, setTimeout(observe(callback, tear(arguments, 2)), delay))
+        dispose : cancelAnimationFrame.bind(null, requestAnimationFrame(observe(callback, tear(arguments, 1))))
     };
 };
 /**
@@ -2319,20 +2341,21 @@ Elf.setTimeout = function (callback, delay) {
  * @param   {Number}         delay
  * @returns {Elf.Disposable}
  */
-Elf.setInterval = function (callback, delay) {
+exports.setInterval = function (callback, delay) {
     return {
-        dispose : clearInterval.bind(window, setInterval(observe(callback, tear(arguments, 2)), delay))
+        dispose : clearInterval.bind(null, setInterval(observe(callback, tear(arguments, 2)), delay))
     };
 };
 /**
  * Wrapped native async function, Let it be tracked.
  * 
  * @param   {Function}       callback
+ * @param   {Number}         delay
  * @returns {Elf.Disposable}
  */
-Elf.requestAnimationFrame = function (callback) {
+exports.setTimeout = function (callback, delay) {
     return {
-        dispose : cancelAnimationFrame.bind(window, requestAnimationFrame(observe(callback, tear(arguments, 1))))
+        dispose : clearTimeout.bind(null, setTimeout(observe(callback, tear(arguments, 2)), delay))
     };
 };
 
@@ -2344,8 +2367,8 @@ Elf.requestAnimationFrame = function (callback) {
  * @returns {Elf.Class<Elf.IComponent & T>}
  * @template                                T
  */
-Elf.Component = function (name, proto) {
-    return define(Elf.createClass(proto), DISPLAYING_COMPONENT, normal(name));
+exports.Component = function (name, proto) {
+    return define(exports.createClass(proto), DISPLAYING_COMPONENT, normal(name));
 };
 /**
  * Returns a Directive class.
@@ -2355,8 +2378,8 @@ Elf.Component = function (name, proto) {
  * @returns {Elf.Class<Elf.IDirective & T>}
  * @template                                T
  */
-Elf.Directive = function (name, proto) {
-    return define(Elf.createClass(proto), DISPLAYING_DIRECTIVE, normal(name));
+exports.Directive = function (name, proto) {
+    return define(exports.createClass(proto), DISPLAYING_DIRECTIVE, normal(name));
 };
 /**
  * Returns a Transform class.
@@ -2366,23 +2389,8 @@ Elf.Directive = function (name, proto) {
  * @returns {Elf.Class<Elf.ITransform & T>}
  * @template                                T
  */
-Elf.Transform = function (name, proto) {
-    return define(Elf.createClass(proto), DISPLAYING_TRANSFORM, normal(name));
-};
-/**
- * Returns a new Class value.
- * 
- * @param   {*}        proto
- * @returns {Function}
- */
-Elf.createClass = function (proto) {
-    return (function (constructor) {
-        return constructor.prototype = proto, constructor;
-    } (
-        (function (parent) {
-            return function () { parent.apply(this, arguments); };
-        } (proto.constructor || NOOP))
-    ));
+exports.Transform = function (name, proto) {
+    return define(exports.createClass(proto), DISPLAYING_TRANSFORM, normal(name));
 };
 /**
  * Returns an Event value.
@@ -2392,7 +2400,7 @@ Elf.createClass = function (proto) {
  * @param   {*}         detail 
  * @returns {Elf.Event}
  */
-Elf.createEvent = function (type, bubbles, detail) {
+exports.createEvent = function (ype, bubbles, detail) {
     return new SyntheticEvent({
         type                     : type,
         bubbles                  : !!bubbles,
@@ -2410,8 +2418,8 @@ Elf.createEvent = function (type, bubbles, detail) {
  * @param {String}                             type 
  * @param {EventListenerOrEventListenerObject} listener 
  */
-Elf.attachEvent = function (node, type, listener) {
-    MKManager( node ).attachEvent(type, listener);
+exports.attachEvent = function (node, type, listener) {
+    MKManager(node).attachEvent(type, listener);
 };
 /**
  * Wrapped native event function, Let it be tracked.
@@ -2420,8 +2428,8 @@ Elf.attachEvent = function (node, type, listener) {
  * @param {String}                             type 
  * @param {EventListenerOrEventListenerObject} listener 
  */
-Elf.detachEvent = function (node, type, listener) {
-    MKManager( node ).detachEvent(type, listener);
+exports.detachEvent = function (node, type, listener) {
+    MKManager(node).detachEvent(type, listener);
 };
 /**
  * Dispatches an Event at the node.
@@ -2429,8 +2437,8 @@ Elf.detachEvent = function (node, type, listener) {
  * @param {HTMLElement | JSX.ElementClass} node 
  * @param {Elf.Event}                      event 
  */
-Elf.dispatchEvent = function (node, event) {
-    MKManager( node ).dispatchEvent(ModifyContactTarget(event, node));
+exports.dispatchEvent = function (node, event) {
+    MKManager(node).dispatchEvent(ModifyContactTarget(event, node));
 };
 /**
  * Returns a virtual element.
@@ -2439,7 +2447,7 @@ Elf.dispatchEvent = function (node, event) {
  * @param   {*}                                    props 
  * @returns {JSX.Element}
  */
-Elf.createElement = function (type, props) {
+exports.createElement = function (type, props) {
     var feature = props || {};
     var insider = flatten(tear(arguments, 2));
     var element = {
@@ -2465,12 +2473,12 @@ Elf.createElement = function (type, props) {
 /**
  * Returns a function that create the virtual element.
  * 
- * @param   {String}   html 
- * @returns {Function}
+ * @param   {String | Function} trustor 
+ * @returns {() => JSX.Element}
  */
-Elf.redactElement = function (trustor) {
+exports.redactElement = function (trustor) {
     if (isString(trustor)) {
-        trustor = Elf.$html_analysis(trustor);
+        trustor = exports.$html_analysis(trustor);
     }
     var privatelyComponentDep = {};
     var privatelyDirectiveDep = {};
@@ -2491,7 +2499,7 @@ Elf.redactElement = function (trustor) {
         temporaryDirectiveDep.push(privatelyDirectiveDep);
         temporaryTransformDep.push(privatelyTransformDep);
         try {
-            return trustor.call(SefeSphere(this || {}));
+            return trustor.call(SefeSphere(this || {}), exports);
         } finally {
             temporaryComponentDep.pop();
             temporaryDirectiveDep.pop();
@@ -2504,13 +2512,13 @@ Elf.redactElement = function (trustor) {
  * 
  * @returns {Boolean}
  */
-Elf.forceUpdate = function () {
+exports.forceUpdate = function () {
     return broadcast();
 };
 /**
  * Register global dependency.
  */
-Elf.depend = function () {
+exports.depend = function () {
     flatten(tear(arguments)).forEach(function (trustor) {
         if (exists(trustor, DISPLAYING_COMPONENT)) {
             define(communityComponentDep, trustor[DISPLAYING_COMPONENT], normal(trustor));
@@ -2531,7 +2539,7 @@ Elf.depend = function () {
  * @param   {Boolean}        duplex
  * @returns {Elf.Individual} 
  */
-Elf.render = function (element, container, duplex) {
+exports.render = function (element, container, duplex) {
     var monitor;
     var collect = [];
     var expanse = container.namespaceURI;
@@ -2559,22 +2567,22 @@ Elf.render = function (element, container, duplex) {
         clean(collect, function (fn) { fn(); });
     }
 };
-/**
- * Promise.
- */
-Elf.Promise = Promise;
 
-//
-// The following methods or properties are used internally.
-//
+/**
+ * Represents the completion of an asynchronous operation
+ * 
+ * @type {Elf.PromiseConstructor}
+ */
+exports.Promise = Promise;
 
 /**
  * Returns a Component class when matched.
- * 
+ * @private The following methods or properties are used internally.
+ *
  * @param  {String}                    value
  * @return {String | JSX.ElementClass} 
  */
-Elf.$tag   = function (value) {
+exports.$tag = function (value) {
     if (exists(last(temporaryComponentDep), value)) {
         return last(temporaryComponentDep)[ value ];
     }
@@ -2585,11 +2593,12 @@ Elf.$tag   = function (value) {
 };
 /**
  * Convert the value with Transforms.
+ * @private The following methods or properties are used internally.
  * 
  * @param   {String} value
  * @returns {String} 
  */
-Elf.$fit   = function (value) {
+exports.$fit = function (value) {
     return tear(arguments, 1).reduce(function (init, item) {
         if (exists(last(temporaryTransformDep), item[0])) {
             return execute(MKUnitary(last(temporaryTransformDep)[item[0]]), init, item);
@@ -2605,11 +2614,12 @@ Elf.$fit   = function (value) {
 };
 /**
  * Returns a Directive class array when matched.
+ * @private The following methods or properties are used internally.
  * 
  * @param   {String}                           value
  * @returns {Array<Elf.Class<Elf.IDirective>>} 
  */
-Elf.$cmd   = function (value) {
+exports.$cmd = function (value) {
     return flatten(trim(value).split(REGEXP_SEPARATOR_CMD).map(function (value) {
         if (exists(last(temporaryDirectiveDep), value)) {
             return last(temporaryDirectiveDep)[ value ];
@@ -2622,17 +2632,18 @@ Elf.$cmd   = function (value) {
 };
 /**
  * Calls a defined callback function on each element of an array (or object), and returns an array that contains the results.
+ * @private The following methods or properties are used internally.
  * 
  * @param   {*}        value 
  * @param   {Function} callback 
  * @param   {*}        target 
  * @returns {Array}
  */
-Elf.$map   = function (value, callback, thisArg) {
+exports.$map = function (value, callback, thisArg) {
     if (isInheritedClass(value, Promise)) {
         value = value[COMMITMENT_STATUS] === RESOLVED
               ? value[COMMITMENT_RESULT]
-              : NULL;
+              : null;
     }
     if (isArray(value)) {
         return value.map(callback, thisArg);
@@ -2648,12 +2659,13 @@ Elf.$map   = function (value, callback, thisArg) {
 /**
  * Analysis html template.
  * When filename is passed in, the source map will be output.
+ * @private The following methods or properties are used internally.
  * 
  * @param   {String}   html 
  * @param   {String=}  filename 
  * @returns {Function}
  */
-Elf.$html_analysis = function (html, filename) {
+exports.$html_analysis = function (html, filename) {
     var start;
     var tally = 0;
     var ahead = 0;
@@ -2671,10 +2683,11 @@ Elf.$html_analysis = function (html, filename) {
     var source = {
         version         : 3,
         sources         : [ filename ],
-        mappings        : ""
+        mappings        : ";AAAA"
     };
-    var lineLength = Elf.$lineLength;
-    var expression = Elf.$expression;
+    var lineLength = exports.$lineLength;
+    var expression = exports.$expression;
+    var outputmaps = exports.btoa && exports.evlq && filename;
     for (start = 0; start < length;) {
         lines.push([start, start = TPLNewlineIndex(start)]);
     }
@@ -2682,6 +2695,9 @@ Elf.$html_analysis = function (html, filename) {
         if (TPLCommentStart(start)) {
             TPLCommentParse(start, start = TPLCommentEnded(start));
         } else
+        if (TPLDoctypeStart(start)) {
+            TPLDoctypeParse(start, start = TPLDoctypeEnded(start));
+        }
         if (TPLOccludeStart(start)) {
             TPLOccludeParse(start, start = TPLOccludeEnded(start));
         } else
@@ -2701,12 +2717,18 @@ Elf.$html_analysis = function (html, filename) {
         ASTAppendScript("null");
     }
     ASTAppendScript(")}");
-    if (filename) {
-        script += "\n//@ sourceMappingURL=data:application/json;base64," + btoa(stringify(source));
+    if (outputmaps) {
+        script = script
+                + "\n"
+                + "\n//# sourceMappingURL=data:application/json;chatset=utf-8;base64," + exports.btoa(stringify(source))
+                + "\n//# sourceURL=" + filename + "!transpiled";
     }
-    return new Function(script);
+    return new Function("Elf", script);
     function TPLCommentStart (start) {
         return startsWith(html, "<!--", start);
+    }
+    function TPLDoctypeStart (start) {
+        return startsWith(html, "<!"  , start) && /DOCTYPE/i.test(html.slice(start + 2, start + 9));
     }
     function TPLOccludeStart (start) {
         return startsWith(html, "</"  , start) && REGEXP_TEMPLATE_NAME.test(html.charAt(start + 2));
@@ -2716,6 +2738,9 @@ Elf.$html_analysis = function (html, filename) {
     }
     function TPLCommentEnded (start) {
         return Math.min(length, TPLRough(html, "-->", start + 4, TPLPlain) + 3);
+    }
+    function TPLDoctypeEnded (start) {
+        return Math.min(length, TPLRough(html, ">"  , start + 9, TPLPlain) + 1);
     }
     function TPLOccludeEnded (start) {
         return Math.min(length, TPLRough(html, ">"  , start + 3, TPLPlain) + 1);
@@ -2731,6 +2756,9 @@ Elf.$html_analysis = function (html, filename) {
     }
     function TPLCommentParse (start, ended) {
         console.warn("Comment '" + tear(html, start, ended) + "' will be dispensed");
+    }
+    function TPLDoctypeParse (start, ended) {
+        console.warn("Doctype '" + tear(html, start, ended) + "' will be dispensed");
     }
     function TPLOccludeParse (start, ended) {
         var qname = TPLNameParse(start + 2,
@@ -2772,11 +2800,23 @@ Elf.$html_analysis = function (html, filename) {
                 value = trim(value);
             }
             if (index >= 0) {
-                TPLStore({
-                    label : false,
-                    level : level,
-                    texts : TPLTextParse(start + index, value)
-                });
+                if (TPLCDATA()) {
+                    TPLStore({
+                        label : false,
+                        level : level,
+                        texts : [{
+                            rawer : true,
+                            place : TPLPlace(start),
+                            value : value
+                        }]
+                    });
+                } else {
+                    TPLStore({
+                        label : false,
+                        level : level,
+                        texts : TPLTextParse(start + index, value)
+                    });
+                }
             }
         }
     }
@@ -2987,15 +3027,28 @@ Elf.$html_analysis = function (html, filename) {
         }
     }
     function TPLValue (value) {
-        return Elf.$html_unescape(value);
+        return exports.$html_unescape(value);
     }
     function TPLDuple (start) {
+        var cdata = TPLCDATA(start);
+        if (cdata) {
+            return startsWith(html, "</" + cdata, start) && /[^-:\w]/.test(html.charAt(start + cdata.length + 2));
+        }
         return TPLCommentStart(start)
             || TPLOccludeStart(start)
             || TPLElementStart(start);
     }
     function TPLPlain () {
         return true;
+    }
+    function TPLCDATA () {
+        if (level > 0) {
+            var name = queue[level - 1].qname.value;
+            if (lower(name) === "style" ||
+                lower(name) === "script") {
+                return name;
+            }
+        }
     }
     function TPLBlank (html) {
         return html.search(REGEXP_TEMPLATE_WORD);
@@ -3211,71 +3264,59 @@ Elf.$html_analysis = function (html, filename) {
         script += value;
     }
     function ASTAppendSource (value) {
-        if (filename) {
+        if (outputmaps) {
             source.mappings += resume ? ";" : ",";
-            source.mappings += VLQEncode([number, 0, value.place.rownum - rownum, value.place.colnum - colnum]);
+            source.mappings += exports.evlq([number, 0, value.place.rownum - rownum, value.place.colnum - colnum]);
             rownum = value.place.rownum;
             colnum = value.place.colnum;
             resume = false;
             number = 0;
         }
     }
-    function VLQEncode (value) {
-        var result = "";
-        var length = value.length;
-        for (var i = 0; i < length; i++) {
-            var ns = value[i];
-            if (ns < 0) {
-                ns = (-ns << 1) | 1;
-            } else {
-                ns = ns << 1;
-            }
-            do {
-                var clamped = ns & 31;
-                if ((ns >>= 5) > 0) {
-                    clamped = clamped | 32;
-                }
-                result += diagrammatic.charAt(clamped);
-            } while (ns > 0);
-        }
-        return result;
-    }
 };
 /**
  * Unescape html character.
+ * @private The following methods or properties are used internally.
  * 
  * @param   {String} html 
  * @returns {String}
  */
-Elf.$html_unescape = function (html) {
-    return CODE.innerHTML = html, CODE.textContent;
+exports.$html_unescape = function (html) {
+    CODE || (CODE = DOMMakeElement("i"));
+    CODE.innerHTML = html;
+    return CODE.textContent;
 };
 /**
  * Event attribute prefix of template.
+ * @private The following methods or properties are used internally.
  */
-Elf.$eventStart = "on";
+exports.$eventStart = "on";
 /**
  * Maximum length of line that generate the code.
+ * @private The following methods or properties are used internally.
  */
-Elf.$lineLength = 0x8000;
+exports.$lineLength = 0x8000;
 /**
  * JavaScript expression block of template.
+ * @private The following methods or properties are used internally.
  */
-Elf.$expression = ["{{", "}}"];
+exports.$expression = ["{{", "}}"];
 /**
  * Condition attribute of template.
+ * @private The following methods or properties are used internally.
  */
-Elf.$condition  = "e-if";
+exports.$condition  = "e-if";
 /**
  * Iteration attribute of template.
+ * @private The following methods or properties are used internally.
  */
-Elf.$iteration  = "e-for";
+exports.$iteration  = "e-for";
+
 //
 // Internal members access for plug-in.
 //
-Elf["Global.listener"] = GlobalEventListener;
-Elf["Global.renderer"] = DISPLAYING_RENDERER;
-Elf["Global.launcher"] = MKManager;
+exports["Global.listener"] = GlobalEventListener;
+exports["Global.renderer"] = DISPLAYING_RENDERER;
+exports["Global.launcher"] = MKManager;
 
-
-} (this.Elf = {}, window, document, Object, Array, Error, JSON, Math, null));
+}));

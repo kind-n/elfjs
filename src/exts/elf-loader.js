@@ -4280,7 +4280,6 @@ function JavaScriptModuleParser () {
     this.depends = [];
     this.ast = null;
 }
-
 JavaScriptModuleParser.prototype.parse = function (source) {
     this.ast = parse(source, {
         ranges      : false,
@@ -5083,26 +5082,6 @@ function utf8Encode (value) {
     }
     return result;
 }
-function vlqEncode (value) {
-    var result = "";
-    var length = value.length;
-    for (var i = 0; i < length; i++) {
-        var ns = value[i];
-        if (ns < 0) {
-            ns = (-ns << 1) | 1;
-        } else {
-            ns = ns << 1;
-        }
-        do {
-            var clamped = ns & 31;
-            if ((ns >>= 5) > 0) {
-                clamped = clamped | 32;
-            }
-            result += diagrammatic.charAt(clamped);
-        } while (ns > 0);
-    }
-    return result;
-}
 
 function makeStyleElementFromCSS (str) {
     var text = document.createTextNode(value);
@@ -5143,7 +5122,7 @@ function makeSourceMapFromSyntax (ast, filename) {
                 } else {
                     source.mappings += ",";
                 }
-                source.mappings += vlqEncode([c - colnum, 0, l - rownum, c - colnum]);
+                source.mappings += exports.evlq([c - colnum, 0, l - rownum, c - colnum]);
                 rownum = l;
                 colnum = c;
             } else if (Array.isArray(node[name])) {
@@ -5512,22 +5491,101 @@ var modulesCache = {
 var noughtExport = {};
 var noughtModule = provide(noughtExport);
 
-
+/**
+ * VLQ encode
+ * 
+ * @param  {String}        value
+ * @return {Array<Number>} 
+ */
+exports.dvlq     = function (value) {
+    var result = [];
+    var length = value.length;
+    var offset = 0;
+    var amount = 0;
+    for (var i = 0; i < length; i++) {
+        var ns = diagrammatic.indexOf(value[i]);
+        amount = amount + ((ns & 31) << offset);
+        if (ns & 32) {
+            offset = offset + 5;
+        } else {
+            result.push(amount & 1 ? -(amount >> 1) : (amount >> 1));
+            amount = 0;
+            offset = 0;
+        }
+    }
+    return result;
+};
+/**
+ * VLQ encode
+ * 
+ * @param   {Array<Number>} value 
+ * @returns {String}
+ */
+exports.evlq     = function (value) {
+    var result = "";
+    var length = value.length;
+    for (var i = 0; i < length; i++) {
+        var ns = value[i];
+        if (ns < 0) {
+            ns = (-ns << 1) | 1;
+        } else {
+            ns = ns << 1;
+        }
+        do {
+            var clamped = ns & 31;
+            if ((ns >>= 5) > 0) {
+                clamped = clamped | 32;
+            }
+            result += diagrammatic.charAt(clamped);
+        } while (ns > 0);
+    }
+    return result;
+};
+/**
+ * Base64 encode
+ * 
+ * @param   {String} value 
+ * @returns {String}
+ */
 exports.btoa     = function (value) {
     return base64Encode(utf8Encode(value));
 };
+/**
+ * Base64 decode
+ * 
+ * @param   {String} value 
+ * @returns {String}
+ */
 exports.atob     = function (value) {
     return utf8Decode(base64Decode(value));
 };
+/**
+ * 
+ * @param   {String}           modname 
+ * @returns {Elf.Promise<any>}
+ */
 exports.require  = function (modname) {
     return LDImport(optionsCache.baseURL || "/")(modname);
 };
+/**
+ * 
+ * @param {Elf.Options} options 
+ */
 exports.config   = function (options) {
     optionsCache = options || optionsCache;
 };
+/**
+ * Set static module
+ * 
+ * @param {String} modname 
+ * @param {*}      value 
+ */
 exports.set      = function (modname, value) {
     modulesCache[modname] = provide( value );
 };
+/**
+ * Compiler
+ */
 exports.Compiler = Compiler;
 
 } (exports, (exports.Promise = (exports.Promise || (

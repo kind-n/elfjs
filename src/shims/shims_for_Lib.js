@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.0.0
+ * @version 1.1.0
  * @license MIT
  * 
  */
@@ -17,6 +17,18 @@
 //
 
 ! (function (Elf, Window, Node) {
+
+if (Elf === void 0) {
+    throw new Error("Elf is not defined");
+}
+
+var GlobalEventLauncher = Elf["Global.launcher"];
+var GlobalEventListener = Elf["Global.listener"];
+
+Window.prototype.addEventListener    = attachEvent(Window.prototype.addEventListener);
+Window.prototype.removeEventListener = detachEvent(Window.prototype.removeEventListener);
+Node.prototype.addEventListener      = attachEvent(Node.prototype.addEventListener);
+Node.prototype.removeEventListener   = detachEvent(Node.prototype.removeEventListener);
 
 function attachEvent (nativeAttachEvent) {
     return function (type, listener) {
@@ -36,13 +48,5 @@ function detachEvent (nativeDetachEvent) {
         }
     }
 }
-
-var GlobalEventLauncher = Elf["Global.launcher"];
-var GlobalEventListener = Elf["Global.listener"];
-
-Node.prototype.addEventListener      = attachEvent(Node.prototype.addEventListener);
-Node.prototype.removeEventListener   = detachEvent(Node.prototype.removeEventListener);
-Window.prototype.addEventListener    = attachEvent(Window.prototype.addEventListener);
-Window.prototype.removeEventListener = detachEvent(Window.prototype.removeEventListener);
 
 } (window.Elf, Window, Node));
