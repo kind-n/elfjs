@@ -35,7 +35,7 @@ declare namespace Elf {
     export function dispatchEvent <T extends HTMLElement | JSX.ElementClass> (node: T, event: Elf.Event<T>): void;
 
     export function createElement (type: string | Elf.Class<JSX.ElementClass>, props?: any, ...children: any[]): JSX.Element;
-    export function redactElement (temp: string, ...depends: any[]): () => JSX.Element;
+    export function redactElement (temp: string | Function, ...depends: any[]): () => JSX.Element;
 
     export function forceUpdate (): boolean;
 
