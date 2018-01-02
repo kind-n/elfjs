@@ -2755,10 +2755,10 @@ exports.$html_analysis = function (html, filename) {
         return Math.min(length, TPLRough(html, "\n" , start    , TPLPlain) + 1);
     }
     function TPLCommentParse (start, ended) {
-        console.warn("Comment '" + tear(html, start, ended) + "' will be dispensed");
+        console.warn(stringify(tear(html, start, ended)) + " will be dispensed");
     }
     function TPLDoctypeParse (start, ended) {
-        console.warn("Doctype '" + tear(html, start, ended) + "' will be dispensed");
+        console.warn(stringify(tear(html, start, ended)) + " will be dispensed");
     }
     function TPLOccludeParse (start, ended) {
         var qname = TPLNameParse(start + 2,
