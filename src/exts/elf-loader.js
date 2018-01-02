@@ -5194,9 +5194,9 @@ function transformCommonJSModule (str, filename, analyzer) {
         + JSON.stringify(["require", "exports", "module"].concat(analyzer.depends))
         + ",function(require,exports,module){\n"
         + str
+        + "\n});"
         + "\n"
-        + makeSourceMapFromSyntax(analyzer.ast, filename)
-        + "\n});";
+        + makeSourceMapFromSyntax(analyzer.ast, filename);
 }
 function additionalSourceURLCode (str, filename, transpiled) {
     return str + "\n//# sourceURL=" + filename + (transpiled ? "!transpiled" : "");
@@ -5292,7 +5292,7 @@ function useBabelTranspile (value, filename) {
                         ],
                         sourceFileName : filename,
                         sourceMaps : "inline"
-                    })
+                    }).code
                 ),
                 filename,
                 true 
@@ -5469,7 +5469,9 @@ var Compiler = {
             }
         }
         return execute(
-            additionalSourceURLCode(value, filename, false), filename
+            additionalSourceURLCode(
+                "\n" + value + "\n" + makeSourceMapFromSyntax(analyzer.ast, filename),
+                filename, true), filename
         );
     },
     jsx  : function (value, filename, rawname) {
