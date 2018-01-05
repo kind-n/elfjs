@@ -374,14 +374,26 @@ cmd.command("init [name]")
             .mkd("main.html");
         // main.js
         new fwriter("src/bootstraps")
-            .add(0, "module.exports = require(\"../components/welcome\")();")
+            .add(0, "var Elf = require(\"elfjs\");")
+            .add(0, "var WelCome = require(\"../components/welcome\");")
+            .add(0, "")
+            .add(0, "module.exports = Elf.render(Elf.createElement(WelCome), document.querySelector(\"section\"), true);")
             .mkd("main.js");
         // welcome.js
         new fwriter("src/components")
-            .add(0, "module.exports = function() {")
-            .add(4, "alert(\"Welcome!\");")
-            .add(0, "};")
-            .mkd("welcome.js")
+            .add(0, "var Elf = require(\"elfjs\");")
+            .add(0, "")
+            .add(0, "module.exports = Elf.Component(\"welcome\", {")
+            .add(4, "render: Elf.redactElement(require(\"./welcome.html\")),")
+            .add(4, "onClick: function () {")
+            .add(8, "alert(\"Welcome!\");")
+            .add(4, "}")
+            .add(0, "});")
+            .mkd("welcome.js");
+        // welcome.html
+        new fwriter("src/components")
+            .add(0, "<button onclick=\"onClick($event);\">Welcome</button>")
+            .mkd("welcome.html");
         // base.css
         new fwriter("src/assets/stylesheets")
             .add(0, "@charset \"UTF-8\";")
