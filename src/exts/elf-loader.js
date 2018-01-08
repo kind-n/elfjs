@@ -5228,8 +5228,8 @@ function useSassTranspile (value, filename, indentedSyntax) {
         ? Promise.resolve(Sass)
         : exports.require("sass")
     ).then(function (Sass) {
-        if (less === noughtExport) {
-            throw new Error("can not find module less");
+        if (Sass === noughtExport) {
+            throw new Error("can not find module sass");
         }
         return new Promise(function (resolve, reject) {
             Sass.compile(value, {
