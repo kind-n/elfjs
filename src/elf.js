@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.2.1
+ * @version 1.2.2
  * @license MIT
  * 
  */
@@ -1450,7 +1450,7 @@ function DOMFormatStyle (product) {
             return token.replace(/[A-Z]/g, function (value) {
                 return "-" + lower(value);
             }) + ":" + value;
-        });
+        }).join("; ");
     }
     return product;
 }
@@ -1464,7 +1464,7 @@ function DOMFormatClass (product) {
     if (isObject(product)) {
         return flatten(exports.$map(product, function (value, token) {
             return value ? token : null;
-        }));
+        })).join(" ");
     }
     return product;
 }
