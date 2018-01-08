@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.2.1
+ * @version 1.2.2
  * @license MIT
  * 
  */
@@ -5084,7 +5084,7 @@ function utf8Encode (value) {
 }
 
 function makeStyleElementFromCSS (str) {
-    var text = document.createTextNode(value);
+    var text = document.createTextNode(str);
     var node = document.createElement("style");
     var head = document.querySelector("head");
     node.setAttribute("type", "text/css");
