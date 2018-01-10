@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.2.2
+ * @version 1.3.0
  * @license MIT
  * 
  */
@@ -3204,7 +3204,7 @@ exports.$html_analysis = function (html, filename) {
             ASTAppendScript(stringify(node.token.value));
             ASTAppendScript(":");
             if (node.event) {
-                ASTAppendScript("function($event){");
+                ASTAppendScript("function(event){");
                 ASTAppendSource(node.prime);
                 ASTAppendScript(node.prime.value);
                 ASTAppendScript("}.bind(this)");
