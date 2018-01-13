@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.1.0
+ * @version 1.3.2
  * @license MIT
  * 
  */
@@ -14,50 +14,17 @@
 ///////////////////////////////////
 /// Typings
 ///////////////////////////////////
-export = Elf;
+declare module "elfjs" {
+    export = Elf;
+}
 
 //
 // elf
 //
 declare namespace Elf {
 
-    export var Promise : Elf.PromiseConstructor;
-
-    export function setTimeout  (handler: ((event: Elf.Event<void>, ...args: any[]) => void), delay?: number, ...args: any[]): Elf.Disposable;
-    export function setInterval (handler: ((event: Elf.Event<void>, ...args: any[]) => void), delay?: number, ...args: any[]): Elf.Disposable;
-    export function requestAnimationFrame (handler: ((event: Elf.Event<void>, ...args: any[]) => void), ...args: any[]): Elf.Disposable;
-
-    export function createClass   <T> (proto: T): Elf.Class<T>;
-
-    export function createEvent   <T extends HTMLElement | JSX.ElementClass> (type: string, bubbles?: boolean, value?: any): Elf.Event<T>;
-    export function attachEvent   <T extends HTMLElement | JSX.ElementClass> (node: T, type: string, listener: EventListenerOrEventListenerObject): void;
-    export function detachEvent   <T extends HTMLElement | JSX.ElementClass> (node: T, type: string, listener: EventListenerOrEventListenerObject): void;
-    export function dispatchEvent <T extends HTMLElement | JSX.ElementClass> (node: T, event: Elf.Event<T>): void;
-
-    export function createElement (type: string | Elf.Class<JSX.ElementClass>, props?: any, ...children: any[]): JSX.Element;
-    export function redactElement (temp: string | Function, ...depends: any[]): () => JSX.Element;
-
-    export function forceUpdate (): boolean;
-
-    export function Transform <T> (name: string, proto: T): Elf.Class<Elf.ITransform & T>;
-    export function Directive <T> (name: string, proto: T): Elf.Class<Elf.IDirective & T>;
-    export function Component <T> (name: string, proto: T): Elf.Class<Elf.IComponent & T>;
-
-    export function depend (...depends: any[]): void;
-    export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Elf.Individual;
-    export function assign (target: any, ...sources: any[]): any;
-
-    export interface Promise<T> extends Elf.Disposable {
-        readonly result?: any;
-        readonly status?: string;
-        then <R1, R2> (onresolved?: ((value: T) => R1 | Elf.Promise<R1>), onrejected?: ((error: any) => R2 | Elf.Promise<R2>)): Elf.Promise<R1 | R2>;
-        catch <R> (onrejected?: ((error: any) => R | Elf.Promise<R>)): Elf.Promise<R | T>;
-    }
-
-    export interface PromiseConstructor {
-        readonly prototype: Elf.Promise<any>;
-        new <T> (executor: ((resolve: ((value: T | Elf.Promise<T>) => void), reject: ((error: any) => void)) => Function | void)) : Elf.Promise<T>;
-        all <R1, R2, R3, R4, R5, R6, R7, R8, R9> (values: [
+    export class Promise <T> implements Elf.Disposable {
+        static all <R1, R2, R3, R4, R5, R6, R7, R8, R9> (values: [
             R1 | Elf.Promise<R1>,
             R2 | Elf.Promise<R2>,
             R3 | Elf.Promise<R3>,
@@ -68,7 +35,7 @@ declare namespace Elf {
             R8 | Elf.Promise<R8>,
             R9 | Elf.Promise<R9>
         ]): Elf.Promise<[R1, R2, R3, R4, R5, R6, R7, R8, R9]>;
-        all <R1, R2, R3, R4, R5, R6, R7, R8> (values: [
+        static all <R1, R2, R3, R4, R5, R6, R7, R8> (values: [
             R1 | Elf.Promise<R1>,
             R2 | Elf.Promise<R2>,
             R3 | Elf.Promise<R3>,
@@ -78,7 +45,7 @@ declare namespace Elf {
             R7 | Elf.Promise<R7>,
             R8 | Elf.Promise<R8>
         ]): Elf.Promise<[R1, R2, R3, R4, R5, R6, R7, R8]>;
-        all <R1, R2, R3, R4, R5, R6, R7> (values: [
+        static all <R1, R2, R3, R4, R5, R6, R7> (values: [
             R1 | Elf.Promise<R1>,
             R2 | Elf.Promise<R2>,
             R3 | Elf.Promise<R3>,
@@ -87,33 +54,70 @@ declare namespace Elf {
             R6 | Elf.Promise<R6>,
             R7 | Elf.Promise<R7>
         ]): Elf.Promise<[R1, R2, R3, R4, R5, R6, R7]>;
-        all <R1, R2, R3, R4, R5> (values: [
+        static all <R1, R2, R3, R4, R5> (values: [
             R1 | Elf.Promise<R1>,
             R2 | Elf.Promise<R2>,
             R3 | Elf.Promise<R3>,
             R4 | Elf.Promise<R4>,
             R5 | Elf.Promise<R5>
         ]): Elf.Promise<[R1, R2, R3, R4, R5]>;
-        all <R1, R2, R3, R4> (values: [
+        static all <R1, R2, R3, R4> (values: [
             R1 | Elf.Promise<R1>,
             R2 | Elf.Promise<R2>,
             R3 | Elf.Promise<R3>,
             R4 | Elf.Promise<R4>
         ]): Elf.Promise<[R1, R2, R3, R4]>;
-        all <R1, R2, R3> (values: [
+        static all <R1, R2, R3> (values: [
             R1 | Elf.Promise<R1>,
             R2 | Elf.Promise<R2>,
             R3 | Elf.Promise<R3>
         ]): Elf.Promise<[R1, R2, R3]>;
-        all <R1, R2> (values: [
+        static all <R1, R2> (values: [
             R1 | Elf.Promise<R1>,
             R2 | Elf.Promise<R2>
         ]): Elf.Promise<[R1, R2]>;
-        all  <R> (values: R[] | Elf.Promise<R>[]): Elf.Promise<R[]>;
-        race <R> (values: R[] | Elf.Promise<R>[]): Elf.Promise<R>;
-        ajax (request: Elf.Request): Elf.Promise<Elf.Response>;
-        resolve <R> (value: R): Elf.Promise<R>;
-        reject (error: any): Elf.Promise<void>;
+        static all  <R> (values: R[] | Elf.Promise<R>[]): Elf.Promise<R[]>;
+        static race <R> (values: R[] | Elf.Promise<R>[]): Elf.Promise<R>;
+        static ajax (request: Elf.Request): Elf.Promise<Elf.Response>;
+        static resolve <R> (value: R): Elf.Promise<R>;
+        static reject (error: any): Elf.Promise<void>;
+
+        readonly result?: any;
+        readonly status?: string;
+
+        constructor (executor: ((resolve: ((value: T | Elf.Promise<T>) => void), reject: ((error: any) => void)) => Function | void));
+
+        then <R1, R2> (onresolved?: ((value: T) => R1 | Elf.Promise<R1>), onrejected?: ((error: any) => R2 | Elf.Promise<R2>)): Elf.Promise<R1 | R2>;
+        catch <R> (onrejected?: ((error: any) => R | Elf.Promise<R>)): Elf.Promise<R | T>;
+        dispose (): void;
+    }
+
+    export function setTimeout  (handler: ((event: Elf.Event<void>, ...args: any[]) => void), delay?: number, ...args: any[]): Elf.Disposable;
+    export function setInterval (handler: ((event: Elf.Event<void>, ...args: any[]) => void), delay?: number, ...args: any[]): Elf.Disposable;
+    export function requestAnimationFrame (handler: ((event: Elf.Event<void>, ...args: any[]) => void), ...args: any[]): Elf.Disposable;
+
+    export function createClass   <T> (proto: T): Elf.Class<T>;
+
+    export function createEvent   <T extends HTMLElement | JSX.ElementClass> (type: string, bubbles?: boolean, value?: any): Elf.Event<T>;
+    export function attachEvent   <T extends HTMLElement | JSX.ElementClass> (node: T, type: string, listener: Elf.EventListenerOrEventListenerObject<T>): void;
+    export function detachEvent   <T extends HTMLElement | JSX.ElementClass> (node: T, type: string, listener: Elf.EventListenerOrEventListenerObject<T>): void;
+    export function dispatchEvent <T extends HTMLElement | JSX.ElementClass> (node: T, event: Elf.Event<T>): void;
+
+    export function createElement (type: string | Elf.Class<JSX.ElementClass>, props?: any, ...children: any[]): JSX.Element;
+    export function redactElement (temp: string | Function, ...depends: any[]): () => JSX.Element;
+
+    export function forceUpdate (): boolean;
+
+    export function Transform <T extends Elf.ITransform> (name: string, proto: T): Elf.Class<T>;
+    export function Directive <T extends Elf.IDirective> (name: string, proto: T): Elf.Class<T>;
+    export function Component <T extends Elf.IComponent> (name: string, proto: T): Elf.Class<T>;
+
+    export function depend (...depends: any[]): void;
+    export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Elf.Individual;
+    export function assign (target: any, ...sources: any[]): any;
+
+    export interface Promise<T> extends Elf.Disposable {
+        
     }
 
     export interface Provide {
@@ -193,8 +197,13 @@ declare namespace Elf {
         stopPropagation()         : void;
         stopImmediatePropagation(): void;
     }
-
-    export type ClassDecorator = <T extends Function> (target: T) => T;
+    export interface EventListener <T> {
+        (event: Elf.Event<T>): void;
+    }
+    export interface EventListenerObject <T> {
+        handleEvent(event: Elf.Event<T>): void;
+    }
+    export type EventListenerOrEventListenerObject <T> = EventListener<T> | EventListenerObject<T>;
 }
 
 //
@@ -217,10 +226,6 @@ declare namespace Elf {
         mapping?: object;
         routing?: (url: string) => string;
         defaultExtension?: string;
-        /**
-         * @deprecated The loader has been automatically identified after v1.1.0
-         */
-        module?: "commonjs" | "amd";
     }
 
     export type CompilerMethod = (value: string, filename: string, rawname: string) => Elf.Provide | Elf.Promise<Elf.Provide>;

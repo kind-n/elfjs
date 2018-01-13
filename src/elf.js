@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.3.1
+ * @version 1.3.2
  * @license MIT
  * 
  */
@@ -2571,7 +2571,7 @@ exports.render = function (element, container, duplex) {
 /**
  * Represents the completion of an asynchronous operation
  * 
- * @type {Elf.PromiseConstructor}
+ * @type {Elf.Class<Elf.Promise<any>>}
  */
 exports.Promise = Promise;
 
