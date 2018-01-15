@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.3.2
+ * @version 1.3.3
  * @license MIT
  * 
  */
