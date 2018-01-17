@@ -5,7 +5,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.3.3
+ * @version 1.3.4
  * @license MIT
  * 
  */
@@ -2400,7 +2400,7 @@ exports.Transform = function (name, proto) {
  * @param   {*}         detail 
  * @returns {Elf.Event}
  */
-exports.createEvent = function (ype, bubbles, detail) {
+exports.createEvent = function (type, bubbles, detail) {
     return new SyntheticEvent({
         type                     : type,
         bubbles                  : !!bubbles,
