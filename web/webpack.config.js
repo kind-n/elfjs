@@ -82,7 +82,7 @@ module.exports = {
             transform: function (value, path) {
                 return value
                     .toString()
-                    .replace(/(\s*<script.*src=").\/node_modules\/elfjs-loader\/dist\/exts\/elf-loader\.min\.js(".*\/script>)/g, "")
+                    .replace(/(\s*<script.*src=").\/node_modules\/elfjs-loader\/dist\/elf-loader\.min\.js(".*\/script>)/g, "")
                     .replace(/(\s*<script.*src=").\/assets\/javascripts\/app\.js".*data-main="(.*)(".*\/script>)/g, "$1$2$3");
             }
         }].concat(
