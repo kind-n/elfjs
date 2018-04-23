@@ -25,8 +25,9 @@ var HTML_PATTERN = [
 // Copy glob pattern in SOURCE_PATH
 var COPY_PATTERN = [
     "assets/**/*.*",
-    "documents/**/*.*",
-    "languages/**/*.*",
+    "components/**/*.*",
+    //"documents/**/*.*",
+    //"languages/**/*.*",
     "views/**/*.*"
 ];
 
