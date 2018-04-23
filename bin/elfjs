@@ -17,23 +17,19 @@
  *          -c, --cache <term>       the cache max-age
  */
 
-var fs     = require("fs");
-var path   = require("path");
-var zlib   = require("zlib");
-var http   = require("http");
-var https  = require("https");
-var crypto = require("crypto");
+var fs        = require("fs");
+var path      = require("path");
+var zlib      = require("zlib");
+var http      = require("http");
+var https     = require("https");
+var crypto    = require("crypto");
 
-var cmd    = require("commander");
-var man    = require("minimatch");
-var pkg    = require("../package.json");
+var commander = require("commander");
+var minimatch = require("minimatch");
 
-var cwd    = process.cwd();
-var cfg    = include(path.join(cwd, "elfjs.config.json")) || {};
-
-//
-//
-//
+var cwd       = process.cwd();
+var cfg       = include(path.join(cwd, "elfjs.config.json")) || {};
+var pkg       = require("../package.json");
 
 function wronged (err) {
     console.log("");
@@ -67,523 +63,401 @@ function combine (obj) {
     }
     return obj;
 }
-function readdir (val) {
-    return new fwriter()
+function arrange (val) {
+    var result = [];
+    for (var i = 0; i < val.length; i++) {
+        entry(val[i].charAt(0).toUpperCase()).push(val[i]);
+    }
+    return new FWriter()
         .add(0, "<!DOCTYPE html>")
         .add(0, "<html>")
-        .add(4, "<head>")
-        .add(8, "<meta charset=\"UTF-8\">")
-        .add(4, "</head>")
-        .add(4, "<body>")
-        .add(8, "<br>")
-        .add(8, "<ul>")
-        .add(0, val.map(function (i) { return "            <li><a href=\"" + i + "\">" + i + "</a></li>" }).join("\n"))
-        .add(8, "</ul>")
-        .add(4, "</body>")
+        .add(1, "<head>")
+        .add(2, "<meta charset=\"UTF-8\">")
+        .add(2, "<meta content=\"no-transform\" http-equiv=\"Cache-Control\">")
+        .add(2, "<meta content=\"IE=edge,chrome=1\" http-equiv=\"X-UA-Compatible\">")
+        .add(2, "<meta content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\" name=\"viewport\">")
+        .add(2, "<meta content=\"pc,mobile\" name=\"applicable-device\">")
+        .add(2, "<style type=\"text/css\">")
+        .add(3, "html {")
+        .add(4, "height: 100%;")
+        .add(4, "}")
+        .add(4, "body {")
+        .add(4, "margin: 0;")
+        .add(4, "min-height: 100%;")
+        .add(4, "background: linear-gradient(#FFF, #EEE);")
+        .add(4, "font: 16px/1.25 Helvetica, monospace, \\5b8b\\4f53, sans-serif;")
+        .add(4, "color: #333;")
+        .add(3, "}")
+        .add(3, "section {")
+        .add(4, "width: 86%;")
+        .add(4, "max-width: 1600px;")
+        .add(4, "overflow: hidden;")
+        .add(4, "margin: 0 auto;")
+        .add(3, "}")
+        .add(3, "a {")
+        .add(4, "color: inherit;")
+        .add(4, "line-height: 2em;")
+        .add(4, "text-decoration: none;")
+        .add(3, "}")
+        .add(3, "a:hover {")
+        .add(4, "text-decoration: underline;")
+        .add(3, "}")
+        .add(2, "</style>")
+        .add(1, "</head>")
+        .add(1, "<body>")
+        .add(2, "<section>")
+        .add(0, result.map(function (item) {
+            return [
+                padStart(4 * 4, "<h1>" + item.first +  "</h1>"),
+                padStart(4 * 4, "<ul>")
+            ].concat(
+                item.value.map(function (item) {
+                    return padStart(5 * 4, "<li><a href=\"/" + item + "\">" + item + "</a></li>")
+                })
+            ).concat([
+                padStart(4 * 4, "</ul>")
+            ]).join("\n");
+        }))
+        .add(2, "</section>")
+        .add(1, "</body>")
         .add(0, "</html>")
         .val.slice(0, -1);
-}
-function fwriter (dir) {
-    this.dir = dir ? path.join(cwd, dir) : cwd;
-    this.val = "";
-}
-fwriter.prototype.add = function (numb, val) {
-    while (numb--) {
-        this.val += " ";
-    }
-    this.val += val || "";
-    this.val += "\n";
-    return this;
-};
-fwriter.prototype.mkd = function (name) {
-    (function mkd (dir, callback) {
-        if (fs.existsSync(dir)) {
-            callback();
-        } else {
-            mkd(path.dirname(dir), function () {
-                fs.mkdirSync(dir);
-                callback();
-            });
+
+    function entry (sn) {
+        for (var i = 0; i < result.length; i++) {
+            if (result[i].first === sn) {
+                return result[i].value;
+            }
         }
-    } (this.dir, function () {
-        if (name) {
+        var entry = {
+            first : sn,
+            value : []
+        };
+        result.push(entry);
+        return entry.value;
+    }
+}
+function copydir (origin, target) {
+    if (fs.existsSync(origin) &&
+        fs.existsSync(target)) {
+        fs.readdirSync(origin).forEach(function (name) {
+            var origin0 = path.join(origin, name);
+            var target0 = path.join(target, name);
+            var stat = fs.statSync(origin0);
+            var make = fs.existsSync(target0) === false;
+            if (stat.isDirectory()) {
+                if (make) {
+                    fs.mkdirSync(target0);
+                }
+                copydir(origin0, target0);
+            } else if (stat.isFile()) {
+                if (make) {
+                    fs.copyFileSync(origin0, target0);
+                }
+            }
+        });
+    }
+}
+function padStart (numb, val) {
+    for (var i = 0; i < numb; i++) {
+        val = " " + val;
+    }
+    return val;
+}
+
+var FWriter = (function () {
+    function FWriter (dir) {
+        this.dir = dir ? path.resolve(dir) : cwd;
+        this.val = "";
+    }
+    FWriter.prototype.add = function (tabs, val) {
+        this.val += padStart(tabs * 4, val) + "\n";
+        return this;
+    };
+    FWriter.prototype.mkd = function (name) {
+        (function mkd (dir, callback) {
+            if (fs.existsSync(dir)) {
+                callback();
+            } else {
+                mkd(path.dirname(dir), function () {
+                    fs.mkdirSync(dir);
+                    callback();
+                });
+            }
+        } (this.dir, function () {
             name = path.join(this.dir, name);
             if (fs.existsSync(name) === false) {
                 fs.writeFileSync(name, this.val.slice(0, -1));
             }
-        }
-    }.bind(this)));
-};
-function fserver (opt) {
-    this.opt = combine({
-        types : {
-            "js"   : "text/javascript; charset=utf-8",
-            "ts"   : "text/typescript; charset=utf-8",
-            "md"   : "text/markdown; charset=utf-8",
-            "txt"  : "text/plain; charset=utf-8",
-            "css"  : "text/css; charset=utf-8",
-            "xml"  : "text/xml; charset=utf-8",
-            "html" : "text/html; charset=utf-8",
-            "sass" : "text/css; charset=utf-8",
-            "scss" : "text/css; charset=utf-8",
-            "less" : "text/css; charset=utf-8",
-            "json" : "application/json; charset=utf-8",
-            "svg"  : "image/svg+xml; charset=utf-8",
-            "bmp"  : "image/bmp",
-            "gif"  : "image/gif",
-            "jpg"  : "image/jpeg",
-            "jpeg" : "image/jpeg",
-            "webp" : "image/webp",
-            "ico"  : "image/x-icon",
-            "png"  : "image/png",
-            "mp3"  : "audio/mpeg",
-            "mp4"  : "video/mp4",
-            "oga"  : "audio/ogg",
-            "ogv"  : "video/ogg",
-            "webm" : "video/webm",
-            "wav"  : "audio/x-wav",
-            "ogg"  : "application/ogg",
-            "pdf"  : "application/pdf"
-        },
-        zlibs : {
-            "js"   : true,
-            "ts"   : true,
-            "md"   : true,
-            "txt"  : true,
-            "css"  : true,
-            "xml"  : true,
-            "sass" : true,
-            "scss" : true,
-            "less" : true,
-            "json" : true,
-            "svg"  : true
-        },
-        https : {
-            key  : null,
-            cert : null,
-            port : 443
-        },
-        route : null,
-        cache : "no-cache",
-        host : null,
-        port : 8080,
-        dir : ""
-    }, cfg, opt);
-    this.hwd = [];
-}
-fserver.prototype.use = function (url, hwd) {
-    this.hwd.push({
-        url : url,
-        hwd : hwd
-    });
-};
-fserver.prototype.end = function (url) {
-    var opt = this.opt;
-    var ext = path.extname(url)
-                  .toLowerCase()
-                  .slice(1);
-    var uri = path.isAbsolute(url)
-            ? url
-            : path.join(cwd, opt.dir, url);
-    var mimetype = opt.types[ext];
-    var compress = opt.zlibs[ext];
-    var conserve = opt.cache !== "no-cache";
-    return function (req, res) {
-        var method = req.method.toUpperCase();
-        if (method !== "GET" &&
-            method !== "HEAD") {
-            res.statusCode = 405;
-            res.end();
-            return;
-        }
-        if (!mimetype) {
-            res.statusCode = 415;
-            res.end();
-            return;
-        }
-        if (!fs.existsSync(uri)) {
-            res.statusCode = 404;
-            res.end();
-            return;
-        }
-        var remark = fs.statSync(uri);
-        if (!remark.isFile()) {
-            res.statusCode = 403;
-            res.end();
-            return;
-        }
-        var ranges = req.headers["range"];
-        var cmatch = req.headers["if-none-match"];
-        var csince = req.headers["if-modified-since"];
-        var coding = req.headers["accept-encoding"]
-                   ? req.headers["accept-encoding"].trim().split(/[,\s]+/g)
-                   : [];
-        var length = remark.size;
-        var charac = remark.mtime;
-        var smatch = crypto.createHash("md5")
-                           .update([remark.ino, remark.size, charac.getTime()].join("-"))
-                           .digest("hex")
-                           .toLowerCase();
-        var ssince = charac.toUTCString();
-        var slimit = new Date(charac.getTime() + 315360000000).toUTCString();
-        res.setHeader("Content-Type", mimetype);
-        if (length === 0 ||
-            method === "HEAD") {
-            res.setHeader("Content-Length", 0);
-            res.statusCode = 200;
-            res.end();
-            return;
-        }
-        if (ranges) {
-            var range = ranges.split(/bytes=([0-9]*)-([0-9]*)/);
-            var start = parseInt(range[1]);
-            var ended = parseInt(range[2]);
-            if (isNaN(start) &&
-                isNaN(ended)) {
-                start = 0;
-                ended = length - 1;
-            } else if (isNaN(start)) {
-                start = length - ended;
-                ended = length - 1;
-            } else if (isNaN(ended)) {
-                ended = length - 1;
-            }
-            if ((start >= length) ||
-                (ended >= length) ||
-                (ended > start)) {
-                res.statusCode = 416;
-                res.setHeader("Content-Range", "bytes */" + length);
-                res.end();
-                return;
-            }
-            res.statusCode = 206;
-            res.setHeader("Accept-Ranges", "bytes");
-            res.setHeader("Cache-Control", "no-cache");
-            res.setHeader("Content-Range", "bytes " + start + "-" + ended + "/" + length);
-            res.setHeader("Content-Length", ended === start ? 0 : ended - start + 1);
-            fs.createReadStream(uri, {
-                start : start,
-                end: ended
-            }).pipe(res);
-            return;
-        }
-        if (conserve) {
-            res.setHeader("Etag", smatch);
-            res.setHeader("Last-Modified", ssince);
-            res.setHeader("Cache-Control", /^\d+$/.test(opt.cache) ? "max-age=" + opt.cache : opt.cache);
-            res.setHeader("Expires", slimit);
-            if (cmatch === smatch ||
-                csince === ssince) {
-                res.statusCode = 304;
-                res.end();
-                return;
-            }
-        }
-        if (compress) {
-            if (coding.indexOf("gzip") >= 0) {
-                var buffer = zlib.gzipSync(fs.readFileSync(uri));
-                res.statusCode = 200;
-                res.setHeader("Content-Length", buffer.length);
-                res.setHeader("Content-Encoding", "gzip");
-                res.end(buffer);
-                return;
-            }
-            if (coding.indexOf("deflate") >= 0) {
-                var buffer = zlib.deflateSync(fs.readFileSync(uri));
-                res.statusCode = 200;
-                res.setHeader("Content-Length", buffer.length);
-                res.setHeader("Content-Encoding", "deflate");
-                res.end(buffer);
-                return;
-            }
-        }
-        res.statusCode = 200;
-        res.setHeader("Content-Length", length);
-        fs.createReadStream(uri).pipe(res);
+        }.bind(this)));
     };
-};
-
-//
-//
-//
-
-cmd.usage("[command] [argv]");
-cmd.version(pkg.name + " " + pkg.version, "-v, --version");
-cmd.command("init [name]")
+    return FWriter;
+} ());
+var FServer = (function () {
+    function FServer (opt) {
+        this.opt = combine({
+            types : {
+                "js"   : "text/javascript; charset=utf-8",
+                "ts"   : "text/typescript; charset=utf-8",
+                "md"   : "text/markdown; charset=utf-8",
+                "txt"  : "text/plain; charset=utf-8",
+                "css"  : "text/css; charset=utf-8",
+                "xml"  : "text/xml; charset=utf-8",
+                "html" : "text/html; charset=utf-8",
+                "sass" : "text/css; charset=utf-8",
+                "scss" : "text/css; charset=utf-8",
+                "less" : "text/css; charset=utf-8",
+                "json" : "application/json; charset=utf-8",
+                "svg"  : "image/svg+xml; charset=utf-8",
+                "bmp"  : "image/bmp",
+                "gif"  : "image/gif",
+                "jpg"  : "image/jpeg",
+                "jpeg" : "image/jpeg",
+                "webp" : "image/webp",
+                "ico"  : "image/x-icon",
+                "png"  : "image/png",
+                "mp3"  : "audio/mpeg",
+                "mp4"  : "video/mp4",
+                "oga"  : "audio/ogg",
+                "ogv"  : "video/ogg",
+                "webm" : "video/webm",
+                "wav"  : "audio/x-wav",
+                "ogg"  : "application/ogg",
+                "pdf"  : "application/pdf"
+            },
+            zlibs : {
+                "js"   : true,
+                "ts"   : true,
+                "md"   : true,
+                "txt"  : true,
+                "css"  : true,
+                "xml"  : true,
+                "sass" : true,
+                "scss" : true,
+                "less" : true,
+                "json" : true,
+                "svg"  : true
+            },
+            https : {
+                key  : null,
+                cert : null,
+                port : 443
+            },
+            route : null,
+            cache : "no-cache",
+            host : null,
+            port : 8080,
+            dir : ""
+        }, cfg, opt);
+        this.hwd = [];
+    }
+    FServer.prototype.use = function (url, hwd) {
+        this.hwd.push({
+            url : url,
+            hwd : hwd
+        });
+    };
+    FServer.prototype.end = function (url) {
+        var opt = this.opt;
+        var ext = path.extname(url).toLowerCase().slice(1);
+        if (path.isAbsolute(url) === false) {
+            url = path.join(cwd, opt.dir, url);
+        }
+        var mimetype = opt.types[ext];
+        var compress = opt.zlibs[ext];
+        var conserve = opt.cache !== "no-cache";
+        return function (req, res) {
+            var method = req.method.toUpperCase();
+            if (method !== "GET" &&
+                method !== "HEAD") {
+                res.statusCode = 405;
+                res.end("Method Not Allowed");
+                return;
+            }
+            if (!mimetype) {
+                res.statusCode = 415;
+                res.end("Unsupported Media Type");
+                return;
+            }
+            if (!fs.existsSync(url)) {
+                res.statusCode = 404;
+                res.end("Not Found");
+                return;
+            }
+            var remark = fs.statSync(url);
+            if (!remark.isFile()) {
+                res.statusCode = 403;
+                res.end("Forbidden");
+                return;
+            }
+            var ranges = req.headers["range"];
+            var cmatch = req.headers["if-none-match"];
+            var csince = req.headers["if-modified-since"];
+            var coding = req.headers["accept-encoding"]
+                    ? req.headers["accept-encoding"].trim().split(/[,\s]+/g)
+                    : [];
+            var length = remark.size;
+            var charac = remark.mtime;
+            var smatch = crypto.createHash("md5")
+                            .update([remark.ino, remark.size, charac.getTime()].join("-"))
+                            .digest("hex")
+                            .toLowerCase();
+            var ssince = charac.toUTCString();
+            var slimit = new Date(charac.getTime() + 315360000000).toUTCString();
+            res.setHeader("Content-Type", mimetype);
+            if (length === 0 ||
+                method === "HEAD") {
+                res.setHeader("Content-Length", 0);
+                res.statusCode = 200;
+                res.end();
+                return;
+            }
+            if (ranges) {
+                var range = ranges.split(/bytes=([0-9]*)-([0-9]*)/);
+                var start = parseInt(range[1]);
+                var ended = parseInt(range[2]);
+                if (isNaN(start) &&
+                    isNaN(ended)) {
+                    start = 0;
+                    ended = length - 1;
+                } else if (isNaN(start)) {
+                    start = length - ended;
+                    ended = length - 1;
+                } else if (isNaN(ended)) {
+                    ended = length - 1;
+                }
+                if ((start >= length) ||
+                    (ended >= length) ||
+                    (ended > start)) {
+                    res.statusCode = 416;
+                    res.setHeader("Content-Range", "bytes */" + length);
+                    res.end("Requested Range Not Satisfiable");
+                    return;
+                }
+                res.statusCode = 206;
+                res.setHeader("Accept-Ranges", "bytes");
+                res.setHeader("Cache-Control", "no-cache");
+                res.setHeader("Content-Range", "bytes " + start + "-" + ended + "/" + length);
+                res.setHeader("Content-Length", ended === start ? 0 : ended - start + 1);
+                fs.createReadStream(url, {
+                    start : start,
+                    end: ended
+                }).pipe(res);
+                return;
+            }
+            if (conserve) {
+                res.setHeader("Etag", smatch);
+                res.setHeader("Last-Modified", ssince);
+                res.setHeader("Cache-Control", /^\d+$/.test(opt.cache) ? "max-age=" + opt.cache : opt.cache);
+                res.setHeader("Expires", slimit);
+                if (cmatch === smatch ||
+                    csince === ssince) {
+                    res.statusCode = 304;
+                    res.end();
+                    return;
+                }
+            }
+            if (compress) {
+                if (coding.indexOf("gzip") >= 0) {
+                    var buffer = zlib.gzipSync(fs.readFileSync(url));
+                    res.statusCode = 200;
+                    res.setHeader("Content-Length", buffer.length);
+                    res.setHeader("Content-Encoding", "gzip");
+                    res.end(buffer);
+                    return;
+                }
+                if (coding.indexOf("deflate") >= 0) {
+                    var buffer = zlib.deflateSync(fs.readFileSync(url));
+                    res.statusCode = 200;
+                    res.setHeader("Content-Length", buffer.length);
+                    res.setHeader("Content-Encoding", "deflate");
+                    res.end(buffer);
+                    return;
+                }
+            }
+            res.statusCode = 200;
+            res.setHeader("Content-Length", length);
+            fs.createReadStream(url).pipe(res);
+        };
+    };
+    return FServer;
+} ());
+commander.usage("[command] [argv]");
+commander.version(pkg.name + " " + pkg.version, "-v, --version");
+commander.command("init [name]")
     .description("Initialize a project")
     .action(function (name) {
         name = (name || path.basename(cwd));
         // README.md
-        new fwriter()
+        new FWriter()
             .add(0, "# " + name)
             .mkd("README.md");
         // package.json
-        new fwriter()
+        new FWriter()
             .add(0, "{")
-            .add(4, "\"name\": \"" + name.replace(/[^\w-]+/g, "-").toLowerCase() + "\",")
-            .add(4, "\"version\": \"1.0.0\",")
-            .add(4, "\"description\": \"\",")
-            .add(4, "\"dependencies\": {")
-            .add(8, "\"elfjs\": \"~" + pkg.version + "\"")
-            .add(4, "},")
-            .add(4, "\"devDependencies\": {")
-            .add(8, "\"glob\": \"~7.1.2\",")
-            .add(8, "\"webpack\": \"~3.10.0\",")
-            .add(8, "\"uglifyjs-webpack-plugin\": \"~1.1.6\",")
-            .add(8, "\"clean-webpack-plugin\": \"~0.1.17\",")
-            .add(8, "\"copy-webpack-plugin\": \"~4.3.1\",")
-            .add(8, "\"html-loader\": \"~0.5.4\"")
-            .add(4, "},")
-            .add(4, "\"scripts\": {")
-            .add(8, "\"build\": \"./node_modules/.bin/webpack\",")
-            .add(8, "\"start\": \"./node_modules/.bin/elfjs view\"")
-            .add(4, "}")
+            .add(1, "\"name\": \"" + name.replace(/[^\w-]+/g, "-").toLowerCase() + "\",")
+            .add(1, "\"version\": \"1.0.0\",")
+            .add(1, "\"description\": \"\",")
+            .add(1, "\"dependencies\": {")
+            .add(2, "\"elfjs\": \"~" + pkg.version + "\",")
+            .add(2, "\"elfjs-common\": \"~2.0.0\",")
+            .add(2, "\"elfjs-engine\": \"~2.0.0\",")
+            .add(2, "\"elfjs-loader\": \"~2.0.0\",")
+            .add(2, "\"elfjs-router\": \"~2.0.0\"")
+            .add(1, "},")
+            .add(1, "\"devDependencies\": {")
+            .add(2, "\"glob\": \"~7.1.2\",")
+            .add(2, "\"webpack\": \"~3.10.0\",")
+            .add(2, "\"uglifyjs-webpack-plugin\": \"~1.1.6\",")
+            .add(2, "\"clean-webpack-plugin\": \"~0.1.17\",")
+            .add(2, "\"copy-webpack-plugin\": \"~4.3.1\",")
+            .add(2, "\"html-loader\": \"~0.5.4\"")
+            .add(1, "},")
+            .add(1, "\"scripts\": {")
+            .add(2, "\"build\": \"./node_modules/.bin/webpack\",")
+            .add(2, "\"start\": \"./node_modules/.bin/elfjs view\"")
+            .add(1, "}")
             .add(0, "}")
             .mkd("package.json");
-        // elfjs.config.json
-        new fwriter()
-            .add(0, "{")
-            .add(4, "\"types\": {},")
-            .add(4, "\"zlibs\": {},")
-            .add(4, "\"https\": {")
-            .add(8, "\"key\": null,")
-            .add(8, "\"cert\": null,")
-            .add(8, "\"port\": 443")
-            .add(4, "},")
-            .add(4, "\"route\": null,")
-            .add(4, "\"cache\": 0,")
-            .add(4, "\"host\": \"localhost\",")
-            .add(4, "\"port\": 8080,")
-            .add(4, "\"dir\": \"src\"")
-            .add(0, "}")
-            .mkd("elfjs.config.json")
-        // webpack.config.js
-        new fwriter()
-            .add(0, "/**")
-            .add(0, " *")
-            .add(0, " * @description Simple pack for release")
-            .add(0, " *")
-            .add(0, " */")
-            .add(0, "\"use strict\";")
-            .add(0, "")
-            .add(0, "var path = require(\"path\");")
-            .add(0, "var glob = require(\"glob\");")
-            .add(0, "var UglifyJsPlugin = require(\"uglifyjs-webpack-plugin\");")
-            .add(0, "var CleanDirPlugin = require(\"clean-webpack-plugin\");")
-            .add(0, "var CopyFilePlugin = require(\"copy-webpack-plugin\");")
-            .add(0, "")
-            .add(0, "var SOURCE_PATH = path.resolve(\"./src\");")
-            .add(0, "var OUTPUT_PATH = path.resolve(\"./dist\");")
-            .add(0, "var ENTRIES_DIR = \"bootstraps\";")
-            .add(0, "// Main glob pattern in SOURCE_PATH/ENTRIES_DIR")
-            .add(0, "var ECMA_PATTERN = [")
-            .add(4, "\"*.js\"")
-            .add(0, "];")
-            .add(0, "// HTML glob pattern in SOURCE_PATH")
-            .add(0, "var HTML_PATTERN = [")
-            .add(4, "\"*.html\"")
-            .add(0, "];")
-            .add(0, "// Copy glob pattern in SOURCE_PATH")
-            .add(0, "var COPY_PATTERN = [")
-            .add(4, "\"assets/**/*.*\"")
-            .add(0, "];")
-            .add(0, "")
-            .add(0, "module.exports = {")
-            .add(4, "entry: glob.sync(")
-            .add(12,"path.join(SOURCE_PATH, ENTRIES_DIR, ECMA_PATTERN.length === 1 ? ECMA_PATTERN[0] : \"{\" + ECMA_PATTERN.join(\",\") + \"}\")")
-            .add(8, ").reduce(function (init, item) {")
-            .add(12,"return Object.defineProperty(init, path.basename(item, path.extname(item)), {")
-            .add(16,"configurable: true,")
-            .add(16,"enumerable: true,")
-            .add(16,"writable: true,")
-            .add(16,"value: item")
-            .add(12,"});")
-            .add(8, "}, Object.create(null)),")
-            .add(4, "output: {")
-            .add(8, "path: OUTPUT_PATH,")
-            .add(8, "filename: ENTRIES_DIR + \"/[name].js\"")
-            .add(4, "},")
-            .add(4, "module: {")
-            .add(8, "rules: [{")
-            .add(12,"test: /\\.html?$/i,")
-            .add(12,"use: [{")
-            .add(16,"loader: \"html-loader\",")
-            .add(16,"options: {")
-            .add(20,"minimize: true,")
-            .add(20,"minifyJS: true,")
-            .add(20,"minifyCSS: true,")
-            .add(20,"removeComments: true,")
-            .add(20,"collapseWhitespace: true,")
-            .add(20,"conservativeCollapse: false")
-            .add(16,"}")
-            .add(12,"}]")
-            .add(8, "}]")
-            .add(4, "},")
-            .add(4, "context: SOURCE_PATH,")
-            .add(4, "plugins: [")
-            .add(8, "new CleanDirPlugin(OUTPUT_PATH),")
-            .add(8, "new UglifyJsPlugin({")
-            .add(12,"uglifyOptions: {")
-            .add(16,"compress: {")
-            .add(20,"keep_fargs: false,")
-            .add(20,"drop_debugger: true")
-            .add(16,"},")
-            .add(16,"output: {")
-            .add(20,"ascii_only: true,")
-            .add(20,"comments: \"some\"")
-            .add(16,"}")
-            .add(12,"}")
-            .add(8, "}),")
-            .add(8, "new CopyFilePlugin([{")
-            .add(12,"from: HTML_PATTERN.length === 1 ? HTML_PATTERN[0] : \"{\" + HTML_PATTERN.join(\",\") + \"}\",")
-            .add(12,"transform: function (value, path) {")
-            .add(16,"return value")
-            .add(20,".toString()")
-            .add(20,".replace(/(\\s*<script.*src=\").\\/jskits\\/elfjs\\/dist\\/exts\\/elf-loader\\.min\\.js(\".*\\/script>)/g, \"\")")
-            .add(20,".replace(/(\\s*<script.*src=\").\\/assets\\/javascripts\\/app\\.js\".*data-main=\"(.*)(\".*\\/script>)/g, \"$1$2$3\");")
-            .add(12,"}")
-            .add(8, "}].concat(")
-            .add(12,"COPY_PATTERN.map(function (item) {")
-            .add(16,"return { from: item };")
-            .add(12,"})")
-            .add(8, "))")
-            .add(4, "],")
-            .add(4, "externals: {")
-            .add(8, "\"elfjs\": \"window.Elf\"")
-            .add(4, "}")
-            .add(0, "};")
-            .mkd("webpack.config.js");
-        // main.html
-        new fwriter("src")
-            .add(0, "<!DOCTYPE html>")
-            .add(0, "<html>")
-            .add(4, "<head>")
-            .add(8, "<title>" + name + "</title>")
-            .add(8, "<meta charset=\"UTF-8\">")
-            .add(8, "<meta content=\"no-transform\" http-equiv=\"Cache-Control\">")
-            .add(8, "<meta content=\"IE=edge,chrome=1\" http-equiv=\"X-UA-Compatible\">")
-            .add(8, "<meta content=\"\" name=\"description\">")
-            .add(8, "<meta content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\" name=\"viewport\">")
-            .add(8, "<meta content=\"pc,mobile\" name=\"applicable-device\">")
-            .add(8, "<link rel=\"stylesheet\" type=\"text/css\" href=\"./assets/stylesheets/base.css\">")
-            .add(4, "</head>")
-            .add(4, "<body>")
-            .add(8, "<section>" + name + "</section>")
-            .add(0, "")
-            .add(8, "<script defer type=\"text/javascript\" src=\"./jskits/elfjs/dist/elf.min.js\"></script>")
-            .add(8, "<script defer type=\"text/javascript\" src=\"./jskits/elfjs/dist/exts/elf-loader.min.js\"></script>")
-            .add(8, "<!--[if IE 9]> <script defer type=\"text/javascript\" src=\"./jskits/elfjs/dist/shims/shims_for_IE9.min.js\"></script> <![endif]-->")
-            .add(8, "<!--[for lib]> <script defer type=\"text/javascript\" src=\"./jskits/elfjs/dist/shims/shims_for_Lib.min.js\"></script> <![ended]-->")
-            .add(8, "<script defer type=\"text/javascript\" src=\"./assets/javascripts/app.js\" data-main=\"./bootstraps/index.js\"></script>")
-            .add(4, "</body>")
-            .add(0, "</html>")
-            .mkd("index.html");
-        // index.js
-        new fwriter("src/bootstraps")
-            .add(0, "var Elf = require(\"elfjs\");")
-            .add(0, "var WelCome = require(\"../components/welcome\");")
-            .add(0, "")
-            .add(0, "module.exports = Elf.render(Elf.createElement(WelCome), document.querySelector(\"section\"), true);")
-            .mkd("index.js");
-        // welcome.js
-        new fwriter("src/components")
-            .add(0, "var Elf = require(\"elfjs\");")
-            .add(0, "")
-            .add(0, "module.exports = Elf.Component(\"welcome\", {")
-            .add(4, "render: Elf.redactElement(require(\"./welcome.html\")),")
-            .add(4, "onClick: function () {")
-            .add(8, "alert(\"Welcome!\");")
-            .add(4, "}")
-            .add(0, "});")
-            .mkd("welcome.js");
-        // welcome.html
-        new fwriter("src/components")
-            .add(0, "<button onclick=\"onClick(event);\">Welcome</button>")
-            .mkd("welcome.html");
-        // base.css
-        new fwriter("src/assets/stylesheets")
-            .add(0, "@charset \"UTF-8\";")
-            .add(0, "")
-            .add(0, "html {")
-            .add(4, "height: 100%;")
-            .add(0, "}")
-            .mkd("base.css");
-        // app.js
-        new fwriter("src/assets/javascripts")
-            .add(0, "/**")
-            .add(0, " *")
-            .add(0, " * @description Simple load helper for development")
-            .add(0, " *")
-            .add(0, " */")
-            .add(0, "\"use strict\";")
-            .add(0, "")
-            .add(0, "!(function (Elf) {")
-            .add(0, "var current = document.currentScript || (function (scripts) {")
-            .add(4, "var i = 0, l = scripts.length;")
-            .add(4, "for (; i < l; i++) {")
-            .add(8, "if (scripts[i].readyState === \"interactive\") {")
-            .add(12,"return scripts[i];")
-            .add(8, "}")
-            .add(4, "}")
-            .add(4, "return scripts[l - 1];")
-            .add(0, "} (document.getElementsByTagName(\"script\")));")
-            .add(0, "var extname = current.getAttribute(\"data-defaultExtension\") || \"js\";")
-            .add(0, "var ingress = current.getAttribute(\"data-main\");")
-            .add(0, "var baseURL = dirname(location.href);")
-            .add(0, "var libsURL = dirname(current.src);")
-            .add(0, "Elf.config({")
-            .add(4, "baseURL: baseURL,")
-            .add(4, "mapping: {")
-            .add(8, "// Inserting the <script> tag in the HTML file can speed up the load.")
-            .add(8, "babel: libsURL + \"libs/compiler/babel.js\",")
-            .add(8, "less : libsURL + \"libs/compiler/style.less.js\",")
-            .add(8, "sass : libsURL + \"libs/compiler/style.sass.js\",")
-            .add(8, "ts   : libsURL + \"libs/compiler/typescript.js\"")
-            .add(4, "},")
-            .add(4, "defaultExtension: extname")
-            .add(0, "});")
-            .add(0, "if (ingress) {")
-            .add(4, "Elf.require(ingress);")
-            .add(0, "}")
-            .add(0, "function dirname (v) {")
-            .add(4, "return v.replace(/[?#].*$/, \"\").replace(/[^\\/]+$/, \"\");")
-            .add(0, "}")
-            .add(0, "} (Elf));")
-            .mkd("app.js");
+        // copy website
+        copydir(path.join(__dirname, "../web"), cwd);
     });
-cmd.command("view [argv]")
+commander.command("view [argv]")
     .description("Open the HTTP server")
     .option("-d, --dir <path>", "the directory")
     .option("-p, --port <port>", "the server port")
     .option("-c, --cache <term>", "the cache max-age")
     .action(function (name, opt) {
-        var server = new fserver({
-            cache : opt.cache,
+        var server = new FServer({
+            cache : opt.cache          || null,
             port  : parseInt(opt.port) || null,
-            dir   : opt.dir
+            dir   : opt.dir            || null
         });
-        if (server.opt.route) {
-            var route = path.join(cwd, server.opt.route);
-            if (fs.existsSync(route) &&
-                fs.statSync(route).isFile()) {
-                require(route)(server);
+        var route = server.opt.route;
+        if (typeof route === "string" && route.length > 0) {
+            route = path.resolve(route);
+            if (path.extname(route).toLowerCase() === ".js") {
+                if (fs.existsSync(route) &&
+                    fs.statSync(route).isFile()) {
+                    var router = require(route);
+                    if (typeof router === "function") {
+                        router(server);
+                    }
+                }
             }
         }
         server.use("/", function (url) {
             return function (req, res) {
+                var dir = path.join(cwd, server.opt.dir);
+                var val = fs.readdirSync(dir).filter(function (item) {
+                    return fs.statSync(path.join(dir, item)).isFile() && path.extname(item).toLowerCase() === ".html";
+                });
                 res.setHeader("Content-Type", "text/html; charset=utf-8");
-                res.end(readdir(
-                    fs.readdirSync(path.join(cwd, server.opt.dir))
-                        .filter(function (value) {
-                            return fs.statSync(path.join(cwd, server.opt.dir, value)).isFile()
-                                && path.extname(value).toLowerCase() === ".html"
-                        })
-                        .sort()
-                ));
+                res.end(arrange(val.sort()));
             };
         });
-        server.use("/jskits/**/*.*", function (url) {
-            return server.end(path.join(cwd, url.replace(/^\/*jskits/, "node_modules")));
+        server.use("/node_modules/**/*.*", function (url) {
+            return server.end(path.join(cwd, url));
         });
         server.use("**", function (url) {
             return server.end(url);
@@ -622,13 +496,13 @@ cmd.command("view [argv]")
                 var u = req.url.replace(/[?#].*$/, "");
                 for (; i < l; i++) {
                     n = server.hwd[i];
-                    if (man(u, n.url)) {
+                    if (minimatch(u, n.url)) {
                         n.hwd(u.replace(/^\/+/, ""))(req, res);
                         return;
                     }
                 }
                 res.statusCode = 404;
-                res.end();
+                res.end("Not Found");
             } catch (error) {
                 res.statusCode = 500;
                 res.end(error.message);
@@ -656,35 +530,8 @@ cmd.command("view [argv]")
             }
         }
     });
-cmd.command("make <name>")
-    .description("Create a HTML file")
-    .action(function (name) {
-        new fwriter("src")
-            .add(0, "<!DOCTYPE html>")
-            .add(0, "<html>")
-            .add(4, "<head>")
-            .add(8, "<title>" + name + "</title>")
-            .add(8, "<meta charset=\"UTF-8\">")
-            .add(8, "<meta content=\"no-transform\" http-equiv=\"Cache-Control\">")
-            .add(8, "<meta content=\"IE=edge,chrome=1\" http-equiv=\"X-UA-Compatible\">")
-            .add(8, "<meta content=\"\" name=\"description\">")
-            .add(8, "<meta content=\"pc,mobile\" name=\"applicable-device\">")
-            .add(8, "<link rel=\"stylesheet\" type=\"text/css\" href=\"./assets/stylesheets/base.css\">")
-            .add(4, "</head>")
-            .add(4, "<body>")
-            .add(8, "<section>" + name + "</section>")
-            .add(0, "")
-            .add(8, "<script defer type=\"text/javascript\" src=\"./jskits/elfjs/dist/elf.min.js\"></script>")
-            .add(8, "<script defer type=\"text/javascript\" src=\"./jskits/elfjs/dist/exts/elf-loader.min.js\"></script>")
-            .add(8, "<!--[if IE 9]> <script defer type=\"text/javascript\" src=\"./jskits/elfjs/dist/shims/shims_for_IE9.min.js\"></script> <![endif]-->")
-            .add(8, "<!--[for lib]> <script defer type=\"text/javascript\" src=\"./jskits/elfjs/dist/shims/shims_for_Lib.min.js\"></script> <![ended]-->")
-            .add(8, "<script defer type=\"text/javascript\" src=\"./assets/javascripts/app.js\" data-main=\"./bootstraps/" + name + ".js\"></script>")
-            .add(4, "</body>")
-            .add(0, "</html>")
-            .mkd(name + ".html");
-    });
-cmd.command("*", null, { noHelp: true })
+commander.command("*", null, { noHelp: true })
     .action(function (cmd) {
         wronged("unknown command `" + cmd + "`");
     });
-cmd.parse(process.argv);
+commander.parse(process.argv);

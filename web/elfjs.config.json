@@ -1,0 +1,14 @@
+{
+    "types": {},
+    "zlibs": {},
+    "https": {
+        "key": null,
+        "cert": null,
+        "port": 443
+    },
+    "route": "app.js",
+    "cache": 0,
+    "host": null,
+    "port": 8080,
+    "dir": "src"
+}

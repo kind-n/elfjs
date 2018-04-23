@@ -1,3322 +1,2476 @@
 /**
  * 
- * 
  * https://www.elfjs.org
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 1.3.4
+ * @version 2.0.0
  * @license MIT
  * 
  */
 "use strict";
 
-//////////////////////////////////////////////////
-/// TYPE
-//////////////////////////////////////////////////
+!(function (exports, Threads, NODE_ENV) {
 
-/**
- * 
- * @typedef Manager
- * @property {Array} behests
- * @property {Boolean} connate
- * @property {Emitter} emitter
- * @property {Manager} founder
- * @property {JSX.Element | String | void} element
- * @property {JSX.ElementClass | HTMLElement | Comment | Text} product
- * @property {function(...):Realtor} initial
- * @property {function(...):Realtor} renewal
- * @property {Function} dispose
- * @property {Function=} trigger
- * @property {Function=} attachEvent
- * @property {Function=} detachEvent
- * @property {Function=} dispatchEvent
- * @property {Manager=} draught
- * @property {Array=} members
- */
-
-/**
- * 
- * @typedef Emitter
- * @property {function(...):boolean} intrude
- * @property {function(...):boolean} extrude
- * @property {Function} replace
- * @property {Function} trigger
- * @property {Function} dispose
- */
-
-/**
- * 
- * @typedef Realtor
- * @property {Boolean} newly
- * @property {HTMLElement} value
- */
-
-//////////////////////////////////////////////////
-/// CODE
-//////////////////////////////////////////////////
-
-! (function (global, factory) {
-    (typeof module !== "undefined" && typeof exports === "object") ? factory(exports) :
-    (typeof define === "function" && define.amd) ? define(factory) :
-    (factory((global.Elf = global.Elf || {})))
-} (this, function (exports) {
-
-/**
- * Removes the leading and trailing white space and line terminator characters from a string.
- * 
- * @param   {String} target
- * @returns {String} 
- */
-function trim (target) {
-    return target.trim();
-}
-/**
- * Returns the last value of the array.
- * 
- * @param   {Array<T>} target 
- * @returns {T}
- * @template           T
- */
-function last (target) {
-    return target[target.length - 1];
-}
-/**
- * Slice string or array.
- * 
- * @param   {Array | String} target 
- * @param   {Number=}        start
- * @param   {Number=}        ended
- * @returns {Array | String}
- */
-function tear (target) {
-    return (target.slice || Array.prototype.slice).apply(
-            target, Array.prototype.slice.call(arguments, 1));
-}
-/**
- * Converts all the alphabetic characters in a string to lowercase.
- * 
- * @param   {String} target 
- * @returns {String}
- */
-function lower (target) {
-    return target.toLowerCase();
-}
-/**
- * Throw error.
- * 
- * @param {Error} target 
- */
-function wrong (target) {
-    throw target;
-}
-/**
- * Empty the array and flashback to execute the callback.
- * 
- * @param {Array}    target 
- * @param {Function} callback 
- */
-function clean (target, fn) {
-    while (target.length) {
-        fn(target.pop());
+    function trim(value) {
+        return value.trim();
     }
-}
-/**
- * Filled with a new array.
- * 
- * @param {Array} target 
- * @param {Array} value 
- */
-function reset (target, value) {
-    Array.prototype.splice.apply(target, [0, target.length].concat(value));
-}
-/**
- * Determines whether it is member of the object.
- * 
- * @param   {*}           target 
- * @param   {PropertyKey} name 
- * @returns {Boolean}
- */
-function exists (target, name) {
-    return isValid(target) && name in target;
-}
-/**
- * Depth comparison of two objects.
- * 
- * @param   {*}       target 
- * @param   {*}       origin 
- * @returns {Boolean}
- */
-function equals (target, origin) {
-    if (target === origin) {
-        return true;
+    function last(value) {
+        return value[value.length - 1];
     }
-    if (isObject(target) &&
-        isObject(origin)) {
-        for (var name in target) {
-            if (!exists(origin, name)) {
-                return false;
+    function tear(value) {
+        return (value.slice || Array.prototype.slice).apply(value, Array.prototype.slice.call(arguments, 1));
+    }
+    function lower(value) {
+        return value.toLowerCase();
+    }
+    function wrong(error) {
+        throw error;
+    }
+    function clean(value, fn) {
+        while (value.length) {
+            fn(value.pop());
+        }
+    }
+    function reset(value, newly) {
+        value.splice.apply(value, [0, value.length].concat(newly));
+    }
+    function exists(value, name) {
+        return isValid(value) && !isBasic(value) && (name in value);
+    }
+    function equals(value, hoary) {
+        if (value === hoary) {
+            return true;
+        }
+        if (isObject(value) &&
+            isObject(hoary)) {
+            for (var name in value) {
+                if (!exists(hoary, name)) { return false; }
+                if (!exists(value[name], hoary[name])) { return false; }
             }
-            if (!equals(target[ name ], origin[ name ])) {
-                return false;
+            for (var name in hoary) {
+                if (!exists(value, name)) { return false; }
             }
+            return true;
         }
-        for (var name in origin) {
-            if (!exists(target, name)) {
-                return false;
-            }
-        }
-        return true;
+        return false;
     }
-    return false;
-}
-/**
- * Creates an object that has the specified prototype, and that optionally contains specified properties.
- * 
- * @param   {PropertyDescriptorMap} target 
- * @returns {Object}
- */
-function create (target) {
-    return Object.create(null, target);
-}
-/**
- * Adds a property to an object, or modifies attributes of an existing property.
- * 
- * @param   {T}                  target 
- * @param   {PropertyKey}        name 
- * @param   {PropertyDescriptor} descriptor 
- * @returns {T}
- * @template                     T
- */
-function define (target, name, descriptor) {
-    return Object.defineProperty(target, name, descriptor);
-}
-/**
- * Returns a ordinary PropertyDescriptor.
- * 
- * @param {*}                   target 
- * @param {Boolean}             enumerable 
- * @return {PropertyDescriptor}
- */
-function normal (target, enumerable) {
-    return {
-        configurable : true,
-        enumerable : !!enumerable,
-        writable : true,
-        value : target
-    };
-}
-/**
- * Returns a readonly PropertyDescriptor.
- * 
- * @param {*}                   target 
- * @param {Boolean}             enumerable 
- * @return {PropertyDescriptor}
- */
-function secure (target, enumerable) {
-    return {
-        enumerable : !!enumerable,
-        get : target
-    };
-}
-/**
- * Returns a constant PropertyDescriptor.
- * 
- * @param {*}                   target 
- * @param {Boolean}             enumerable 
- * @return {PropertyDescriptor}
- */
-function fixate (target, enumerable) {
-    return {
-        enumerable : !!enumerable,
-        value : target
-    };
-}
-/**
- * Flattens a nested array.
- * 
- * @param   {Array} target
- * @returns {Array} 
- */
-function flatten (target) {
-    var result = [];
-    var length = target.length;
-    for (var i = 0; i < length; i++) {
-        var ns = target[i];
-        if (isArray(ns)) {
-            if (ns.length) {
-                result.push.apply(result, flatten(ns));
-            }
-        } else {
-            if (isValid(ns)) {
-                result.push(ns);
-            }
-        }
+    function define(value, name, descriptor) {
+        return Object.defineProperty(value, name, descriptor);
     }
-    return result;
-}
-/**
- * Add an object to an array.
- * And return whether it's first to add.
- * 
- * @param   {Array}   target 
- * @param   {*}       value 
- * @returns {Boolean}
- */
-function intrude (target, value) {
-    return target.indexOf(value) < 0 ? target.push(value) === 1 : false;
-}
-/**
- * Remove an object from an array.
- * And return whether it's last to remove.
- * 
- * @param   {Array}   target 
- * @param   {*}       value 
- * @returns {Boolean}
- */
-function extrude (target, value) {
-    var number = target.indexOf(value);
-    if (number >= 0) {
-        target.splice(number, 1);
-        return target.length === 0;
-    }
-    return false;
-}
-/**
- * Watch an async function.
- * 
- * @param   {Function} target 
- * @param   {Array}    flags 
- * @returns {Function}
- */
-function observe (target, flags) {
-    return function () {
-        var instance = exports.createEvent("async", false);
-        target.apply(this, [instance].concat(flags));
-        instance.refreshPrevented || broadcast();
-    };
-}
-/**
- * Converts a JavaScript value to a JavaScript Object Notation (JSON) string.
- * 
- * @param   {*}      target 
- * @returns {String}
- */
-function stringify (target) {
-    return JSON.stringify(target);
-}
-/**
- * Converts a JavaScript Object Notation (JSON) string into an object.
- * 
- * @param   {String} target 
- * @returns {*}
- */
-function objectify (target) {
-    return JSON.parse(target);
-}
-/**
- * Add individual to the collectivity.
- * 
- * @param   {Elf.Individual} target 
- * @returns {Elf.Disposable}
- */
-function subscribe (target) {
-    return intrude(collectivity, target), {
-        dispose : extrude.bind(null, collectivity, target)
-    };
-}
-/**
- * Invoke collectivity update.
- * Only once at the same time.
- * 
- * @returns {Boolean}
- */
-function broadcast () {
-    if (isUnoccupied) {
-        isUnoccupied = false;
-        setTimeout(function () {
-            try {
-                collectivity.forEach(function (i) {
-                    i.duplex && i.forceUpdate();
-                });
-            } finally {
-                isUnoccupied = true;
-            }
-        });
-    }
-    return !isUnoccupied;
-}
-
-
-/**
- * Determines whether the passed value is an Array.
- * 
- * @param   {*}       target
- * @returns {Boolean}
- */
-function isArray (target) {
-    return Array.isArray(target);
-}
-/**
- * Determines whether the passed value is a valid value.
- * 
- * @param   {*}       target
- * @returns {Boolean}
- */
-function isValid (target) {
-    return target !== void 0 && target !== null;
-}
-/**
- * Determines whether the passed value is an basic type.
- * 
- * @param   {*}       target
- * @returns {Boolean}
- */
-function isBasic (target) {
-    return isString(target)
-        || typeof target === "number"
-        || typeof target === "boolean";
-}
-/**
- * Determines whether the passed value is a string.
- * 
- * @param   {*}       target
- * @returns {Boolean}
- */
-function isString (target) {
-    return typeof target === "string";
-}
-/**
- * Determines whether the passed value is an object.
- * 
- * @param   {*}       target
- * @returns {Boolean}
- */
-function isObject (target) {
-    return typeof target === "object" && target !== null;
-}
-/**
- * Returns true if the sequence of elements of searchString converted to a String is the
- * same as the corresponding elements of this object (converted to a String) starting at
- * position. Otherwise returns false.
- * 
- * @param   {String}  target
- * @param   {String}  value
- * @param   {Number}  current
- * @returns {Boolean} 
- */
-function startsWith (target, value, start) {
-    var number = start || 0;
-    var length = value.length;
-    for (var i = 0; i < length; i++) {
-        if (value.charAt(i) !== target.charAt(number + i)) {
-            return false;
-        }
-    }
-    return true;
-};
-
-/**
- * Determines whether the passed value is PRE element.
- * 
- * @param   {String}  value 
- * @returns {Boolean}
- */
-function isPreformatted (value) {
-    return isString(value) && lower(value) === "pre";
-}
-/**
- * Determines whether the passed value is INPUT element.
- * 
- * @param   {String}  value 
- * @returns {Boolean}
- */
-function isInputElement (value) {
-    return isString(value) && lower(value) === "input";
-}
-/**
- * Determines whether the passed value is solitary element.
- * 
- * @param   {String}  value 
- * @returns {Boolean}
- */
-function isSolitaryNode (value) {
-    return exists(htmlElementSolitaries, lower(value));
-}
-/**
- * Determines whether the passed value is text type of INPUT element.
- * 
- * @param   {String}  value
- * @returns {Boolean} 
- */
-function isVariableType (value) {
-    return exists(allowedModifyDrawings, value);
-}
-
-/**
- * Determines whether the passed value is iteration attrubute.
- * 
- * @param   {String}  value 
- * @returns {Boolean}
- */
-function isCycleAttribute (value) {
-    return exports.$iteration === value;
-}
-/**
- * Determines whether the passed value is condition attrubute.
- * 
- * @param   {String}  value 
- * @returns {Boolean}
- */
-function isJudgeAttribute (value) {
-    return exports.$condition === value;
-}
-/**
- * Determines whether the passed value is event attrubute.
- * 
- * @param   {String}  value 
- * @returns {Boolean}
- */
-function isEventAttribute (value) {
-    return startsWith(value, exports.$eventStart);
-}
-/**
- * Determines whether the target is inheriting the class.
- * 
- * @param {*}         value 
- * @param {Function}  clazz 
- * @returns {Boolean}
- */
-function isInheritedClass (value, clazz) {
-    return value instanceof clazz;
-}
-
-
-/**
- * Returns the event need bubble.
- * 
- * @param   {Elf.Event} event 
- * @returns {Boolean}
- */
-function ShouldEventBubbling (event) {
-    return event.bubbles && !event.cancelBubble;   
-}
-/**
- * Modify the target of event.
- * 
- * @param   {Event | Elf.Event} event 
- * @param   {*}                 target 
- * @returns {Elf.Event}
- */
-function ModifyContactTarget (event, target) {
-    return define(new SyntheticEvent(event), EVENT_CONTACT_TARGET, normal(target));
-}
-/**
- * Modify the currentTarget of event.
- * 
- * @param   {Event | Elf.Event} event 
- * @param   {*}                 target 
- * @returns {Elf.Event}
- */
-function ModifyCurrentTarget (event, target) {
-    return define(new SyntheticEvent(event), EVENT_CURRENT_TARGET, normal(target));
-}
-
-
-/**
- * Returns a new unique Symbol value.
- * 
- * @param   {String | Number} target 
- * @returns {PropertyKey}
- */
-function SafeMember (value) {
-    if (supportedSafeMember) {
-        return Symbol(value);
-    }
-    return value;
-}
-/**
- * Returns a new Proxy value.
- * 
- * @param   {T} target 
- * @returns {T}
- * @template    T
- */
-function SefeSphere (value) {
-    if (supportedSafeSphere) {
-        return new Proxy(value, {
-            has : function (target, name) {
-                return exists(target, name) || !(exists(allowedGlobalVariates, name) || wrong(new Error(name + " is not defined")));
-            }
-        });
-    }
-    return value;
-}
-
-//
-// Promise default callbacks.
-//
-function Misfortune (error) {
-    return Promise.reject(error);
-}
-function Accomplish (value) {
-    return value;
-}
-
-//
-// The implementation of Promise. 
-//
-function PMDeliver (target) {
-    return function () {
-        return target[COMMITMENT_DISPOSE];
-    };
-}
-function PMFixator (target, status) {
-    return function (result) {
-        PMResolve(target, status, result);
-    };
-}
-function PMResolve (target, status, result) {
-    if (target[COMMITMENT_STATUS] === PENDING) {
-        if (target === result) {
-            status = REJECTED;
-            result = new Error("Promise resolved with itself");
-        }
-        if (isInheritedClass(result, Promise)) {
-            if (result[COMMITMENT_STATUS] === PENDING) {
-                result.then(
-                    PMFixator(target, RESOLVED),
-                    PMFixator(target, REJECTED)
-                );
-                return;
-            }
-            target[COMMITMENT_STATUS] = result[COMMITMENT_STATUS];
-            target[COMMITMENT_RESULT] = result[COMMITMENT_RESULT];
-            result[COMMITMENT_CAPTURE] = true;
-        } else {
-            target[COMMITMENT_STATUS] = status;
-            target[COMMITMENT_RESULT] = result;
-        }
-        var member = target[COMMITMENT_OBSERVE];
-        var length = member.length;
-        while (member.length) {
-            var product = member.shift();
-            var success = member.shift();
-            var failure = member.shift();
-            switch (target[COMMITMENT_STATUS]) {
-                case RESOLVED:
-                    PMExecute(product, target[COMMITMENT_RESULT], success);
-                    break;
-                case REJECTED:
-                    PMExecute(product, target[COMMITMENT_RESULT], failure);
-                    break;
-            }
-        }
-        if (length === 0 && target[COMMITMENT_STATUS] === REJECTED) {
-            setTimeout(function () {
-                target[COMMITMENT_CAPTURE] || wrong(target[COMMITMENT_RESULT]);
-            });
-        }
-    }
-}
-function PMExecute (target, result, action) {
-    try {
-        PMResolve(target, RESOLVED, action(result));
-    } catch (error) {
-        PMResolve(target, REJECTED, error);
-    }
-}
-
-//
-// The implementation of async requests (AJAX/JSONP).
-//
-function PMAsync (request, resolve, reject) {
-    var xhrContent = "Content-Type";
-    var xhrPattern = "X-Requested-With";
-    var xhrFashion = request.method  || "GET";
-    var xhrHeaders = request.headers || {};
-    var xhrRequest = new XMLHttpRequest();
-    xhrRequest.open(xhrFashion.toUpperCase(), request.url, true);
-    DOMAddListener(xhrRequest, "load", doresolved);
-    DOMAddListener(xhrRequest, "error", dorejected);
-    if (!exists(xhrHeaders, xhrContent)) {
-        PMAffix(xhrRequest, xhrContent, "application/x-www-form-urlencoded; charset=UTF-8");
-    }
-    if (!exists(xhrHeaders, xhrPattern)) {
-        PMAffix(xhrRequest, xhrPattern, "XMLHttpRequest");
-    }
-    for (var name in xhrHeaders) {
-        PMAffix(xhrRequest, name, xhrHeaders[name]);
-    }
-    xhrRequest.send(request.body);
-    return function () {
-        DOMDelListener(xhrRequest, "load", doresolved);
-        DOMDelListener(xhrRequest, "error", dorejected);
-        xhrRequest.abort();
-    };
-    function doresolved () {
-        var result = xhrRequest.response || xhrRequest.responseText;
-        var status = xhrRequest.status === 1223 ? 200 : xhrRequest.status;
-        if (status === 0) {
-            status = result ? 200 : 0;
-        }
-        var headers = {};
-        var content = trim(xhrRequest.getAllResponseHeaders() || "");
-        if (content) {
-            content.split("\n").forEach(function (i) {
-                var x = ":";
-                var l = trim(i).split(x);
-                var m = trim(l.shift());
-                var n = trim(l.join(x));
-                headers[m] = n;
-            });
-        }
-        if (200 <= status && status < 300) {
-            resolve({
-                status  : status,
-                headers : headers,
-                text    : function () {
-                    return result;
-                },
-                json    : function () {
-                    return objectify(result);
+    function flatten(value) {
+        var result = [];
+        var length = value.length;
+        for (var i = 0; i < length; i++) {
+            var ns = value[i];
+            if (Array.isArray(ns)) {
+                if (ns.length) {
+                    result.push.apply(result, flatten(ns));
                 }
-            });
-        } else {
-            reject(xhrRequest);
-        }
-        broadcast();
-    }
-    function dorejected () {
-        reject(xhrRequest);
-        broadcast();
-    }
-}
-function PMJsonp (request, resolve, reject) {
-    var xhrCallback = "Elf" + (Math.random() * 1E9 | 0);
-    var xhrHeadNode = document.querySelector("head");
-    var xhrHostNode = DOMMakeElement("script");
-    window[xhrCallback] = doresolved;
-    DOMAddListener(xhrHostNode, "error", dorejected);
-    DOMSetProperty(xhrHostNode, "type", "text/javascript");
-    DOMSetProperty(xhrHostNode, "src", request.url);
-    DOMInsertChild(xhrHeadNode, xhrHostNode);
-    return function () {
-        if (window[xhrCallback]) {
-            window[xhrCallback] = doabnormal;
-        }
-        DOMRemoveChild(xhrHostNode);
-    };
-    function doresolved (value) {
-        resolve({
-            status : 200,
-            headers : {},
-            text : function () {
-                return isObject(value) ? stringify(value) : value;
-            },
-            json : function () {
-                return value;
-            }
-        });
-        doabnormal();
-        broadcast();
-    }
-    function dorejected (error) {
-        reject(error);
-        doabnormal();
-        broadcast();
-    }
-    function doabnormal () {
-        delete window[xhrCallback];
-    }
-}
-function PMAffix (request, header, value) {
-    request.setRequestHeader(header, value);
-}
-
-/**
- * Returns an Emitter.
- * 
- * @param   {Manager} manager 
- * @returns {Emitter}
- */
-function MKEmitter (manager) {
-    return {
-        E : {},
-        M : function (type) {
-            return this.E[lower(type)] || (this.E[lower(type)] = []);
-        },
-        intrude : function (type, listener) {
-            intrude(this.M(type), listener) && manager.connate && DOMAddListener(manager.product, type, GlobalEventListener);
-        },
-        extrude : function (type, listener) {
-            extrude(this.M(type), listener) && manager.connate && DOMDelListener(manager.product, type, GlobalEventListener);
-        },
-        replace : function (type, oldValue, newValue) {
-            var events = this.M(type);
-            var number = events.indexOf(oldValue);
-            if (number >= 0) {
-                events.splice(number,1, newValue);
-            }
-        },
-        trigger : function (event) {
-            var target = manager.product;
-            var events = tear(this.M(event.type));
-            var length = events.length;
-            for (var i = 0; i < length; i++) {
-                var listener = events[i];
-                var instance = ModifyCurrentTarget(event, target);
-                if (listener.handleEvent) {
-                    listener.handleEvent(instance);
-                } else {
-                    listener.call(target,instance);
+            } else {
+                if (isValid(ns)) {
+                    result.push(ns);
                 }
-                if (instance.cancelEntire) {
-                    break;
-                }
-            }
-        },
-        dispose : function () {
-            if (manager.connate) {
-                for (var type in this.E) {
-                    DOMDelListener(manager.product, type, GlobalEventListener);
-                }
-            }
-            this.E = {};
-        }
-    };
-}
-/**
- * Returns a Realtor.
- * 
- * @param   {HTMLElement} element 
- * @param   {Boolean}     newly 
- * @returns {Realtor}
- */
-function MKRealtor (element, newly) {
-    return { value: element, newly: newly };
-}
-/**
- * Create a Manager by a virtual element.
- * 
- * @param   {JSX.Element} element 
- * @param   {Manager}     founder 
- * @returns {Manager}
- */
-function MKDraught (element, founder) {
-    return isValid(element)
-        ? isObject(element)
-        ? isString(element.type)
-        ? new ElementRenderer(element, founder)
-        : new ComplexRenderer(element, founder)
-        : new ContentRenderer(element, founder)
-        : new CommentRenderer(founder);
-}
-/**
- * Compare two virtual elements, and returns the difference.
- * 
- * @param   {JSX.Element} element 
- * @param   {JSX.Element} ancient 
- * @returns {Variety}
- */
-function MKVariety (element, ancient) {
-    var variety = {
-        hoary : {},
-        newly : {},
-        alter : {}
-    };
-    if (element !== ancient) {
-        for (var name in ancient) {
-            if (!exists(element, name)) {
-                variety.hoary[name] = ancient[name];
-            } else
-            if (!equals(element[name], ancient[name])) {
-                variety.alter[name] = {
-                    oldValue : ancient[name],
-                    newValue : element[name]
-                };
-            }
-        }
-        for (var name in element) {
-            if (!exists(ancient, name)) {
-                variety.newly[name] = element[name];
-            }
-        }
-    }
-    return variety;
-}
-/**
- * Create a Component instance.
- * 
- * @param   {Elf.Class<JSX.ElementClass>} trustor 
- * @param   {*}                           attribute 
- * @param   {Manager}                     manager 
- * @returns {JSX.ElementClass}
- */
-function MKExample (trustor, attribute, manager) {
-    var product = Object.create(trustor.prototype);
-    define(product, DISPLAYING_RENDERER, normal(manager));
-    define(product, "props", normal(attribute));
-    define(product, "refs", normal({}));
-    product.constructor();
-    return product;
-}
-/**
- * Create a HTMLElement instance.
- * 
- * @param   {String}      trustor 
- * @param   {String}      namespace 
- * @param   {Manager}     manager 
- * @returns {HTMLElement}
- */
-function MKElement (trustor, namespace, manager) {
-    return define(DOMMakeElement(trustor, namespace), DISPLAYING_RENDERER, normal(manager));
-}
-/**
- * Returns a single object of the passed value.
- * 
- * @param   {Elf.Class<T>} trustor 
- * @returns {T}
- * @template               T
- */
-function MKUnitary (trustor) {
-    return trustor[DISPLAYING_INSTANCE] || (trustor[DISPLAYING_INSTANCE] = new trustor());
-}
-/**
- * Create a single manager of the passed value.
- * 
- * @param   {HTMLElement | JSX.ElementClass} product 
- * @returns {Manager}
- */
-function MKManager (product) {
-    return product[DISPLAYING_RENDERER] || (product[DISPLAYING_RENDERER] = new LibertyRenderer(product));
-}
-/**
- * Create a virtual element.
- * 
- * @param   {JSX.ElementClass} product 
- * @returns {JSX.Element}
- */
-function MKVirtual (product) {
-    temporaryElementOwner.push(product);
-    try {
-        return product.render();
-    } finally {
-        temporaryElementOwner.pop();
-    }
-}
-/**
- * Returns this closest element with manager.
- * 
- * @param   {HTMLElement | Document | Window} product 
- * @returns {Manager}
- */
-function MKFounder (product) {
-    var instance = product.parentNode
-                || product.defaultView;
-    if (instance && instance !== product) {
-        if (instance[DISPLAYING_RENDERER]) {
-            return instance[DISPLAYING_RENDERER];
-        } else {
-            return MKFounder(instance);
-        }
-    }
-}
-
-
-/**
- * Rectify event attrubute.
- * 
- * @param   {String} value 
- * @returns {String}
- */
-function VMRectifyEvent (target) {
-    return lower(tear(target, exports.$eventStart.length));
-}
-/**
- * Rectify trait attrubute.
- * 
- * @param   {String} value 
- * @returns {String}
- */
-function VMRectifyTrait (target) {
-    return htmlAttributeMappings[target] || target;
-}
-/**
- * Compare two virtual elements, and returns no need redraw.
- * 
- * @param {JSX.Element | String | Number} target 
- * @param {JSX.Element | String | Number} origin 
- */
-function VMNoneedRedraw (target, origin) {
-    if (target === origin) {
-        return true;
-    }
-    if (isObject(target) &&
-        isObject(origin)) {
-        if ( target.key !== origin.key ) {
-            return false;
-        }
-        if (target.type !== origin.type) {
-            return false;
-        }
-        if (isInputElement(target.type)) {
-            var tA = target.props.type;
-            var tB = origin.props.type;
-            return tA === tB
-                || isVariableType(tA)
-                && isVariableType(tB);
-        }
-        return true;
-    }
-    return isValid(target) === isValid(origin)
-        && isBasic(target) === isBasic(origin);
-}
-
-
-/**
- * Create childNodes.
- * 
- * @param {Array<Manager>}                       members 
- * @param {HTMLElement}                          product 
- * @param {Manager}                              manager 
- * @param {Array<JSX.Element | String | Number>} insider 
- * @param {String}                               namespace 
- * @param {Array}                                collect 
- */
-function VMSetOffspring (members, product, manager, insider, namespace, collect) {
-    for (var i = 0; i < insider.length; i++) {
-        var draught = MKDraught(insider[i], manager);
-        var realtor = draught.initial(namespace, collect);
-        if (realtor.newly) {
-            DOMInsertChild(product, realtor.value);
-        }
-        members.push(draught);
-    }
-}
-/**
- * Modify childNodes.
- * 
- * @param {Array<Manager>}                       members 
- * @param {HTMLElement}                          product 
- * @param {Manager}                              manager 
- * @param {Array<JSX.Element | String | Number>} insider 
- * @param {String}                               namespace 
- * @param {Array}                                collect 
- */
-function VMModOffspring (members, product, manager, insider, namespace, collect) {
-    var deposit = new Array(insider.length);
-    var leaguer = insider.map(function (item) { return { element: item, product: null }; });
-
-    var oldTokenIndex;
-    var oldTokenPairs;
-    var oldStartIndex = 0;
-    var newStartIndex = 0;
-    var oldEndedIndex = members.length - 1;
-    var oldStartVMsgr = members[0];
-    var oldEndedVMsgr = members[oldEndedIndex];
-    var newEndedIndex = leaguer.length - 1;
-    var newStartVMsgr = leaguer[0];
-    var newEndedVMsgr = leaguer[newEndedIndex];
-    while (oldStartIndex <= oldEndedIndex && newStartIndex <= newEndedIndex) {
-        if (!isValid(oldStartVMsgr)) {
-            oldStartVMsgr = members[++oldStartIndex];
-        } else
-        if (!isValid(oldEndedVMsgr)) {
-            oldEndedVMsgr = members[--oldEndedIndex];
-        } else
-        if (VMModCompareWithElements(oldStartVMsgr, newStartVMsgr)) {
-            VMModMoveOrInsertElement(
-                VMModGetAuthenticElement(oldStartVMsgr).nextSibling,
-                VMModInvokeUpdateElement(oldStartVMsgr, newStartVMsgr, newStartIndex),
-                false
-            );
-            oldStartVMsgr = members[++oldStartIndex];
-            newStartVMsgr = leaguer[++newStartIndex];
-        } else
-        if (VMModCompareWithElements(oldEndedVMsgr, newEndedVMsgr)) {
-            VMModMoveOrInsertElement(
-                VMModGetAuthenticElement(oldEndedVMsgr).nextSibling,
-                VMModInvokeUpdateElement(oldEndedVMsgr, newEndedVMsgr, newEndedIndex),
-                false
-            );
-            oldEndedVMsgr = members[--oldEndedIndex];
-            newEndedVMsgr = leaguer[--newEndedIndex];
-        } else
-        if (VMModCompareWithElements(oldStartVMsgr, newEndedVMsgr)) {
-            VMModMoveOrInsertElement(
-                VMModGetAuthenticElement(oldEndedVMsgr).nextSibling,
-                VMModInvokeUpdateElement(oldStartVMsgr, newEndedVMsgr, newEndedIndex),
-                true
-            );
-            oldStartVMsgr = members[++oldStartIndex];
-            newEndedVMsgr = leaguer[--newEndedIndex];
-        } else
-        if (VMModCompareWithElements(oldEndedVMsgr, newStartVMsgr)) {
-            VMModMoveOrInsertElement(
-                VMModGetAuthenticElement(oldStartVMsgr),
-                VMModInvokeUpdateElement(oldEndedVMsgr, newStartVMsgr, newStartIndex),
-                true
-            );
-            oldEndedVMsgr = members[--oldEndedIndex];
-            newStartVMsgr = leaguer[++newStartIndex];
-        } else {
-            VMModGetIndexFromMembers(newStartVMsgr, oldStartIndex, oldEndedIndex);
-            VMModMoveOrInsertElement(
-                VMModGetAuthenticElement(oldStartVMsgr),
-                VMModCreateOrUpdateVMsgr(newStartVMsgr, newStartIndex),
-                true
-            );
-            newStartVMsgr = leaguer[++newStartIndex];
-        }
-    }
-    if (oldStartIndex > oldEndedIndex) {
-        VMModBatchCreateElements(
-            VMModGetAuthenticElement(leaguer[newEndedIndex + 1]), newStartIndex, newEndedIndex);
-    } else
-    if (newStartIndex > newEndedIndex) {
-        VMModBatchRemoveElements(oldStartIndex, oldEndedIndex);
-    }
-    reset(members, deposit);
-
-    function VMModGetAuthenticElement (manager) {
-        return manager ? manager.draught ? VMModGetAuthenticElement(manager.draught) : manager.product : null;
-    }
-    function VMModCreateSingleElement (updated, number) {
-        var draught = MKDraught(updated.element, manager);
-        var realtor = draught.initial(namespace, collect);
-        updated.product = realtor.value;
-        deposit[number] = draught;
-        return realtor;
-    }
-    function VMModCreateOrUpdateVMsgr (updated, number) {
-        if (isValid(oldTokenIndex)) {
-            var ancient = members[oldTokenIndex];
-            if (VMModCompareWithElements(ancient, updated)) {
-                members[oldTokenIndex] = null;
-                return VMModInvokeUpdateElement(ancient, updated, number);
-            }
-        }
-        return VMModCreateSingleElement(updated, number);
-    }
-    function VMModCompareWithElements (ancient, updated) {
-        return VMNoneedRedraw (ancient.element, updated.element);
-    }
-    function VMModInvokeUpdateElement (ancient, updated, number) {
-        var realtor = ancient.renewal(namespace, collect, updated.element);
-        updated.product = realtor.value;
-        deposit[number] = ancient;
-        return realtor;
-    }
-    function VMModMoveOrInsertElement (address, realtor, remain) {
-        if (realtor.newly || remain) {
-            DOMInsertChild(product, realtor.value, address);
-        }
-    }
-    function VMModGetIndexFromMembers (updated, start, ended) {
-        oldTokenPairs = oldTokenPairs || VMModCreateIndexMapByKey(start, ended);
-        oldTokenIndex = updated.element.key ? oldTokenPairs[updated.element.key] : VMModFindIndexByIterator(updated, start, ended);
-    }
-    function VMModFindIndexByIterator (updated, start, ended) {
-        for (var i = start; i <= ended; i++) {
-            if (members[i] && VMNoneedRedraw(members[i].element, updated.element)) {
-                return i;
-            }
-        }
-    }
-    function VMModBatchCreateElements (address, start, ended) {
-        for (var i = start; i <= ended; i++) {
-            VMModMoveOrInsertElement(
-                address,
-                VMModCreateSingleElement(leaguer[i], i),
-                true
-            );
-        }
-    }
-    function VMModBatchRemoveElements (start, ended) {
-        for (var i = start; i <= ended; i++) {
-            if (members[i]) {
-                members[i].dispose();
-            }
-        }
-    }
-    function VMModCreateIndexMapByKey (start, ended) {
-        var result = {};
-        for (var i = start; i <= ended; i++) {
-            var sn = members[i].element.key;
-            if (sn) {
-                result[sn] = i;
             }
         }
         return result;
     }
-}
-/**
- * Remove childNodes.
- * 
- * @param {Array<Manager>} members 
- */
-function VMDelOffspring (members) {
-    clean(members, function (draught) {
-        draught.dispose();
-    });
-}
-/**
- * Assign attributes.
- * 
- * @param {*}       feature 
- * @param {Manager} manager 
- */
-function VMSetAttribute (feature, manager) {
-    for (var name in feature) {
-        if (isEventAttribute(name)) {
-            manager.attachEvent(VMRectifyEvent(name), feature[name]);
-        } else
-        if (manager.connate) {
-            DOMSetProperty(manager.product, VMRectifyTrait(name), feature[name]);
+    function intrude(array, value) {
+        return array.indexOf(value) < 0 ? array.push(value) === 1 : false;
+    }
+    function extrude(array, value) {
+        var index = array.indexOf(value);
+        if (index >= 0) {
+            array.splice(index, 1);
+            return !array.length;
         }
+        return false;
     }
-}
-/**
- * Modify attributes.
- * 
- * @param {Variety} variety 
- * @param {Manager} manager 
- */
-function VMModAttribute (variety, manager) {
-    VMDelAttribute(variety.hoary, manager);
-    VMSetAttribute(variety.newly, manager);
-    for (var name in variety.alter) {
-        if (isEventAttribute(name)) {
-            manager.emitter.replace(VMRectifyEvent(name), variety.alter[name].oldValue, variety.alter[name].newValue);
-        } else
-        if (manager.connate) {
-            DOMSetProperty(manager.product, VMRectifyTrait(name), variety.alter[name].newValue);
+    function observe(fn, parameters) {
+        return function () {
+            var instance = exports.createEvent("async");
+            fn.apply(this, [instance].concat(parameters));
+            instance.refreshPrevented || broadcast();
+        };
+    }
+    function describe(value, enumerable) {
+        return {
+            configurable: true,
+            enumerable: !!enumerable,
+            writable: true,
+            value: value
+        };
+    }
+    function stringify(value) {
+        return JSON.stringify(value);
+    }
+    function subscribe(value) {
+        return intrude(collectivity, value), {
+            dispose: extrude.bind(null, collectivity, value)
+        };
+    }
+    function broadcast() {
+        if (NODE_ENV) {
+            return false;
         }
-    }
-}
-/**
- * Remove attributes.
- * 
- * @param {*}       feature 
- * @param {Manager} manager 
- */
-function VMDelAttribute (feature, manager) {
-    for (var name in feature) {
-        if (isEventAttribute(name)) {
-            manager.detachEvent(VMRectifyEvent(name), feature[name]);
-        } else
-        if (manager.connate) {
-            DOMDelProperty(manager.product, VMRectifyTrait(name), feature[name]);
+        if (isUnoccupied) {
+            isUnoccupied = false;
+            requestAnimationFrame(function () {
+                try {
+                    collectivity.forEach(function (i) {
+                        i.duplex && i.forceUpdate();
+                    });
+                } finally {
+                    isUnoccupied = true;
+                }
+            });
         }
+        return !isUnoccupied;
     }
-}
-/**
- * Assign directives.
- * 
- * @param {Array}                          behests 
- * @param {HTMLElement | JSX.ElementClass} product 
- * @param {*}                              feature 
- * @param {Array}                          command 
- * @param {Array}                          collect 
- */
-function VMSetDirective (behests, product, feature, command, collect) {
-    for (var i = 0; i < command.length; i++) {
-        var dictate = MKUnitary(command[i]);
-        if (dictate[LIFE_CYCLE_INITIAL]) {
-            collect.push(dictate[LIFE_CYCLE_INITIAL].bind(dictate, product, feature));
-        }
-        behests.push(dictate);
-    }
-}
-/**
- * Modify directives.
- * 
- * @param {Array}                          behests 
- * @param {HTMLElement | JSX.ElementClass} product 
- * @param {*}                              feature 
- * @param {Array}                          command 
- * @param {Array}                          collect 
- */
-function VMModDirective (behests, product, feature, command, collect) {
-    var deposit = [];
-    for (var i = 0; i < behests.length; i++) {
-        var sn = commandIndex(behests[i]);
-        if (sn < 0) {
-            if (behests[i][LIFE_CYCLE_DISPOSE]) {
-                behests[i][LIFE_CYCLE_DISPOSE](product, feature);
-            }
-        }
-    }
-    for (var i = 0; i < command.length; i++) {
-        var sn = behestsIndex(command[i]);
-        if (sn < 0) {
-            var dictate = MKUnitary(command[i]);
-            if (dictate[LIFE_CYCLE_INITIAL]) {
-                collect.push(dictate[LIFE_CYCLE_INITIAL].bind(dictate, product, feature));
-            }
-        } else {
-            deposit.push(behests[sn]);
-        }
-    }
-    reset(behests, deposit);
-    function commandIndex (target) {
-        for (var i = 0; i < command.length; i++) {
-            if (isInheritedClass(target, command[i])) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    function behestsIndex (target) {
-        for (var i = 0; i < behests.length; i++) {
-            if (isInheritedClass(behests[i], target)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-}
-/**
- * Remove directives.
- * 
- * @param {Array}                          behests 
- * @param {HTMLElement | JSX.ElementClass} product 
- * @param {*}                              feature 
- */
-function VMDelDirective (behests, product, feature) {
-    clean(behests, function (dictate) {
-        if (dictate[LIFE_CYCLE_DISPOSE]) {
-            dictate[LIFE_CYCLE_DISPOSE](product, feature);
-        }
-    });
-}
-/**
- * Assign reference.
- * 
- * @param {JSX.Element}                    element 
- * @param {HTMLElement | JSX.ElementClass} product 
- */
-function VMSetReference (element, product) {
-    if (element.owner && element.ref) {
-        element.owner.refs[element.ref] = product;
-    }
-}
-/**
- * Modify reference.
- * 
- * @param {JSX.Element}                    element 
- * @param {HTMLElement | JSX.ElementClass} product 
- * @param {JSX.Element}                    ancient 
- */
-function VMModReference (element, product, ancient) {
-    if (element.ref   !== ancient.ref ||
-        element.owner !== ancient.owner) {
-        VMDelReference(ancient);
-        VMSetReference(element, product);
-    }
-}
-/**
- * Remove reference.
- * 
- * @param {JSX.Element} element 
- */
-function VMDelReference (element) {
-    if (element.owner && element.ref) {
-        delete element.owner.refs[element.ref];
-    }
-}
-/**
- * Execute initial life cycle.
- * 
- * @param {JSX.ElementClass} product 
- * @param {Array}            collect 
- */
-function VMSetLifeCycle (product, collect) {
-    if (product[LIFE_CYCLE_INITIAL]) {
-        collect.push(product[LIFE_CYCLE_INITIAL].bind(product));
-    }
-}
-/**
- * Execute dispose life cycle.
- * 
- * @param {JSX.ElementClass} product 
- */
-function VMDelLifeCycle (product) {
-    if (product[LIFE_CYCLE_DISPOSE]) {
-        product[LIFE_CYCLE_DISPOSE]();
-    }
-}
 
+    function safeMember(value) {
+        return typeof Symbol !== "undefined" ? Symbol(value) : value;
+    }
+    function safeDomain(value) {
+        return typeof Proxy !== "undefined" && exports.$safeScope ? new Proxy(value, {
+            has: function (value, name) {
+                return exists(value, name) || !(exists(allowedGlobalVariates, name) || wrong(new Error(name + " is not defined")));
+            }
+        }) : value;
+    }
+    function startsWith(total, value, start) {
+        var number = start || 0;
+        var length = value.length;
+        for (var i = 0; i < length; i++) {
+            if (value.charAt(i) !== total.charAt(number + i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    function createClass(proto) {
+        return (function (constructor) {
+            return constructor.prototype = proto, constructor;
+        }(
+            (function (parent) {
+                return function () { parent.apply(this, arguments); };
+            }(proto.constructor || NOOP))
+        ));
+    }
 
-/**
- * Native add event listener.
- * 
- * @param {HTMLElement}                        element 
- * @param {String}                             type 
- * @param {EventListenerOrEventListenerObject} listener 
- */
-function DOMAddListener (element, type, listener) {
-    element.addEventListener(type, listener, false);
-}
-/**
- * Native remove event listener.
- * 
- * @param {HTMLElement}                        element 
- * @param {String}                             type 
- * @param {EventListenerOrEventListenerObject} listener 
- */
-function DOMDelListener (element, type, listener) {
-    element.removeEventListener(type, listener, false);
-}
-/**
- * Native set attribute.
- * 
- * @param {HTMLElement} element 
- * @param {String}      name 
- * @param {*}           value 
- */
-function DOMSetProperty (element, name, value) {
-    switch (htmlAttributeSpecials[ name ] || 0) {
-        case 0:
-            element.setAttribute(name, value);
-            break;
-        case 1:
-            element[name].cssText = DOMFormatStyle(value);
-            break;
-        case 2:
-            element[name] = (value === false) ? value : true;
-            break;
-        case 3:
-            element[name] = DOMFormatClass(value);
-            break;
-        case 4:
-            element[name] = value;
-            break;
+    function isValid(value) {
+        return value !== null && value !== void 0;
     }
-}
-/**
- * Native remove attribute.
- * 
- * @param {HTMLElement} element 
- * @param {String}      name 
- */
-function DOMDelProperty (element, name) {
-    switch (htmlAttributeSpecials[ name ] || 0) {
-        case 0:
-            element.removeAttribute(name);
-            break;
-        case 1:
-            element[name].cssText = "";
-            break;
-        case 2:
-            element[name] = false;
-            break;
-        case 3:
-        case 4:
-            element[name] = "";
-            break;
+    function isBasic(value) {
+        return isString(value)
+            || typeof value === "number"
+            || typeof value === "boolean";
     }
-}
-/**
- * Native insert child.
- * 
- * @param {HTMLElement} product 
- * @param {HTMLElement} element 
- * @param {HTMLElement} address 
- */
-function DOMInsertChild (product, element, address) {
-    product.insertBefore(element, address || null);
-}
-/**
- * Native remove child.
- * 
- * @param {HTMLElement} element 
- */
-function DOMRemoveChild (element) {
-    if (element.parentNode) {
-        element.parentNode.removeChild(element);
+    function isString(value) {
+        return typeof value === "string";
     }
-}
-/**
- * Format style, support object style.
- * 
- * @param   {*}      product 
- * @returns {String}
- */
-function DOMFormatStyle (product) {
-    if (isObject(product)) {
-        return exports.$map(product, function (value, token) {
+    function isObject(value) {
+        return isValid(value)
+            && typeof value === "object";
+    }
+    function isAllied(value, lowerCase) {
+        return value.length === lowerCase.length && lower(value) === lowerCase;
+    }
+    function isEventAttribute(value) {
+        return startsWith(value, exports.$eventStart);
+    }
+    function isInheritedClass(value, constructor) {
+        return value instanceof constructor;
+    }
+
+    function DOMAddListener(element, type, listener) {
+        element.addEventListener(type, listener, false);
+    }
+    function DOMDelListener(element, type, listener) {
+        element.removeEventListener(type, listener, false);
+    }
+    function DOMSetProperty(element, name, value) {
+        switch (htmlAttributeSpecials[name] || 0) {
+            case 0:
+                element.setAttribute(name, value);
+                break;
+            case 1:
+                element[name].cssText = DOMFormatStyle(value);
+                break;
+            case 2:
+                element[name] = (value === false) ? value : true;
+                break;
+            case 3:
+                element[name] = DOMFormatClass(value);
+                break;
+            case 4:
+                element[name] = value;
+                break;
+        }
+    }
+    function DOMDelProperty(element, name) {
+        switch (htmlAttributeSpecials[name] || 0) {
+            case 0:
+                element.removeAttribute(name);
+                break;
+            case 1:
+                element[name].cssText = "";
+                break;
+            case 2:
+                element[name] = false;
+                break;
+            case 3:
+            case 4:
+                element[name] = "";
+                break;
+        }
+    }
+    function DOMInsertChild(element, child, previous) {
+        element.insertBefore(child, previous || null);
+    }
+    function DOMRemoveChild(element) {
+        if (element.parentNode) {
+            element.parentNode.removeChild(element);
+        }
+    }
+    function DOMFormatStyle(value) {
+        return isObject(value) ? exports.$map(value, function (value, token) {
             return token.replace(/[A-Z]/g, function (value) {
                 return "-" + lower(value);
             }) + ":" + value;
-        }).join("; ");
+        }).join("; ") : value;
     }
-    return product;
-}
-/**
- * Format class, support object class.
- * 
- * @param   {*}      product
- * @returns {String} 
- */
-function DOMFormatClass (product) {
-    if (isObject(product)) {
-        return flatten(exports.$map(product, function (value, token) {
+    function DOMFormatClass(value) {
+        return isObject(value) ? flatten(exports.$map(value, function (value, token) {
             return value ? token : null;
-        })).join(" ");
+        })).join(" ") : value;
     }
-    return product;
-}
-/**
- * Native create element.
- * 
- * @param   {String}      trustor 
- * @param   {String}      namespace 
- * @returns {HTMLElement}
- */
-function DOMMakeElement (trustor, namespace) {
-    return namespace ? document.createElementNS(namespace, trustor) : document.createElement(lower(trustor));
-}
 
-//
-// Constants.
-//
-var CODE;
-var NOOP = function () {};
-var RESOLVED = "resolved";
-var REJECTED = "rejected";
-var PENDING  = "pending";
-
-var LIFE_CYCLE_INITIAL   = "onInitial";
-var LIFE_CYCLE_DISPOSE   = "onDispose";
-
-var REGEXP_TEMPLATE_NAME = /[:A-Za-z0-9][-:\w]*/;
-var REGEXP_TEMPLATE_EACH = /(\S.*)(\s+(?:in|of)\s+)(.*\S)/;
-var REGEXP_TEMPLATE_ATTR = /([^\s"'<>/=]+)(?:(\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s"'<>/=]+)))?/;
-var REGEXP_TEMPLATE_WORD = /\S/;
-
-var REGEXP_SEPARATOR_CMD = /[,\s]+/;
-var REGEXP_SEPARATOR_FIT = /\|/;
-var REGEXP_SEPARATOR_ARG = /\s/;
-
-/**
- * Individual storage.
- */
-var collectivity = [];
-/**
- * Indicates whether an update can be made.
- */
-var isUnoccupied = true;
-/**
- * SVG root element's tag.
- */
-var svgRootQName = "svg";
-/**
- * MathML root element's tag.
- */
-var mmlRootQName = "math";
-/**
- * SVG namespaceURI.
- */
-var svgNamespace = "http://www.w3.org/2000/svg";
-/**
- * MathML namespaceURI.
- */
-var mmlNamespace = "http://www.w3.org/2000/MathML";
-/**
- * Encoding chart.
- */
-var diagrammatic = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-/**
- * Indicates whether can use Symbol API.
- */
-var supportedSafeMember = typeof Symbol !== "undefined";
-/**
- * Indicates whether can use Proxy API.
- */
-var supportedSafeSphere = typeof Proxy  !== "undefined";
-/**
- * HTMLElement attribute mappings.
- */
-var htmlAttributeMappings = {
-    // prop mappings.
-    autoFocus: "autofocus",
-    autoPlay: "autoplay",
-    "class": "className",
-    "for": "htmlFor",
-    novalidate: "noValidate",
-    formnovalidate: "formNoValidate",
-    readonly: "readOnly",
-    // attr mappings.
-    accentHeight: "accent-height",
-    acceptCharset: "accept-charset",
-    alignmentBaseline: "alignment-baseline",
-    altimgHeight: "altimg-height",
-    altimgValign: "altimg-valign",
-    altimgWidth: "altimg-width",
-    arabicForm: "arabic-form",
-    baselineShift: "baseline-shift",
-    capHeight: "cap-height",
-    clipPath: "clip-path",
-    clipRule: "clip-rule",
-    colorInterpolation: "color-interpolation",
-    colorInterpolationFilters: "color-interpolation-filters",
-    colorProfile: "color-profile",
-    colorRendering: "color-rendering",
-    dominantBaseline: "dominant-baseline",
-    enableBackground: "enable-background",
-    fillOpacity: "fill-opacity",
-    fillRule: "fill-rule",
-    floodColor: "flood-color",
-    floodOpacity: "flood-opacity",
-    fontFamily: "font-family",
-    fontSize: "font-size",
-    fontSizeAdjust: "font-size-adjust",
-    fontStretch: "font-stretch",
-    fontStyle: "font-style",
-    fontVariant: "font-variant",
-    fontWeight: "font-weight",
-    glyphName: "glyph-name",
-    glyphOrientationHorizontal: "glyph-orientation-horizontal",
-    glyphOrientationVertical: "glyph-orientation-vertical",
-    horizAdvX: "horiz-adv-x",
-    horizOriginX: "horiz-origin-x",
-    httpEquiv: "http-equiv",
-    imageRendering: "image-rendering",
-    letterSpacing: "letter-spacing",
-    lightingColor: "lighting-color",
-    markerEnd: "marker-end",
-    markerMid: "marker-mid",
-    markerStart: "marker-start",
-    overlinePosition: "overline-position",
-    overlineThickness: "overline-thickness",
-    paintOrder: "paint-order",
-    panose1: "panose-1",
-    pointerEvents: "pointer-events",
-    renderingIntent: "rendering-intent",
-    shapeRendering: "shape-rendering",
-    stopColor: "stop-color",
-    stopOpacity: "stop-opacity",
-    strikethroughPosition: "strikethrough-position",
-    strikethroughThickness: "strikethrough-thickness",
-    strokeDasharray: "stroke-dasharray",
-    strokeDashoffset: "stroke-dashoffset",
-    strokeLinecap: "stroke-linecap",
-    strokeLinejoin: "stroke-linejoin",
-    strokeMiterlimit: "stroke-miterlimit",
-    strokeOpacity: "stroke-opacity",
-    strokeWidth: "stroke-width",
-    textAnchor: "text-anchor",
-    textDecoration: "text-decoration",
-    textRendering: "text-rendering",
-    underlinePosition: "underline-position",
-    underlineThickness: "underline-thickness",
-    unicodeBidi: "unicode-bidi",
-    unicodeRange: "unicode-range",
-    unitsPerEm: "units-per-em",
-    vAlphabetic: "v-alphabetic",
-    vHanging: "v-hanging",
-    vIdeographic: "v-ideographic",
-    vMathematical: "v-mathematical",
-    vertAdvY: "vert-adv-y",
-    vertOriginX: "vert-origin-x",
-    vertOriginY: "vert-origin-y",
-    wordSpacing: "word-spacing",
-    writingMode: "writing-mode",
-    xHeight: "x-height",
-    xlinkActuate: "xlink:actuate",
-    xlinkArcrole: "xlink:arcrole",
-    xlinkHref: "xlink:href",
-    xlinkRole: "xlink:role",
-    xlinkShow: "xlink:show",
-    xlinkTitle: "xlink:title",
-    xlinkType: "xlink:type",
-    xmlBase: "xml:base",
-    xmlSpace: "xml:space"
-};
-/**
- * HTMLElement attribute specials.
- * 1 -> CSSStyleDeclaration
- * 2 -> Boolean
- * 3 -> ClassName
- * 4 -> String
- * 9 -> ignore
- */
-var htmlAttributeSpecials = {
-    async: 2,
-    autofocus: 2,
-    autoplay: 2,
-    checked: 2,
-    className: 3,
-    controls: 2,
-    "default": 2,
-    defaultValue: 4,
-    defaultChecked: 2,
-    defer: 2,
-    disabled: 2,
-    hidden: 2,
-    htmlFor: 4,
-    innerHTML: 4,
-    loop: 2,
-    multiple: 2,
-    muted: 2,
-    noValidate: 2,
-    formNoValidate: 2,
-    open: 2,
-    readOnly: 2,
-    required: 2,
-    reversed: 2,
-    scoped: 2,
-    selected: 2,
-    style: 1,
-    value: 4,
-    // ignore it.
-     children: 9
-};
-/**
- * HTMLElement solitaries, They don't have end tag.
- */
-var htmlElementSolitaries = {
-    area: 0,
-    base: 0,
-    br: 0,
-    col: 0,
-    embed: 0,
-    hr: 0,
-    img: 0,
-    input: 0,
-    keygen: 0,
-    link: 0,
-    menuitem: 0,
-    meta: 0,
-    param: 0,
-    source: 0,
-    track: 0,
-    wbr: 0
-};
-/**
- * Event useful attributes.
- */
-var eventUsefulAttributes = {
-    altKey: 0,
-    animationName: 0,
-    button: 0,
-    buttons: 0,
-    changedTouches: 0,
-    charCode: 0,
-    clientX: 0,
-    clientY: 0,
-    clipboardData: 0,
-    ctrlKey: 0,
-    data: 0,
-    dataTransfer: 0,
-    deltaMode: 0,
-    deltaX: 0,
-    deltaY: 0,
-    deltaZ: 0,
-    detail: 0,
-    elapsedTime: 0,
-    key: 0,
-    keyCode: 0,
-    locale: 0,
-    location: 0,
-    metaKey: 0,
-    pageX: 0,
-    pageY: 0,
-    propertyName: 0,
-    relatedTarget: 0,
-    repeat: 0,
-    screenX: 0,
-    screenY: 0,
-    shiftKey: 0,
-    targetTouches: 0,
-    timeStamp: 0,
-    touches: 0,
-    which: 0
-};
-/**
- * Allowed modify input types.
- */
-var allowedModifyDrawings = {
-    text: 0,
-    number: 0,
-    password: 0,
-    search: 0,
-    email: 0,
-    tel: 0,
-    url: 0
-};
-/**
- * Allowed global variates.
- */
-var allowedGlobalVariates = {
-    Array: 0,
-    Boolean: 0,
-    Date: 0,
-    Infinity: 0,
-    Intl: 0,
-    JSON: 0,
-    Map: 0,
-    Math: 0,
-    NaN: 0,
-    Number: 0,
-    Object: 0,
-    RegExp: 0,
-    Set: 0,
-    String: 0,
-    decodeURI: 0,
-    decodeURIComponent: 0,
-    encodeURI: 0,
-    encodeURIComponent: 0,
-    isFinite: 0,
-    isNaN: 0,
-    parseFloat: 0,
-    parseInt: 0,
-    undefined: 0,
-    // elfjs.
-    Elf: 0
-};
-/**
- * Community dependency for Component.
- */
-var communityComponentDep = {};
-/**
- * Community dependency for Directive.
- */
-var communityDirectiveDep = {};
-/**
- * Community dependency for Transform.
- */
-var communityTransformDep = {};
-/**
- * Temporary dependency for Component.
- */
-var temporaryComponentDep = [];
-/**
- * Temporary dependency for Directive.
- */
-var temporaryDirectiveDep = [];
-/**
- * Temporary dependency for Transform.
- */
-var temporaryTransformDep = [];
-/**
- * Temporary dependency for element owner.
- */
-var temporaryElementOwner = [];
-
-//
-// Safe member of object.
-//
-var COMMITMENT_STATUS    = SafeMember("Promise.status");
-var COMMITMENT_RESULT    = SafeMember("Promise.result");
-var COMMITMENT_OBSERVE   = SafeMember("Promise.observe");
-var COMMITMENT_CAPTURE   = SafeMember("Promise.capture");
-var COMMITMENT_DISPOSE   = SafeMember("Promise.dispose");
-var DISPLAYING_INSTANCE  = SafeMember("Display.instance");
-var DISPLAYING_RENDERER  = SafeMember("Display.renderer");
-var DISPLAYING_COMPONENT = SafeMember("Display.component");
-var DISPLAYING_DIRECTIVE = SafeMember("Display.directive");
-var DISPLAYING_TRANSFORM = SafeMember("Display.transform");
-var EVENT_STATUS_TRACKER = SafeMember("Event.tracker");
-var EVENT_CONTACT_TARGET = SafeMember("Event.contact");
-var EVENT_CURRENT_TARGET = SafeMember("Event.current");
-var EVENT_ORIGINAL_EVENT = SafeMember("Event.founder");
-
-/**
- * Global event listener.
- * All HTMLElement are bind this.
- * 
- * @param {Event} event 
- */
-var GlobalEventListener  = Accomplish(function (event) {
-    var instance = new SyntheticEvent(event);
-    this[DISPLAYING_RENDERER].dispatchEvent(instance);
-    instance.refreshPrevented || broadcast();
-    event.stopImmediatePropagation();
-});
-/**
- * Comment renderer.
- */
-var CommentRenderer = Accomplish(function (founder) {
-    this.founder = founder;
-});
-/**
- * Content renderer.
- */
-var ContentRenderer = Accomplish(function (element, founder) {
-    this.element = element;
-    this.founder = founder;
-});
-/**
- * Complex renderer.
- */
-var ComplexRenderer = Accomplish(function (element, founder) {
-    var current = this;
-    current.emitter = MKEmitter(current);
-    current.element = element;
-    current.founder = founder;
-    current.connate = false;
-});
-/**
- * Element renderer.
- */
-var ElementRenderer = Accomplish(function (element, founder) {
-    var current = this;
-    current.emitter = MKEmitter(current);
-    current.element = element;
-    current.founder = founder;
-    current.connate = true;
-});
-/**
- * Liberty renderer.
- */
-var LibertyRenderer = Accomplish(function (product) {
-    var current = this;
-    current.emitter = MKEmitter(current);
-    current.product = product;
-    current.connate = true;
-});
-/**
- * SyntheticEvent.
- */
-var SyntheticEvent  = Accomplish(function (event) {
-    define(this, EVENT_CONTACT_TARGET, normal(event.target));
-    define(this, EVENT_CURRENT_TARGET, normal(event.currentTarget));
-    define(this, EVENT_ORIGINAL_EVENT, normal(event[EVENT_ORIGINAL_EVENT] || event));
-    define(this, EVENT_STATUS_TRACKER, normal(event[EVENT_STATUS_TRACKER] || {
-        defaultPrevented : !!event.defaultPrevented,
-        refreshPrevented : !!event.refreshPrevented,
-        cancelBubble     : !!event.cancelBubble,
-        cancelEntire     : !!event.cancelEntire
-    }));
-    for (var name in eventUsefulAttributes) {
-        if (exists(event, name)) {
-            define(this, name, fixate(event[name], true));
-        }
+    function GlobalMethodListener(event) {
+        var instance = new SyntheticEvent(event);
+        this[DISPLAYING_RENDERER].dispatchEvent(instance);
+        instance.refreshPrevented || broadcast();
+        event.stopImmediatePropagation();
     }
-});
-/**
- * Promise.
- */
-var Promise         = Accomplish(function (executor) {
-    define(this, COMMITMENT_OBSERVE, normal([]));
-    define(this, COMMITMENT_CAPTURE, normal(false));
-    define(this, COMMITMENT_RESULT , normal(void 0));
-    define(this, COMMITMENT_STATUS , normal(PENDING));
-    try {
-        define(this, COMMITMENT_DISPOSE, normal(
-            executor(
-                PMFixator(this, RESOLVED),
-                PMFixator(this, REJECTED)
-            )
-        ));
-    } catch (error) {
-        PMResolve(this, REJECTED, error);
+    function GlobalMethodLauncher(value) {
+        return value[DISPLAYING_RENDERER] || (value[DISPLAYING_RENDERER] = new LibertyManager(value));
     }
-});
+    function NOOP() { }
 
-//
-// Prototypes of class.
-//
-CommentRenderer.prototype = create({
-    constructor : normal(CommentRenderer),
-    initial     : normal(function (namespace, collect) {
-        return MKRealtor(this.product = document.createComment(""), true);
-    }),
-    renewal     : normal(function (namespace, collect, updated) {
-        return MKRealtor(this.product, false);
-    }),
-    dispose     : normal(function () {
-        DOMRemoveChild(this.product);
-    })
-});
-ContentRenderer.prototype = create({
-    constructor : normal(ContentRenderer),
-    initial     : normal(function (namespace, collect) {
-        return MKRealtor(this.product = document.createTextNode(this.element), true);
-    }),
-    renewal     : normal(function (namespace, collect, updated) {
-        if (this.element !== updated) {
-            this.product.textContent = this.element = updated;
-        }
-        return MKRealtor(this.product, false);
-    }),
-    dispose     : normal(function () {
-        DOMRemoveChild(this.product);
-    })
-});
-ComplexRenderer.prototype = create({
-    constructor : normal(ComplexRenderer),
-    initial     : normal(function (namespace, collect) {
-        var manager = this;
-        var element = manager.element;
-        var feature = element.props;
-        var trustor = element.type;
-        var command = element.cmd;
+    var PENDING = "pending";
+    var RESOLVED = "resolved";
+    var REJECTED = "rejected";
 
-        var behests = [];
-        var product = MKExample(trustor, feature, manager);
-        var draught = MKDraught(MKVirtual(product), manager);
-        var realtor = draught.initial(namespace, collect);
+    var LIFE_CYCLE_INITIAL = "onInitial";
+    var LIFE_CYCLE_DISPOSE = "onDispose";
 
-        manager.behests = behests;
-        manager.product = product;
-        manager.draught = draught;
+    var REGEXP_TEMPLATE_WORD = /\S/;
+    var REGEXP_TEMPLATE_NAME = /[:A-Za-z0-9][-:\w]*/;
+    var REGEXP_TEMPLATE_EACH = /(\S.*)(\s+(?:in|of)\s+)(.*\S)/;
+    var REGEXP_TEMPLATE_ATTR = /([^\s"'<>/=]+)(?:(\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s"'<>/=]+)))?/;
+    var REGEXP_UNESCAPE_CHAR = /&(?:([a-zA-Z][0-9a-zA-Z]*)|#([0-9]+)|#[Xx]([0-9a-fA-F]+));/g;
 
-        VMSetAttribute(feature, manager);
-        VMSetDirective(behests, product, feature, command, collect);
-        VMSetReference(element, product);
-        VMSetLifeCycle(product, collect);
+    var REGEXP_SEPARATOR_CMD = /[,\s]+/;
+    var REGEXP_SEPARATOR_ARG = /\s/;
+    var REGEXP_SEPARATOR_FIT = /\|/;
 
-        return realtor;
-    }),
-    renewal     : normal(function (namespace, collect, updated) {
-        var manager = this;
-        var element = manager.element;
-        var behests = manager.behests;
-        var draught = manager.draught;
-        var product = manager.product;
-        var possess = updated.owner;
-        var feature = updated.props;
-        var command = updated.cmd;
-        var appoint = updated.ref;
-        var realtor;
-
-        manager.element = updated;
-        product.props   = updated.props;
-
-        var virtual = MKVirtual(product);
-        var variety = MKVariety(feature, element.props);
-
-        if (VMNoneedRedraw(virtual, draught.element)) {
-            realtor = draught.renewal(namespace, collect, virtual);
-        } else {
-            draught.dispose();
-            draught = MKDraught(virtual, manager);
-            realtor = draught.initial(namespace, collect);
-            manager.draught = draught;
-        }
-
-        VMModAttribute(variety, manager);
-        VMModDirective(behests, product, feature, command, collect);
-        VMModReference(updated, product, element);
-
-        return realtor;
-    }),
-    dispose     : normal(function () {
-        var manager = this;
-        var behests = manager.behests;
-        var product = manager.product;
-        var element = manager.element;
-
-        VMDelDirective(behests, product, element.props);
-        VMDelReference(element);
-        VMDelLifeCycle(product);
-        manager.emitter.dispose();
-        manager.draught.dispose();
-    }),
-    trigger     : normal(function (event, connate) {
-        if (this.connate === connate) {
-            this.emitter.trigger(event);
-        }
-        if (ShouldEventBubbling(event)) {
-            this.founder.trigger(event, connate);
-        }
-    }),
-    attachEvent : normal(function (type, listener) {
-        this.emitter.intrude(type, listener);
-    }),
-    detachEvent : normal(function (type, listener) {
-        this.emitter.extrude(type, listener);
-    }),
-    dispatchEvent : normal(function (event) {
-        this.trigger(event, this.connate);
-    })
-});
-ElementRenderer.prototype = create({
-    constructor : normal(ElementRenderer),
-    initial     : normal(function (namespace, collect) {
-        var manager = this;
-        var element = manager.element;
-        var insider = element.props.children;
-        var feature = element.props;
-        var trustor = element.type;
-        var command = element.cmd;
-
-        if (trustor === svgRootQName) {
-            namespace = svgNamespace;
-        }
-        if (trustor === mmlRootQName) {
-            namespace = mmlRootQName;
-        }
-
-        var behests = [];
-        var members = [];
-        var product = MKElement(trustor, namespace, manager);
-
-        manager.behests = behests;
-        manager.members = members;
-        manager.product = product;
-
-        VMSetAttribute(feature, manager);
-        VMSetOffspring(members, product, manager, insider, namespace, collect);
-        VMSetDirective(behests, product, feature, command, collect)
-        VMSetReference(element, product);
-
-        return MKRealtor(product, true);
-    }),
-    renewal     : normal(function (namespace, collect, updated) {
-        var manager = this;
-        var element = manager.element;
-        var behests = manager.behests;
-        var members = manager.members;
-        var product = manager.product;
-        var insider = updated.props.children;
-        var feature = updated.props;
-        var trustor = updated.type;
-        var command = updated.cmd;
-        
-        if (trustor === svgRootQName) {
-            namespace = svgNamespace;
-        }
-        if (trustor === mmlRootQName) {
-            namespace = mmlRootQName;
-        }
-
-        manager.element = updated;
-
-        var variety = MKVariety(feature, element.props);
-
-        VMModAttribute(variety, manager);
-        VMModOffspring(members, product, manager, insider, namespace, collect);
-        VMModDirective(behests, product, feature, command, collect);
-        VMModReference(updated, product, element);
-
-        return MKRealtor(product, false);
-    }),
-    dispose     : normal(function () {
-        var manager = this;
-        var behests = manager.behests;
-        var members = manager.members;
-        var product = manager.product;
-        var element = manager.element;
-
-        VMDelOffspring(members);
-        VMDelDirective(behests, product, element.props);
-        VMDelReference(element);
-        manager.emitter.dispose();
-        DOMRemoveChild(product);
-    }),
-    trigger     : normal(function (event, connate) {
-        if (this.connate === connate) {
-            this.emitter.trigger(event);
-        }
-        if (ShouldEventBubbling(event)) {
-            this.founder.trigger(event, connate);
-        }
-    }),
-    attachEvent : normal(function (type, listener) {
-        this.emitter.intrude(type, listener);
-    }),
-    detachEvent : normal(function (type, listener) {
-        this.emitter.extrude(type, listener);
-    }),
-    dispatchEvent : normal(function (event) {
-        this.trigger(event, this.connate);
-    })
-});
-LibertyRenderer.prototype = create({
-    constructor : normal(LibertyRenderer),
-    trigger     : normal(function (event, connate) {
-        if (this.connate === connate) {
-            this.emitter.trigger(event);
-        }
-        if (ShouldEventBubbling(event)) {
-            var founder = MKFounder(this.product);
-            if (founder) {
-                founder.trigger(event, connate);
-            }
-        }
-    }),
-    attachEvent : normal(function (type, listener) {
-        this.emitter.intrude(type, listener);
-    }),
-    detachEvent : normal(function (type, listener) {
-        this.emitter.extrude(type, listener);
-    }),
-    dispatchEvent : normal(function (event) {
-        this.trigger(event, this.connate);
-    })
-});
-SyntheticEvent.prototype  = create({
-    constructor : normal(SyntheticEvent),
-    stopImmediatePropagation : normal(function () {
-        this[EVENT_ORIGINAL_EVENT].stopImmediatePropagation();
-        this[EVENT_STATUS_TRACKER].cancelEntire = true;
-        this[EVENT_STATUS_TRACKER].cancelBubble = true;
-    }),
-    stopPropagation  : normal(function () {
-        this[EVENT_ORIGINAL_EVENT].stopPropagation();
-        this[EVENT_STATUS_TRACKER].cancelBubble = true;
-    }),
-    preventDefault   : normal(function () {
-        if (this[EVENT_ORIGINAL_EVENT].cancelable) {
-            this[EVENT_ORIGINAL_EVENT].preventDefault();
-            this[EVENT_STATUS_TRACKER].defaultPrevented = true;
-        }
-    }),
-    preventRefresh   : normal(function () {
-        this[EVENT_STATUS_TRACKER].refreshPrevented = true;
-    }),
-    type             : secure(function () {
-        return this[EVENT_ORIGINAL_EVENT].type;
-    }, true),
-    bubbles          : secure(function () {
-        return this[EVENT_ORIGINAL_EVENT].bubbles;
-    }, true),
-    cancelable       : secure(function () {
-        return this[EVENT_ORIGINAL_EVENT].cancelable;
-    }, true),
-    cancelBubble     : secure(function () {
-        return this[EVENT_STATUS_TRACKER].cancelBubble;
-    }, true),
-    cancelEntire     : secure(function () {
-        return this[EVENT_STATUS_TRACKER].cancelEntire;
-    }, true),
-    defaultPrevented : secure(function () {
-        return this[EVENT_STATUS_TRACKER].defaultPrevented;
-    }, true),
-    refreshPrevented : secure(function () {
-        return this[EVENT_STATUS_TRACKER].refreshPrevented;
-    }, true),
-    originalEvent    : secure(function () {
-        return this[EVENT_ORIGINAL_EVENT];
-    }, true),
-    currentTarget    : secure(function () {
-        return this[EVENT_CURRENT_TARGET];
-    }, true),
-    target           : secure(function () {
-        return this[EVENT_CONTACT_TARGET];
-    }, true)
-});
-Promise.prototype         = create({
-    constructor : normal(Promise),
-    dispose     : normal(function () {
-        if (this[COMMITMENT_DISPOSE]) {
-            this[COMMITMENT_DISPOSE]();
-        }
-    }),
-    "catch"     : normal(function (onrejected) {
-        return this.then(null, onrejected);
-    }),
-    then        : normal(function (onresolved, onrejected) {
-        var success = onresolved || Accomplish;
-        var failure = onrejected || Misfortune;
-        var product = new Promise(PMDeliver(this));
-        switch (this[COMMITMENT_STATUS]) {
-            case PENDING:
-                this[COMMITMENT_OBSERVE].push(product, success, failure);
-                break;
-            case RESOLVED:
-                PMExecute(product, this[COMMITMENT_RESULT], success);
-                break;
-            case REJECTED:
-                PMExecute(product, this[COMMITMENT_RESULT], failure);
-                break;
-        }
-        this[COMMITMENT_CAPTURE] = true;
-        return product;
-    }),
-    status      : secure(function () {
-        return this[COMMITMENT_STATUS];
-    }),
-    result      : secure(function () {
-        return this[COMMITMENT_RESULT];
-    })     
-});
-
-//
-// Promise static expansion.
-//
-Promise.resolve = Accomplish(function (value) {
-    return new Promise(function (resolve) { resolve(value); });
-});
-Promise.reject  = Accomplish(function (error) {
-    return new Promise(function (_,reject) { reject(error); });
-});
-Promise.ajax    = Accomplish(function (request) {
-    return new Promise(function (resolve, reject) {
-        return request.jsonp ? PMJsonp(request, resolve, reject) : PMAsync(request, resolve, reject);
-    });
-});
-Promise.race    = Accomplish(function (array) {
-    return new Promise(function (resolve, reject) {
-        if (array.length) {
-            array.forEach(function (value) {
-                (isInheritedClass(value, Promise) ? value : Promise.resolve(value)).then(resolve, reject);
-            });
-        } else {
-            resolve();
-        }
-    });
-});
-Promise.all     = Accomplish(function (array) {
-    return new Promise(function (resolve, reject) {
-        var number = 0;
-        var length = array.length;
-        var result = new Array(length);
-        if (length) {
-            array.forEach(function (value, index) {
-                (isInheritedClass(value, Promise) ? value : Promise.resolve(value)).then(function (value) {
-                    result[index] = value;
-                    if (++number === length) {
-                        resolve(result);
-                    }
-                }, reject);
-            });
-        } else {
-            resolve(result);
-        }
-    });
-});
-
-
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////
-
-
-/**
- * Copy the values of all of the enumerable own properties from one or more source objects to a
- * target object. Returns the target object.
- * 
- * @param   {T} target
- * @returns {T}
- * @template    T
- */
-exports.assign = function (target) {
-    target = Object(target);
-    for (var i = 1; i < arguments.length; i++) {
-        var ns = arguments[i];
-        for (var name in ns) {
-            if (Object.prototype.hasOwnProperty.call(ns, name)) {
-                target[name] = ns[name];
-            }
-        }
-    }
-    return target;
-};
-/**
- * Returns a new Class value.
- * 
- * @param   {*}        proto
- * @returns {Function}
- */
-exports.createClass = function (proto) {
-    return (function (constructor) {
-        return constructor.prototype = proto, constructor;
-    } (
-        (function (parent) {
-            return function () { parent.apply(this, arguments); };
-        } (proto.constructor || NOOP))
-    ));
-};
-/**
- * Wrapped native async function, Let it be tracked.
- * 
- * @param   {Function}       callback
- * @returns {Elf.Disposable}
- */
-exports.requestAnimationFrame = function (callback, delay) {
-    return {
-        dispose : cancelAnimationFrame.bind(null, requestAnimationFrame(observe(callback, tear(arguments, 1))))
+    var collectivity = [];
+    var isUnoccupied = true;
+    var svgNamespace = "http://www.w3.org/2000/svg";
+    var mmlNamespace = "http://www.w3.org/1998/Math/MathML";
+    var htmlAttributeMappings = {
+        // prop mappings.
+        autoFocus: "autofocus",
+        autoPlay: "autoplay",
+        "class": "className",
+        "for": "htmlFor",
+        novalidate: "noValidate",
+        formnovalidate: "formNoValidate",
+        readonly: "readOnly",
+        // attr mappings.
+        accentHeight: "accent-height",
+        acceptCharset: "accept-charset",
+        alignmentBaseline: "alignment-baseline",
+        altimgHeight: "altimg-height",
+        altimgValign: "altimg-valign",
+        altimgWidth: "altimg-width",
+        arabicForm: "arabic-form",
+        baselineShift: "baseline-shift",
+        capHeight: "cap-height",
+        clipPath: "clip-path",
+        clipRule: "clip-rule",
+        colorInterpolation: "color-interpolation",
+        colorInterpolationFilters: "color-interpolation-filters",
+        colorProfile: "color-profile",
+        colorRendering: "color-rendering",
+        dominantBaseline: "dominant-baseline",
+        enableBackground: "enable-background",
+        fillOpacity: "fill-opacity",
+        fillRule: "fill-rule",
+        floodColor: "flood-color",
+        floodOpacity: "flood-opacity",
+        fontFamily: "font-family",
+        fontSize: "font-size",
+        fontSizeAdjust: "font-size-adjust",
+        fontStretch: "font-stretch",
+        fontStyle: "font-style",
+        fontVariant: "font-variant",
+        fontWeight: "font-weight",
+        glyphName: "glyph-name",
+        glyphOrientationHorizontal: "glyph-orientation-horizontal",
+        glyphOrientationVertical: "glyph-orientation-vertical",
+        horizAdvX: "horiz-adv-x",
+        horizOriginX: "horiz-origin-x",
+        httpEquiv: "http-equiv",
+        imageRendering: "image-rendering",
+        letterSpacing: "letter-spacing",
+        lightingColor: "lighting-color",
+        markerEnd: "marker-end",
+        markerMid: "marker-mid",
+        markerStart: "marker-start",
+        overlinePosition: "overline-position",
+        overlineThickness: "overline-thickness",
+        paintOrder: "paint-order",
+        panose1: "panose-1",
+        pointerEvents: "pointer-events",
+        renderingIntent: "rendering-intent",
+        shapeRendering: "shape-rendering",
+        stopColor: "stop-color",
+        stopOpacity: "stop-opacity",
+        strikethroughPosition: "strikethrough-position",
+        strikethroughThickness: "strikethrough-thickness",
+        strokeDasharray: "stroke-dasharray",
+        strokeDashoffset: "stroke-dashoffset",
+        strokeLinecap: "stroke-linecap",
+        strokeLinejoin: "stroke-linejoin",
+        strokeMiterlimit: "stroke-miterlimit",
+        strokeOpacity: "stroke-opacity",
+        strokeWidth: "stroke-width",
+        textAnchor: "text-anchor",
+        textDecoration: "text-decoration",
+        textRendering: "text-rendering",
+        underlinePosition: "underline-position",
+        underlineThickness: "underline-thickness",
+        unicodeBidi: "unicode-bidi",
+        unicodeRange: "unicode-range",
+        unitsPerEm: "units-per-em",
+        vAlphabetic: "v-alphabetic",
+        vHanging: "v-hanging",
+        vIdeographic: "v-ideographic",
+        vMathematical: "v-mathematical",
+        vertAdvY: "vert-adv-y",
+        vertOriginX: "vert-origin-x",
+        vertOriginY: "vert-origin-y",
+        wordSpacing: "word-spacing",
+        writingMode: "writing-mode",
+        xHeight: "x-height",
+        xlinkActuate: "xlink:actuate",
+        xlinkArcrole: "xlink:arcrole",
+        xlinkHref: "xlink:href",
+        xlinkRole: "xlink:role",
+        xlinkShow: "xlink:show",
+        xlinkTitle: "xlink:title",
+        xlinkType: "xlink:type",
+        xmlBase: "xml:base",
+        xmlSpace: "xml:space"
     };
-};
-/**
- * Wrapped native async function, Let it be tracked.
- * 
- * @param   {Function}       callback
- * @param   {Number}         delay
- * @returns {Elf.Disposable}
- */
-exports.setInterval = function (callback, delay) {
-    return {
-        dispose : clearInterval.bind(null, setInterval(observe(callback, tear(arguments, 2)), delay))
+    var htmlUnescapedMappings = {
+        quot: "\x22",
+        amp: "\x26",
+        lt: "\x3c",
+        gt: "\x3e",
+        nbsp: "\xa0",
+        iexcl: "\xa1",
+        cent: "\xa2",
+        pound: "\xa3",
+        curren: "\xa4",
+        yen: "\xa5",
+        brvbar: "\xa6",
+        sect: "\xa7",
+        uml: "\xa8",
+        copy: "\xa9",
+        ordf: "\xaa",
+        laquo: "\xab",
+        not: "\xac",
+        shy: "\xad",
+        reg: "\xae",
+        macr: "\xaf",
+        deg: "\xb0",
+        plusmn: "\xb1",
+        sup2: "\xb2",
+        sup3: "\xb3",
+        acute: "\xb4",
+        micro: "\xb5",
+        para: "\xb6",
+        middot: "\xb7",
+        cedil: "\xb8",
+        sup1: "\xb9",
+        ordm: "\xba",
+        raquo: "\xbb",
+        frac14: "\xbc",
+        frac12: "\xbd",
+        frac34: "\xbe",
+        iquest: "\xbf",
+        Agrave: "\xc0",
+        Aacute: "\xc1",
+        Acirc: "\xc2",
+        Atilde: "\xc3",
+        Auml: "\xc4",
+        Aring: "\xc5",
+        AElig: "\xc6",
+        Ccedil: "\xc7",
+        Egrave: "\xc8",
+        Eacute: "\xc9",
+        Ecirc: "\xca",
+        Euml: "\xcb",
+        Igrave: "\xcc",
+        Iacute: "\xcd",
+        Icirc: "\xce",
+        Iuml: "\xcf",
+        ETH: "\xd0",
+        Ntilde: "\xd1",
+        Ograve: "\xd2",
+        Oacute: "\xd3",
+        Ocirc: "\xd4",
+        Otilde: "\xd5",
+        Ouml: "\xd6",
+        times: "\xd7",
+        Oslash: "\xd8",
+        Ugrave: "\xd9",
+        Uacute: "\xda",
+        Ucirc: "\xdb",
+        Uuml: "\xdc",
+        Yacute: "\xdd",
+        THORN: "\xde",
+        szlig: "\xdf",
+        agrave: "\xe0",
+        aacute: "\xe1",
+        acirc: "\xe2",
+        atilde: "\xe3",
+        auml: "\xe4",
+        aring: "\xe5",
+        aelig: "\xe6",
+        ccedil: "\xe7",
+        egrave: "\xe8",
+        eacute: "\xe9",
+        ecirc: "\xea",
+        euml: "\xeb",
+        igrave: "\xec",
+        iacute: "\xed",
+        icirc: "\xee",
+        iuml: "\xef",
+        eth: "\xf0",
+        ntilde: "\xf1",
+        ograve: "\xf2",
+        oacute: "\xf3",
+        ocirc: "\xf4",
+        otilde: "\xf5",
+        ouml: "\xf6",
+        divide: "\xf7",
+        oslash: "\xf8",
+        ugrave: "\xf9",
+        uacute: "\xfa",
+        ucirc: "\xfb",
+        uuml: "\xfc",
+        yacute: "\xfd",
+        thorn: "\xfe",
+        yuml: "\xff"
     };
-};
-/**
- * Wrapped native async function, Let it be tracked.
- * 
- * @param   {Function}       callback
- * @param   {Number}         delay
- * @returns {Elf.Disposable}
- */
-exports.setTimeout = function (callback, delay) {
-    return {
-        dispose : clearTimeout.bind(null, setTimeout(observe(callback, tear(arguments, 2)), delay))
+    var htmlAttributeSpecials = {
+        async: 2,
+        autofocus: 2,
+        autoplay: 2,
+        checked: 2,
+        className: 3,
+        controls: 2,
+        "default": 2,
+        defaultValue: 4,
+        defaultChecked: 2,
+        defer: 2,
+        disabled: 2,
+        hidden: 2,
+        htmlFor: 4,
+        innerHTML: 4,
+        loop: 2,
+        multiple: 2,
+        muted: 2,
+        noValidate: 2,
+        formNoValidate: 2,
+        open: 2,
+        readOnly: 2,
+        required: 2,
+        reversed: 2,
+        scoped: 2,
+        selected: 2,
+        style: 1,
+        value: 4,
+        // ignore it.
+        children: 9
     };
-};
+    var htmlElementSolitaries = {
+        area: 0,
+        base: 0,
+        br: 0,
+        col: 0,
+        embed: 0,
+        hr: 0,
+        img: 0,
+        input: 0,
+        keygen: 0,
+        link: 0,
+        menuitem: 0,
+        meta: 0,
+        param: 0,
+        source: 0,
+        track: 0,
+        wbr: 0
+    };
+    var eventUsefulAttributes = {
+        altKey: 0,
+        animationName: 0,
+        button: 0,
+        buttons: 0,
+        changedTouches: 0,
+        charCode: 0,
+        clientX: 0,
+        clientY: 0,
+        clipboardData: 0,
+        ctrlKey: 0,
+        data: 0,
+        dataTransfer: 0,
+        deltaMode: 0,
+        deltaX: 0,
+        deltaY: 0,
+        deltaZ: 0,
+        detail: 0,
+        elapsedTime: 0,
+        key: 0,
+        keyCode: 0,
+        locale: 0,
+        location: 0,
+        metaKey: 0,
+        pageX: 0,
+        pageY: 0,
+        propertyName: 0,
+        relatedTarget: 0,
+        repeat: 0,
+        screenX: 0,
+        screenY: 0,
+        shiftKey: 0,
+        targetTouches: 0,
+        timeStamp: 0,
+        touches: 0,
+        which: 0
+    };
+    var allowedModifyDrawings = {
+        email: 0,
+        number: 0,
+        password: 0,
+        search: 0,
+        text: 0,
+        tel: 0,
+        url: 0
+    };
+    var allowedGlobalVariates = {
+        Array: 0,
+        Boolean: 0,
+        Date: 0,
+        Infinity: 0,
+        Intl: 0,
+        JSON: 0,
+        Map: 0,
+        Math: 0,
+        NaN: 0,
+        Number: 0,
+        Object: 0,
+        RegExp: 0,
+        Set: 0,
+        String: 0,
+        decodeURI: 0,
+        decodeURIComponent: 0,
+        encodeURI: 0,
+        encodeURIComponent: 0,
+        escape: 0,
+        isFinite: 0,
+        isNaN: 0,
+        parseFloat: 0,
+        parseInt: 0,
+        undefined: 0,
+        unescape: 0,
+        // elfjs.
+        Elf: 0
+    };
+    var communityComponentDep = {};
+    var communityDirectiveDep = {};
+    var communityTransformDep = {};
+    var temporaryComponentDep = [];
+    var temporaryDirectiveDep = [];
+    var temporaryTransformDep = [];
+    var temporaryElementOwner = [];
 
-/**
- * Returns a Component class.
- * 
- * @param   {String}                        name
- * @param   {T}                             proto
- * @returns {Elf.Class<Elf.IComponent & T>}
- * @template                                T
- */
-exports.Component = function (name, proto) {
-    return define(exports.createClass(proto), DISPLAYING_COMPONENT, normal(name));
-};
-/**
- * Returns a Directive class.
- * 
- * @param   {String}                        name
- * @param   {T}                             proto
- * @returns {Elf.Class<Elf.IDirective & T>}
- * @template                                T
- */
-exports.Directive = function (name, proto) {
-    return define(exports.createClass(proto), DISPLAYING_DIRECTIVE, normal(name));
-};
-/**
- * Returns a Transform class.
- * 
- * @param   {String}                        name
- * @param   {T}                             proto
- * @returns {Elf.Class<Elf.ITransform & T>}
- * @template                                T
- */
-exports.Transform = function (name, proto) {
-    return define(exports.createClass(proto), DISPLAYING_TRANSFORM, normal(name));
-};
-/**
- * Returns an Event value.
- * 
- * @param   {String}    type 
- * @param   {Boolean}   bubbles 
- * @param   {*}         detail 
- * @returns {Elf.Event}
- */
-exports.createEvent = function (type, bubbles, detail) {
-    return new SyntheticEvent({
-        type                     : type,
-        bubbles                  : !!bubbles,
-        cancelable               : false,
-        detail                   : detail,
-        stopImmediatePropagation : NOOP,
-        stopPropagation          : NOOP,
-        preventDefault           : NOOP
-    });
-};
-/**
- * Wrapped native event function, Let it be tracked.
- *  
- * @param {HTMLElement | JSX.ElementClass}     node 
- * @param {String}                             type 
- * @param {EventListenerOrEventListenerObject} listener 
- */
-exports.attachEvent = function (node, type, listener) {
-    MKManager(node).attachEvent(type, listener);
-};
-/**
- * Wrapped native event function, Let it be tracked.
- *  
- * @param {HTMLElement | JSX.ElementClass}     node 
- * @param {String}                             type 
- * @param {EventListenerOrEventListenerObject} listener 
- */
-exports.detachEvent = function (node, type, listener) {
-    MKManager(node).detachEvent(type, listener);
-};
-/**
- * Dispatches an Event at the node.
- * 
- * @param {HTMLElement | JSX.ElementClass} node 
- * @param {Elf.Event}                      event 
- */
-exports.dispatchEvent = function (node, event) {
-    MKManager(node).dispatchEvent(ModifyContactTarget(event, node));
-};
-/**
- * Returns a virtual element.
- * 
- * @param   {String | Elf.Class<JSX.ElementClass>} type 
- * @param   {*}                                    props 
- * @returns {JSX.Element}
- */
-exports.createElement = function (type, props) {
-    var feature = props || {};
-    var insider = flatten(tear(arguments, 2));
-    var element = {
-        owner   : last(temporaryElementOwner),
-        props   : {},
-        type    : type,
-        cmd     : feature.cmd || [],
-        key     : feature.key,
-        ref     : feature.ref
-    };
-    for (var name in feature) {
-        if (name !== "cmd" &&
-            name !== "key" &&
-            name !== "ref" &&
-            isValid(feature[name])) {
-            element.props[ name ] = feature[ name ];
-        }
-    }
-    define(element.props, "children", normal(insider));
-    Object.freeze(element.props);
-    return element;
-};
-/**
- * Returns a function that create the virtual element.
- * 
- * @param   {String | Function} trustor 
- * @returns {() => JSX.Element}
- */
-exports.redactElement = function (trustor) {
-    if (isString(trustor)) {
-        trustor = exports.$html_analysis(trustor);
-    }
-    var privatelyComponentDep = {};
-    var privatelyDirectiveDep = {};
-    var privatelyTransformDep = {};
-    flatten(tear(arguments, 1)).forEach(function (trustor) {
-        if (exists(trustor, DISPLAYING_COMPONENT)) {
-            define(privatelyComponentDep, trustor[DISPLAYING_COMPONENT], normal(trustor));
-        }
-        if (exists(trustor, DISPLAYING_DIRECTIVE)) {
-            define(privatelyDirectiveDep, trustor[DISPLAYING_DIRECTIVE], normal(trustor));
-        }
-        if (exists(trustor, DISPLAYING_TRANSFORM)) {
-            define(privatelyTransformDep, trustor[DISPLAYING_TRANSFORM], normal(trustor));
-        }
-    });
-    return function () {
-        temporaryComponentDep.push(privatelyComponentDep);
-        temporaryDirectiveDep.push(privatelyDirectiveDep);
-        temporaryTransformDep.push(privatelyTransformDep);
-        try {
-            return trustor.call(SefeSphere(this || {}), exports);
-        } finally {
-            temporaryComponentDep.pop();
-            temporaryDirectiveDep.pop();
-            temporaryTransformDep.pop();
-        }
-    };
-};
-/**
- * Force update all duplex individuals, Ignored if already in progress.
- * 
- * @returns {Boolean}
- */
-exports.forceUpdate = function () {
-    return broadcast();
-};
-/**
- * Register global dependency.
- */
-exports.depend = function () {
-    flatten(tear(arguments)).forEach(function (trustor) {
-        if (exists(trustor, DISPLAYING_COMPONENT)) {
-            define(communityComponentDep, trustor[DISPLAYING_COMPONENT], normal(trustor));
-        }
-        if (exists(trustor, DISPLAYING_DIRECTIVE)) {
-            define(communityDirectiveDep, trustor[DISPLAYING_DIRECTIVE], normal(trustor));
-        }
-        if (exists(trustor, DISPLAYING_TRANSFORM)) {
-            define(communityTransformDep, trustor[DISPLAYING_TRANSFORM], normal(trustor));
-        }
-    });
-};
-/**
- * Create HTMLElement by a virtual element and append to DOM.
- * 
- * @param   {JSX.Element}    element 
- * @param   {HTMLElement}    container 
- * @param   {Boolean}        duplex
- * @returns {Elf.Individual} 
- */
-exports.render = function (element, container, duplex) {
-    var monitor;
-    var collect = [];
-    var expanse = container.namespaceURI;
-    var manager = new MKManager(container);
-    var draught = MKDraught(element, manager);
-    var product = {
-        forceUpdate : function () {
-            manufacture(draught.renewal(expanse, collect, element));
-        },
-        dispose : function () {
-            monitor.dispose();
-            draught.dispose();
-        },
-        duplex : !!duplex
-    };
-    manufacture(draught.initial(expanse, collect));
-    return monitor = subscribe(product), product;
-    function manufacture (realtor) {
-        if (realtor.newly) {
-            while (container.firstChild) {
-                DOMRemoveChild(container.firstChild);
-            }
-            DOMInsertChild(container, realtor.value);
-        }
-        clean(collect, function (fn) { fn(); });
-    }
-};
+    var COMMITMENT_STATUS = safeMember("Promise.status");
+    var COMMITMENT_RESULT = safeMember("Promise.result");
+    var COMMITMENT_OBSERVE = safeMember("Promise.observe");
+    var COMMITMENT_CAPTURE = safeMember("Promise.capture");
+    var COMMITMENT_DISPOSE = safeMember("Promise.dispose");
+    var DISPLAYING_INSTANCE = safeMember("Display.instance");
+    var DISPLAYING_RENDERER = safeMember("Display.renderer");
+    var DISPLAYING_COMPONENT = safeMember("Display.component");
+    var DISPLAYING_DIRECTIVE = safeMember("Display.directive");
+    var DISPLAYING_TRANSFORM = safeMember("Display.transform");
+    var EVENT_STATUS_TRACKER = safeMember("Event.tracker");
+    var EVENT_CONTACT_TARGET = safeMember("Event.contact");
+    var EVENT_CURRENT_TARGET = safeMember("Event.current");
+    var EVENT_ORIGINAL_EVENT = safeMember("Event.product");
 
-/**
- * Represents the completion of an asynchronous operation
- * 
- * @type {Elf.Class<Elf.Promise<any>>}
- */
-exports.Promise = Promise;
+    var CommentManager;
+    var ContentManager;
+    var ComplexManager;
+    var ElementManager;
+    var LibertyManager;
 
-/**
- * Returns a Component class when matched.
- * @private The following methods or properties are used internally.
- *
- * @param  {String}                    value
- * @return {String | JSX.ElementClass} 
- */
-exports.$tag = function (value) {
-    if (exists(last(temporaryComponentDep), value)) {
-        return last(temporaryComponentDep)[ value ];
-    }
-    if (exists(communityComponentDep, value)) {
-        return communityComponentDep[ value ];
-    }
-    return value;
-};
-/**
- * Convert the value with Transforms.
- * @private The following methods or properties are used internally.
- * 
- * @param   {String} value
- * @returns {String} 
- */
-exports.$fit = function (value) {
-    return tear(arguments, 1).reduce(function (init, item) {
-        if (exists(last(temporaryTransformDep), item[0])) {
-            return execute(MKUnitary(last(temporaryTransformDep)[item[0]]), init, item);
-        }
-        if (exists(communityTransformDep, item[0])) {
-            return execute(MKUnitary(communityTransformDep[item[0]]), init, item);
-        }
-        return wrong(new Error("Invalid transform " + item[0])), init;
-    }, value);
-    function execute (target, init, item) {
-        return target.transform.apply(target, [init].concat(tear(item, 1)));
-    }
-};
-/**
- * Returns a Directive class array when matched.
- * @private The following methods or properties are used internally.
- * 
- * @param   {String}                           value
- * @returns {Array<Elf.Class<Elf.IDirective>>} 
- */
-exports.$cmd = function (value) {
-    return flatten(trim(value).split(REGEXP_SEPARATOR_CMD).map(function (value) {
-        if (exists(last(temporaryDirectiveDep), value)) {
-            return last(temporaryDirectiveDep)[ value ];
-        }
-        if (exists(communityDirectiveDep, value)) {
-            return communityDirectiveDep[ value ];
-        }
-        return wrong(new Error("Invalid directive " + value));
-    }));
-};
-/**
- * Calls a defined callback function on each element of an array (or object), and returns an array that contains the results.
- * @private The following methods or properties are used internally.
- * 
- * @param   {*}        value 
- * @param   {Function} callback 
- * @param   {*}        target 
- * @returns {Array}
- */
-exports.$map = function (value, callback, thisArg) {
-    if (isInheritedClass(value, Promise)) {
-        value = value[COMMITMENT_STATUS] === RESOLVED
-              ? value[COMMITMENT_RESULT]
-              : null;
-    }
-    if (isArray(value)) {
-        return value.map(callback, thisArg);
-    }
-    var result = [];
-    for (var name in value) {
-        result.push(
-            callback.call(thisArg, value[name], name, value)
-        );
-    }
-    return result;
-};
-/**
- * Analysis html template.
- * When filename is passed in, the source map will be output.
- * @private The following methods or properties are used internally.
- * 
- * @param   {String}   html 
- * @param   {String=}  filename 
- * @returns {Function}
- */
-exports.$html_analysis = function (html, filename) {
-    var start;
-    var tally = 0;
-    var ahead = 0;
-    var level = 0;
-    var queue = [];
-    var lines = [];
-    var roots = [];
-    var rownum = 0;
-    var colnum = 0;
-    var number = 18;
-    var totals = 18;
-    var resume = true;
-    var script = "with(this){return(";
-    var length = html.length;
-    var source = {
-        version         : 3,
-        sources         : [ filename ],
-        mappings        : ";AAAA"
-    };
-    var lineLength = exports.$lineLength;
-    var expression = exports.$expression;
-    var outputmaps = exports.btoa && exports.evlq && filename;
-    for (start = 0; start < length;) {
-        lines.push([start, start = TPLNewlineIndex(start)]);
-    }
-    for (start = 0; start < length;) {
-        if (TPLCommentStart(start)) {
-            TPLCommentParse(start, start = TPLCommentEnded(start));
-        } else
-        if (TPLDoctypeStart(start)) {
-            TPLDoctypeParse(start, start = TPLDoctypeEnded(start));
-        }
-        if (TPLOccludeStart(start)) {
-            TPLOccludeParse(start, start = TPLOccludeEnded(start));
-        } else
-        if (TPLElementStart(start)) {
-            TPLElementParse(start, start = TPLElementEnded(start));
-        } else {
-            //
-            TPLContentParse(start, start = TPLContentEnded(start));
-        }
-    }
-    if (roots.length > 1) {
-        wrong(new Error("Cannot use multiple root node"));
-    }
-    if (roots[0]) {
-        ASTElementParse(roots[0]);
-    } else {
-        ASTAppendScript("null");
-    }
-    ASTAppendScript(")}");
-    if (outputmaps) {
-        script = script
-                + "\n"
-                + "\n//# sourceMappingURL=data:application/json;chatset=utf-8;base64," + exports.btoa(stringify(source))
-                + "\n//# sourceURL=" + filename + "!transpiled";
-    }
-    return new Function("Elf", script);
-    function TPLCommentStart (start) {
-        return startsWith(html, "<!--", start);
-    }
-    function TPLDoctypeStart (start) {
-        return startsWith(html, "<!"  , start) && /DOCTYPE/i.test(html.slice(start + 2, start + 9));
-    }
-    function TPLOccludeStart (start) {
-        return startsWith(html, "</"  , start) && REGEXP_TEMPLATE_NAME.test(html.charAt(start + 2));
-    }
-    function TPLElementStart (start) {
-        return startsWith(html, "<"   , start) && REGEXP_TEMPLATE_NAME.test(html.charAt(start + 1));
-    }
-    function TPLCommentEnded (start) {
-        return Math.min(length, TPLRough(html, "-->", start + 4, TPLPlain) + 3);
-    }
-    function TPLDoctypeEnded (start) {
-        return Math.min(length, TPLRough(html, ">"  , start + 9, TPLPlain) + 1);
-    }
-    function TPLOccludeEnded (start) {
-        return Math.min(length, TPLRough(html, ">"  , start + 3, TPLPlain) + 1);
-    }
-    function TPLElementEnded (start) {
-        return Math.min(length, TPLExact(html, ">"  , start + 2, TPLPlain) + 1);
-    }
-    function TPLContentEnded (start) {
-        return Math.min(length, TPLRough(html, "<"  , start    , TPLDuple)    );
-    }
-    function TPLNewlineIndex (start) {
-        return Math.min(length, TPLRough(html, "\n" , start    , TPLPlain) + 1);
-    }
-    function TPLCommentParse (start, ended) {
-        console.warn(stringify(tear(html, start, ended)) + " will be dispensed");
-    }
-    function TPLDoctypeParse (start, ended) {
-        console.warn(stringify(tear(html, start, ended)) + " will be dispensed");
-    }
-    function TPLOccludeParse (start, ended) {
-        var qname = TPLNameParse(start + 2,
-                      tear(html, start + 2, ended - 1));
-        if (tally && isPreformatted(qname.value)) {
-            tally--;
-        }
-        if (!isSolitaryNode(qname.value)) {
-            while  (level) {
-                if (queue[--level].qname.value === qname.value) {
-                    break;
-                }
-            }
-        }
-    }
-    function TPLElementParse (start, ended) {
-        var qname = TPLNameParse(start + 1,
-                      tear(html, start + 1, ended - 1));
-        var attrs = TPLAttrParse(start + 1 + qname.value.length,
-                      tear(html, start + 1 + qname.value.length, ended - 1));
-        var depth = !(html.charAt(ended - 2) === "/" || isSolitaryNode(qname.value));
-        if (depth && isPreformatted(qname.value)) {
-            tally++;
-        }
-        TPLStore({
-            label : true,
-            level : level,
-            qname : qname,
-            attrs : attrs,
-            nodes : []
-        }, depth);
-    }
-    function TPLContentParse (start, ended) {
-        if (start < ended) {
-            var index = 0;
-            var value = tear(html, start, ended);
-            if (tally === 0) {
-                index = TPLBlank(value);
-                value = trim(value);
-            }
-            if (index >= 0) {
-                if (TPLCDATA()) {
-                    TPLStore({
-                        label : false,
-                        level : level,
-                        texts : [{
-                            rawer : true,
-                            place : TPLPlace(start),
-                            value : value
-                        }]
-                    });
-                } else {
-                    TPLStore({
-                        label : false,
-                        level : level,
-                        texts : TPLTextParse(start + index, value)
-                    });
-                }
-            }
-        }
-    }
-    function TPLNameParse (start, value) {
-        var match = value.match(REGEXP_TEMPLATE_NAME);
-        return TPLTuple(start + match.index, match[0]);
-    }
-    function TPLAttrParse (start, value) {
-        var match;
-        var token;
-        var texts;
-        var index;
-        var iteration;
-        var condition;
-        var otherwise = [];
-        for (;
-            match = value.match(REGEXP_TEMPLATE_ATTR);
-            value = tear(value, match.index + match[0].length),
-            start = start                   + match[0].length) {
-            token = match[1];
-            texts = match[3] || match[4] || match[5] || "";
-            start = start + match.index;
-            index = start + token.length;
-            if (isString(match[2])) {
-                index += match[2].length;
-            }
-            if (isString(match[3]) ||
-                isString(match[4])) {
-                index += 1;
-            }
-            if (isCycleAttribute(token)) {
-                iteration = TPLEachParse(index, texts);
-            } else
-            if (isJudgeAttribute(token)) {
-                condition = TPLWhenParse(index, texts);
-            } else
-            if (isEventAttribute(token)) {
-                otherwise.push({
-                    event : true,
-                    token : TPLTuple(start, token),
-                    prime : TPLTuple(index, texts) 
-                });
-            } else {
-                otherwise.push({
-                    event : false,
-                    token : TPLTuple(start, token),
-                    texts : TPLTextParse(index, texts)
-                });
-            }
-        }
+    var MKEmitter = function (manager) {
         return {
-            iteration : iteration,
-            condition : condition,
-            otherwise : otherwise
-        };
-    }
-    function TPLEachParse (start, value) {
-        var match = value.match(REGEXP_TEMPLATE_EACH);
-        if (match) {
-            return {
-                keys : TPLTuple(start + match.index , match[1]),
-                body : TPLTuple(start + match.index + match[1].length + match[2].length, match[3])
-            };
-        }
-        wrong(new Error("Invalid iteration expression " + value));
-    }
-    function TPLWhenParse (start, value) {
-        var index = TPLBlank (value);
-        if (index >= 0) {
-            return TPLTuple(start + index, trim(value));
-        }
-    }
-    function TPLTextParse (start, value) {
-        var texts = [];
-        var number = 0;
-        var length = value.length;
-        var prenum = expression[0].length;
-        var sufnum = expression[1].length;
-        var incept = 0;
-        var finish = 0 - sufnum;
-        for (;
-            (incept = value.indexOf(expression[0], finish + sufnum)) >= 0 &&
-            (finish = value.indexOf(expression[1], incept + prenum)) >= 0
-            ;number = finish + sufnum) {
-            if (number < incept) {
-                TPLConst(start + number,
-                    tear(value , number, incept ));
-            }
-            if (incept < finish - prenum) {
-                TPLTrend(start + incept + prenum,
-                    tear(value , incept + prenum, finish ));
-            }
-        }
-        if (number < length) {
-            TPLConst(start + number,
-                tear(value , number, length ));
-        }
-        return texts;
-        function TPLConst (start, value) {
-            if (value) {
-                texts.push({
-                    rawer : true,
-                    place : TPLPlace(start),
-                    value : TPLValue(value)
-                });
-            }
-        }
-        function TPLTrend (start, value) {
-            var first;
-            var pipes = [];
-            var number = 0;
-            var length = value.length;
-            for ( ; number < length; number++) {
-                if (number === 0) {
-                    TPLFirst(start + number,
-                        tear(value , number, number = TPLUprightIndex(number) ));
-                } else {
-                    TPLPipes(start + number,
-                        tear(value , number, number = TPLUprightIndex(number) ));
+            E: {},
+            M: function (type) {
+                return this.E[lower(type)] || (this.E[lower(type)] = []);
+            },
+            attachEvent: function (type, listener) {
+                intrude(this.M(type), listener) && manager.connate && DOMAddListener(manager.product, type, GlobalMethodListener);
+            },
+            detachEvent: function (type, listener) {
+                extrude(this.M(type), listener) && manager.connate && DOMAddListener(manager.product, type, GlobalMethodListener);
+            },
+            replace: function (type, listenerPair) {
+                var events = this.M(type);
+                var number = events.indexOf(listenerPair.hoary);
+                if (number >= 0) {
+                    events.splice(number, 1, listenerPair.newly);
                 }
-            }
-            if (first) {
-                texts.push({
-                    rawer : false,
-                    first : first,
-                    pipes : pipes
-                });
-            }
-            function TPLUprightIndex (start) {
-                return Math.min(length, TPLExact(value, REGEXP_SEPARATOR_FIT, TPLShave(value, REGEXP_TEMPLATE_WORD, start), TPLAlone));
-            }
-            function TPLFirst (start, value) {
-                var index = TPLBlank(value);
-                if (index >= 0) {
-                    first = TPLTuple(start + index, trim(value));
-                }
-            }
-            function TPLPipes (start, value) {
-                var token;
-                var flags = [];
-                var number = 0;
-                var length = value.length;
-                for ( ; number < length; number++) {
-                    if (number === 0) {
-                        TPLToken(start + number,
-                            tear(value , number, number = TPLSpacingIndex(number) ));
+            },
+            trigger: function (event) {
+                var target = manager.product;
+                var events = tear(this.M(event.type));
+                var length = events.length;
+                for (var i = 0; i < length; i++) {
+                    var listener = events[i];
+                    var instance = new SyntheticEvent(event, null, target);
+                    if (listener.handleEvent) {
+                        listener.handleEvent(instance);
                     } else {
-                        TPLFlags(start + number,
-                            tear(value , number, number = TPLSpacingIndex(number) ));
+                        listener.call(target, instance);
+                    }
+                    if (instance.cancelEntire) {
+                        break;
                     }
                 }
-                if (token) {
-                    pipes.push({
-                        token : token,
-                        flags : flags
-                    });
-                }
-                function TPLSpacingIndex (start) {
-                    return Math.min(length, TPLExact(value, REGEXP_SEPARATOR_ARG, TPLShave(value, REGEXP_TEMPLATE_WORD, start), TPLPlain));
-                }
-                function TPLToken (start, value) {
-                    var index = TPLBlank(value);
-                    if (index >= 0) {
-                        token = TPLTuple(start + index, trim(value));
+            },
+            dispose: function () {
+                if (manager.connate) {
+                    for (var name in this.E) {
+                        DOMDelListener(manager.product, name, GlobalMethodListener);
                     }
                 }
-                function TPLFlags (start, value) {
-                    var index = TPLBlank(value);
-                    if (index >= 0) {
-                        flags.push(
-                                TPLTuple(start + index, trim(value))
-                        );
-                    }
+                this.E = {};
+            }
+        };
+    };
+    var MKRealtor = function (element, newly) {
+        return { value: element, newly: newly };
+    };
+    var MKDraught = function (element, parent) {
+        return isValid(element)
+            ? isObject(element)
+                ? isString(element.type)
+                    ? new ElementManager(parent, element)
+                    : new ComplexManager(parent, element)
+                : new ContentManager(parent, element)
+            : new CommentManager(parent);
+    };
+    var MKVariety = function (natures, ancient) {
+        var variety = {
+            hoary: {},
+            newly: {},
+            alter: {}
+        };
+        if (natures !== ancient) {
+            for (var name in ancient) {
+                if (!exists(natures, name)) {
+                    variety.hoary[name] = ancient[name];
+                } else if (!equals(natures[name], ancient[name])) {
+                    variety.alter[name] = {
+                        hoary: ancient[name],
+                        newly: natures[name]
+                    };
+                }
+            }
+            for (var name in natures) {
+                if (!exists(ancient, name)) {
+                    variety.newly[name] = natures[name];
                 }
             }
         }
-        function TPLAlone (start) {
-            return !REGEXP_SEPARATOR_FIT.test(value.charAt(start + 1))
-                && !REGEXP_SEPARATOR_FIT.test(value.charAt(start - 1));
+        return variety;
+    };
+    var MKUnitary = function (trustor) {
+        return trustor[DISPLAYING_INSTANCE] || (trustor[DISPLAYING_INSTANCE] = new trustor());
+    };
+    var MKVirtual = function (product) {
+        temporaryElementOwner.push(product);
+        try {
+            return product.render();
+        } finally {
+            temporaryElementOwner.pop();
         }
-    }
-    function TPLStore (value, depth) {
-        queue[level] = value;
-        if (level) {
-            queue[level - 1].nodes.push(value);
-        } else {
-            roots.push(value);
+    };
+
+    var VMRectifyEvent = function (value) {
+        return lower(tear(value, exports.$eventStart.length));
+    };
+    var VMRectifyTrait = function (value) {
+        return htmlAttributeMappings[value] || value;
+    };
+    var VMNeedBubbling = function (event) {
+        return event.bubbles && !event.cancelBubble;
+    };
+    var VMNoneedRedraw = function (value, hoary) {
+        if (value === hoary) {
+            return true;
         }
-        if (depth) {
-            level++;
+        if (isObject(value) &&
+            isObject(hoary)) {
+            var valueType = value.type;
+            if (value.key !== hoary.key ||
+                valueType !== hoary.type) {
+                return false;
+            }
+            if (isString(valueType) &&
+                isAllied(valueType, "input")) {
+                var tA = value.props.type;
+                var tB = hoary.props.type;
+                return tA === tB
+                    || exists(allowedModifyDrawings, tA)
+                    && exists(allowedModifyDrawings, tB);
+            }
+            return true;
         }
-    }
-    function TPLTuple (start, value) {
-        return {
-            place : TPLPlace(start),
-            value : TPLValue(value) 
+        return isValid(value) === isValid(hoary)
+            && isBasic(value) === isBasic(hoary);
+    };
+
+    var VMSetOffspring = function (members, product, manager, insider, document, namespace, collect) {
+        for (var i = 0, length = insider.length; i < length; i++) {
+            var draught = MKDraught(insider[i], manager);
+            var realtor = draught.initial(document, namespace, collect);
+            realtor.newly && DOMInsertChild(product, realtor.value);
+            members.push(draught);
+        }
+    };
+    var VMModOffspring = function (members, product, manager, insider, document, namespace, collect) {
+        var deposit = new Array(insider.length);
+        var leaguer = insider.map(function (i) {
+            return { element: i, product: null };
+        });
+        var oldTokenIndex;
+        var oldTokenPairs;
+        var oldStartIndex = 0;
+        var newStartIndex = 0;
+        var oldEndedIndex = members.length - 1;
+        var oldStartVMsgr = members[0];
+        var oldEndedVMsgr = members[oldEndedIndex];
+        var newEndedIndex = leaguer.length - 1;
+        var newStartVMsgr = leaguer[0];
+        var newEndedVMsgr = leaguer[newEndedIndex];
+        while (oldStartIndex <= oldEndedIndex && newStartIndex <= newEndedIndex) {
+            if (!isValid(oldStartVMsgr)) {
+                oldStartVMsgr = members[++oldStartIndex];
+            } else if (!isValid(oldEndedVMsgr)) {
+                oldEndedVMsgr = members[--oldEndedIndex];
+            } else if (VMModCompareWithElements(oldStartVMsgr, newStartVMsgr)) {
+                VMModMoveOrInsertElement(
+                    VMModGetAuthenticElement(oldStartVMsgr).nextSibling,
+                    VMModInvokeUpdateElement(oldStartVMsgr, newStartVMsgr, newStartIndex),
+                    false
+                );
+                oldStartVMsgr = members[++oldStartIndex];
+                newStartVMsgr = leaguer[++newStartIndex];
+            } else if (VMModCompareWithElements(oldEndedVMsgr, newEndedVMsgr)) {
+                VMModMoveOrInsertElement(
+                    VMModGetAuthenticElement(oldEndedVMsgr).nextSibling,
+                    VMModInvokeUpdateElement(oldEndedVMsgr, newEndedVMsgr, newEndedIndex),
+                    false
+                );
+                oldEndedVMsgr = members[--oldEndedIndex];
+                newEndedVMsgr = leaguer[--newEndedIndex];
+            } else if (VMModCompareWithElements(oldStartVMsgr, newEndedVMsgr)) {
+                VMModMoveOrInsertElement(
+                    VMModGetAuthenticElement(oldEndedVMsgr).nextSibling,
+                    VMModInvokeUpdateElement(oldStartVMsgr, newEndedVMsgr, newEndedIndex),
+                    true
+                );
+                oldStartVMsgr = members[++oldStartIndex];
+                newEndedVMsgr = leaguer[--newEndedIndex];
+            } else if (VMModCompareWithElements(oldEndedVMsgr, newStartVMsgr)) {
+                VMModMoveOrInsertElement(
+                    VMModGetAuthenticElement(oldStartVMsgr),
+                    VMModInvokeUpdateElement(oldEndedVMsgr, newStartVMsgr, newStartIndex),
+                    true
+                );
+                oldEndedVMsgr = members[--oldEndedIndex];
+                newStartVMsgr = leaguer[++newStartIndex];
+            } else {
+                VMModGetIndexFromMembers(newStartVMsgr, oldStartIndex, oldEndedIndex);
+                VMModMoveOrInsertElement(
+                    VMModGetAuthenticElement(oldStartVMsgr),
+                    VMModCreateOrUpdateVMsgr(newStartVMsgr, newStartIndex),
+                    true
+                );
+                newStartVMsgr = leaguer[++newStartIndex];
+            }
+        }
+        if (oldStartIndex > oldEndedIndex) {
+            VMModBatchCreateElements(
+                VMModGetAuthenticElement(leaguer[newEndedIndex + 1]), newStartIndex, newEndedIndex);
+        } else if (newStartIndex > newEndedIndex) {
+            VMModBatchRemoveElements(oldStartIndex, oldEndedIndex);
+        }
+        reset(members, deposit);
+        function VMModGetAuthenticElement(manager) {
+            return manager ? manager.draught ? VMModGetAuthenticElement(manager.draught) : manager.product : null;
+        }
+        function VMModCreateSingleElement(updated, number) {
+            var draught = MKDraught(updated.element, manager);
+            var realtor = draught.initial(document, namespace, collect);
+            updated.product = realtor.value;
+            deposit[number] = draught;
+            return realtor;
+        }
+        function VMModCreateOrUpdateVMsgr(updated, number) {
+            if (isValid(oldTokenIndex)) {
+                var ancient = members[oldTokenIndex];
+                if (VMModCompareWithElements(ancient, updated)) {
+                    members[oldTokenIndex] = null;
+                    return VMModInvokeUpdateElement(ancient, updated, number);
+                }
+            }
+            return VMModCreateSingleElement(updated, number);
+        }
+        function VMModCompareWithElements(ancient, updated) {
+            return VMNoneedRedraw(ancient.element, updated.element);
+        }
+        function VMModInvokeUpdateElement(ancient, updated, number) {
+            var realtor = ancient.renewal(document, namespace, collect, updated.element);
+            updated.product = realtor.value;
+            deposit[number] = ancient;
+            return realtor;
+        }
+        function VMModMoveOrInsertElement(address, realtor, remain) {
+            if (realtor.newly || remain) {
+                DOMInsertChild(product, realtor.value, address);
+            }
+        }
+        function VMModGetIndexFromMembers(updated, start, ended) {
+            oldTokenPairs = oldTokenPairs || VMModCreateIndexMapByKey(start, ended);
+            oldTokenIndex = updated.element.key ? oldTokenPairs[updated.element.key] : VMModFindIndexByIterator(updated, start, ended);
+        }
+        function VMModFindIndexByIterator(updated, start, ended) {
+            for (var i = start; i <= ended; i++) {
+                if (members[i] && VMNoneedRedraw(members[i].element, updated.element)) {
+                    return i;
+                }
+            }
+        }
+        function VMModBatchCreateElements(address, start, ended) {
+            for (var i = start; i <= ended; i++) {
+                VMModMoveOrInsertElement(
+                    address,
+                    VMModCreateSingleElement(leaguer[i], i),
+                    true
+                );
+            }
+        }
+        function VMModBatchRemoveElements(start, ended) {
+            for (var i = start; i <= ended; i++) {
+                if (members[i]) {
+                    members[i].dispose();
+                }
+            }
+        }
+        function VMModCreateIndexMapByKey(start, ended) {
+            var result = {};
+            for (var i = start; i <= ended; i++) {
+                var sn = members[i].element.key;
+                if (sn) {
+                    result[sn] = i;
+                }
+            }
+            return result;
+        }
+    };
+    var VMDelOffspring = function (members) {
+        clean(members, function (draught) {
+            draught.dispose();
+        });
+    };
+    var VMSetAttribute = function (natures, manager) {
+        for (var name in natures) {
+            if (isEventAttribute(name)) {
+                manager.attachEvent(VMRectifyEvent(name), natures[name]);
+            } else if (manager.connate) {
+                DOMSetProperty(manager.product, VMRectifyTrait(name), natures[name]);
+            }
+        }
+    };
+    var VMModAttribute = function (variety, manager) {
+        VMDelAttribute(variety.hoary, manager);
+        VMSetAttribute(variety.newly, manager);
+        for (var name in variety.alter) {
+            if (isEventAttribute(name)) {
+                manager.emitter.replace(VMRectifyEvent(name), variety.alter[name]);
+            } else if (manager.connate) {
+                DOMSetProperty(manager.product, VMRectifyTrait(name), variety.alter[name].newly);
+            }
+        }
+    };
+    var VMDelAttribute = function (natures, manager) {
+        for (var name in natures) {
+            if (isEventAttribute(name)) {
+                manager.detachEvent(VMRectifyEvent(name), natures[name]);
+            } else if (manager.connate) {
+                DOMDelProperty(manager.product, VMRectifyTrait(name));
+            }
+        }
+    };
+
+    var VMSetDirective = NODE_ENV ? NOOP : function (behests, product, natures, command, collect) {
+        for (var i = 0, length = command.length; i < length; i++) {
+            var dictate = MKUnitary(command[i]);
+            if (dictate[LIFE_CYCLE_INITIAL]) {
+                collect.push(dictate[LIFE_CYCLE_INITIAL].bind(dictate, product, natures));
+            }
+            behests.push(dictate);
+        }
+    };
+    var VMModDirective = NODE_ENV ? NOOP : function (behests, product, natures, command, collect) {
+        var deposit = [];
+        for (var i = 0, length = behests.length; i < length; i++) {
+            var sn = VMModCommandIndex(behests[i]);
+            if (sn < 0) {
+                if (behests[i][LIFE_CYCLE_DISPOSE]) {
+                    behests[i][LIFE_CYCLE_DISPOSE](product, natures);
+                }
+            }
+        }
+        for (var i = 0, length = command.length; i < length; i++) {
+            var sn = VMModBehestsIndex(command[i]);
+            if (sn < 0) {
+                var dictate = MKUnitary(command[i]);
+                if (dictate[LIFE_CYCLE_INITIAL]) {
+                    collect.push(dictate[LIFE_CYCLE_INITIAL].bind(dictate, product, natures));
+                }
+                deposit.push(dictate);
+            } else {
+                deposit.push(behests[sn]);
+            }
+        }
+        reset(behests, deposit);
+        function VMModCommandIndex(value) {
+            for (var i = 0, length = command.length; i < length; i++) {
+                if (isInheritedClass(value, command[i])) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        function VMModBehestsIndex(value) {
+            for (var i = 0, length = behests.length; i < length; i++) {
+                if (isInheritedClass(behests[i], value)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+    };
+    var VMDelDirective = NODE_ENV ? NOOP : function (behests, product, natures) {
+        clean(behests, function (dictate) {
+            if (dictate[LIFE_CYCLE_DISPOSE]) {
+                dictate[LIFE_CYCLE_DISPOSE](product, natures);
+            }
+        });
+    };
+    var VMSetReference = NODE_ENV ? NOOP : function (element, product) {
+        if (element.owner && element.ref) {
+            element.owner.refs[element.ref] = product;
+        }
+    };
+    var VMModReference = NODE_ENV ? NOOP : function (element, product, updated) {
+        if (element.ref !== updated.ref ||
+            element.owner !== updated.owner) {
+            VMDelReference(element);
+            VMSetReference(updated, product);
+        }
+    };
+    var VMDelReference = NODE_ENV ? NOOP : function (element) {
+        if (element.owner && element.ref) {
+            delete element.owner.refs[element.ref];
+        }
+    };
+    var VMSetLifeCycle = NODE_ENV ? NOOP : function (product, collect) {
+        if (product[LIFE_CYCLE_INITIAL]) {
+            collect.push(product[LIFE_CYCLE_INITIAL].bind(product));
+        }
+    };
+    var VMDelLifeCycle = NODE_ENV ? NOOP : function (product) {
+        if (product[LIFE_CYCLE_DISPOSE]) {
+            product[LIFE_CYCLE_DISPOSE]();
+        }
+    };
+
+    CommentManager = createClass({
+        constructor: function (parent) {
+            this.parent = parent;
+        },
+        initial: function (document, namespace, collect) {
+            return MKRealtor(this.product = document.createComment(""), true);
+        },
+        renewal: function (document, namespace, collect, updated) {
+            return MKRealtor(this.product, false);
+        },
+        dispose: function () {
+            DOMRemoveChild(this.product);
+        }
+    });
+    ContentManager = createClass({
+        constructor: function (parent, element) {
+            this.parent = parent;
+            this.element = element;
+        },
+        initial: function (document, namespace, collect) {
+            return MKRealtor(this.product = document.createTextNode(this.element), true);
+        },
+        renewal: function (document, namespace, collect, updated) {
+            if (this.element !== updated) {
+                this.product.textContent = this.element = updated;
+            }
+            return MKRealtor(this.product, false);
+        },
+        dispose: function () {
+            DOMRemoveChild(this.product);
+        }
+    });
+    ComplexManager = createClass({
+        constructor: function (parent, element) {
+            this.parent = parent;
+            this.element = element;
+            this.emitter = MKEmitter(this);
+            this.connate = false;
+        },
+        initial: function (document, namespace, collect) {
+            var manager = this;
+            var element = manager.element;
+            var natures = element.props;
+            var trustor = element.type;
+            var command = element.cmd;
+            var behests = [];
+            var product;
+            var draught;
+            var realtor;
+
+            product = Object.create(trustor.prototype);
+            product[DISPLAYING_RENDERER] = manager;
+            product.props = natures;
+            product.state = {};
+            product.refs = {};
+            if (product.constructor) {
+                product.constructor();
+            }
+            draught = MKDraught(MKVirtual(product), manager);
+            realtor = draught.initial(document, namespace, collect);
+
+            manager.behests = behests;
+            manager.product = product;
+            manager.draught = draught;
+
+            VMSetAttribute(natures, manager);
+            VMSetDirective(behests, product, natures, command, collect);
+            VMSetReference(element, product);
+            VMSetLifeCycle(product, collect);
+
+            return realtor;
+        },
+        renewal: function (document, namespace, collect, updated) {
+            var manager = this;
+            var element = manager.element;
+            var behests = manager.behests;
+            var draught = manager.draught;
+            var product = manager.product;
+            var natures = updated.props;
+            var command = updated.cmd;
+            var virtual;
+            var variety;
+            var realtor;
+
+            manager.element = updated;
+            product.props = natures;
+            virtual = MKVirtual(product);
+            variety = MKVariety(natures, element.props);
+
+            if (VMNoneedRedraw(virtual, draught.element)) {
+                realtor = draught.renewal(document, namespace, collect, virtual);
+            } else {
+                draught.dispose();
+                draught = MKDraught(virtual, manager);
+                realtor = draught.initial(document, namespace, collect);
+                manager.draught = draught;
+            }
+
+            VMModAttribute(variety, manager);
+            VMModDirective(behests, product, natures, command, collect);
+            VMModReference(element, product, updated);
+
+            return realtor;
+        },
+        dispose: function () {
+            var manager = this;
+            var behests = manager.behests;
+            var product = manager.product;
+            var element = manager.element;
+
+            VMDelDirective(behests, product, element.props);
+            VMDelReference(element);
+            VMDelLifeCycle(product);
+
+            manager.emitter.dispose();
+            manager.draught.dispose();
+        },
+        trigger: function (event, connate) {
+            if (this.connate === connate) {
+                this.emitter.trigger(event);
+            }
+            if (VMNeedBubbling(event)) {
+                this.parent.trigger(event, connate);
+            }
+        },
+        attachEvent: function (type, listener) {
+            this.emitter.attachEvent(type, listener);
+        },
+        detachEvent: function (type, listener) {
+            this.emitter.detachEvent(type, listener);
+        },
+        dispatchEvent: function (event) {
+            this.trigger(event, this.connate);
+        }
+    });
+    ElementManager = createClass({
+        constructor: function (parent, element) {
+            this.parent = parent;
+            this.element = element;
+            this.emitter = MKEmitter(this);
+            this.connate = true;
+        },
+        initial: function (document, namespace, collect) {
+            var manager = this;
+            var element = manager.element;
+            var natures = element.props;
+            var insider = natures.children;
+            var trustor = element.type;
+            var command = element.cmd;
+            var behests = [];
+            var members = [];
+            var product;
+
+            if (trustor === "svg") {
+                namespace = svgNamespace;
+            }
+            if (trustor === "math") {
+                namespace = mmlNamespace;
+            }
+            if (namespace) {
+                product = document.createElementNS(namespace, trustor);
+            } else {
+                product = document.createElement(lower(trustor));
+            }
+            product[DISPLAYING_RENDERER] = manager;
+
+            manager.behests = behests;
+            manager.members = members;
+            manager.product = product;
+
+            VMSetAttribute(natures, manager);
+            VMSetOffspring(members, product, manager, insider, document, namespace, collect);
+            VMSetDirective(behests, product, natures, command, collect);
+            VMSetReference(element, product);
+
+            return MKRealtor(product, true);
+        },
+        renewal: function (document, namespace, collect, updated) {
+            var manager = this;
+            var element = manager.element;
+            var behests = manager.behests;
+            var members = manager.members;
+            var product = manager.product;
+            var natures = updated.props;
+            var insider = natures.children;
+            var trustor = updated.type;
+            var command = updated.cmd;
+            var variety;
+
+            if (trustor === "svg") {
+                namespace = svgNamespace;
+            }
+            if (trustor === "math") {
+                namespace = mmlNamespace;
+            }
+
+            manager.element = updated;
+            variety = MKVariety(natures, element.props);
+
+            VMModAttribute(variety, manager);
+            VMModOffspring(members, product, manager, insider, document, namespace, collect);
+            VMModDirective(behests, product, natures, command, collect);
+            VMModReference(element, product, updated);
+
+            return MKRealtor(product, false);
+        },
+        dispose: function () {
+            var manager = this;
+            var behests = manager.behests;
+            var members = manager.members;
+            var product = manager.product;
+            var element = manager.element;
+
+            VMDelOffspring(members);
+            VMDelDirective(behests, product, element.props);
+            VMDelReference(element);
+
+            manager.emitter.dispose();
+
+            DOMRemoveChild(product);
+        },
+        trigger: function (event, connate) {
+            if (this.connate === connate) {
+                this.emitter.trigger(event);
+            }
+            if (VMNeedBubbling(event)) {
+                this.parent.trigger(event, connate);
+            }
+        },
+        attachEvent: function (type, listener) {
+            this.emitter.attachEvent(type, listener);
+        },
+        detachEvent: function (type, listener) {
+            this.emitter.detachEvent(type, listener);
+        },
+        dispatchEvent: function (event) {
+            this.trigger(event, this.connate);
+        }
+    });
+    LibertyManager = createClass({
+        constructor: function (product) {
+            this.product = product;
+            this.emitter = MKEmitter(this);
+            this.connate = true;
+        },
+        dispose: function () {
+            this.emitter.dispose();
+            DOMRemoveChild(this.product);
+        },
+        trigger: function (event, connate) {
+            if (this.connate === connate) {
+                this.emitter.trigger(event);
+            }
+            if (VMNeedBubbling(event)) {
+                var parent = (function findParent(product) {
+                    var instance = product.parentNode
+                        || product.defaultView;
+                    if (instance && instance !== product) {
+                        if (instance[DISPLAYING_RENDERER]) {
+                            return instance[DISPLAYING_RENDERER];
+                        } else {
+                            return findParent(instance);
+                        }
+                    }
+                }(this.product));
+                if (parent) {
+                    parent.trigger(event, connate);
+                }
+            }
+        },
+        attachEvent: function (type, listener) {
+            this.emitter.attachEvent(type, listener);
+        },
+        detachEvent: function (type, listener) {
+            this.emitter.detachEvent(type, listener);
+        },
+        dispatchEvent: function (event) {
+            this.trigger(event, this.connate);
+        }
+    });
+
+
+    var SyntheticEvent;
+
+    SyntheticEvent = createClass({
+        constructor: function (event, contact, current) {
+            define(this, EVENT_CONTACT_TARGET, describe(contact || event.target));
+            define(this, EVENT_CURRENT_TARGET, describe(current || event.currentTarget));
+            define(this, EVENT_ORIGINAL_EVENT, describe(event[EVENT_ORIGINAL_EVENT] || event));
+            define(this, EVENT_STATUS_TRACKER, describe(event[EVENT_STATUS_TRACKER] || {
+                defaultPrevented: !!event.defaultPrevented,
+                refreshPrevented: !!event.refreshPrevented,
+                cancelBubble: !!event.cancelBubble,
+                cancelEntire: !!event.cancelEntire
+            }));
+            for (var name in eventUsefulAttributes) {
+                if (exists(event, name)) {
+                    define(this, name, {
+                        enumerable: true,
+                        value: event[name]
+                    });
+                }
+            }
+        },
+        stopImmediatePropagation: function () {
+            this[EVENT_ORIGINAL_EVENT].stopImmediatePropagation();
+            this[EVENT_STATUS_TRACKER].cancelEntire = true;
+            this[EVENT_STATUS_TRACKER].cancelBubble = true;
+        },
+        stopPropagation: function () {
+            this[EVENT_ORIGINAL_EVENT].stopPropagation();
+            this[EVENT_STATUS_TRACKER].cancelBubble = true;
+        },
+        preventDefault: function () {
+            if (this[EVENT_ORIGINAL_EVENT].cancelable) {
+                this[EVENT_ORIGINAL_EVENT].preventDefault();
+                this[EVENT_STATUS_TRACKER].defaultPrevented = true;
+            }
+        },
+        preventRefresh: function () {
+            this[EVENT_STATUS_TRACKER].refreshPrevented = true;
+        },
+        get type() {
+            return this[EVENT_ORIGINAL_EVENT].type;
+        },
+        get bubbles() {
+            return this[EVENT_ORIGINAL_EVENT].bubbles;
+        },
+        get cancelable() {
+            return this[EVENT_ORIGINAL_EVENT].cancelable;
+        },
+        get cancelBubble() {
+            return this[EVENT_STATUS_TRACKER].cancelBubble;
+        },
+        get cancelEntire() {
+            return this[EVENT_STATUS_TRACKER].cancelEntire;
+        },
+        get defaultPrevented() {
+            return this[EVENT_STATUS_TRACKER].defaultPrevented;
+        },
+        get refreshPrevented() {
+            return this[EVENT_STATUS_TRACKER].refreshPrevented;
+        },
+        get originalEvent() {
+            return this[EVENT_ORIGINAL_EVENT];
+        },
+        get currentTarget() {
+            return this[EVENT_CURRENT_TARGET];
+        },
+        get target() {
+            return this[EVENT_CONTACT_TARGET];
+        }
+    });
+
+
+    var SynchroPromise;
+
+    var SPFixator = function (instance, status) {
+        return function (result) {
+            SPResolve(instance, status, result);
         };
-    }
-    function TPLPlace (value) {
-        for ( ; ahead <  lines.length; ahead++) {
-            if (value >= lines[ahead][0] &&
-                value <  lines[ahead][1]) {
-                return {
-                    rownum : ahead,
-                    colnum : value - lines[ahead][0]
+    };
+    var SPResolve = function (instance, status, result) {
+        if (instance[COMMITMENT_STATUS] === PENDING) {
+            if (instance === result) {
+                status = REJECTED;
+                result = new Error("Promise resolved with itself");
+            }
+            if (isInheritedClass(result, SynchroPromise)) {
+                if (result[COMMITMENT_STATUS] === PENDING) {
+                    result.then(
+                        SPFixator(instance, RESOLVED),
+                        SPFixator(instance, REJECTED)
+                    );
+                    return;
+                }
+                result[COMMITMENT_CAPTURE] = true;
+                instance[COMMITMENT_STATUS] = result[COMMITMENT_STATUS];
+                instance[COMMITMENT_RESULT] = result[COMMITMENT_RESULT];
+            } else if (result && typeof result.then === "function") {
+                result.then(
+                    SPFixator(instance, RESOLVED),
+                    SPFixator(instance, REJECTED)
+                );
+                return;
+            } else {
+                instance[COMMITMENT_STATUS] = status;
+                instance[COMMITMENT_RESULT] = result;
+            }
+            var member = instance[COMMITMENT_OBSERVE];
+            var length = member.length;
+            while (member.length) {
+                var product = member.shift();
+                var success = member.shift();
+                var failure = member.shift();
+                switch (instance[COMMITMENT_STATUS]) {
+                    case RESOLVED:
+                        SPExecute(product, instance[COMMITMENT_RESULT], success);
+                        break;
+                    case REJECTED:
+                        SPExecute(product, instance[COMMITMENT_RESULT], failure);
+                        break;
+                }
+            }
+            if (length === 0 && instance[COMMITMENT_STATUS] === REJECTED) {
+                Threads.then(function () { instance[COMMITMENT_CAPTURE] || wrong(instance[COMMITMENT_RESULT]); });
+            }
+        }
+    };
+    var SPExecute = function (instance, result, action) {
+        try {
+            SPResolve(instance, RESOLVED, action(result));
+        } catch (error) {
+            SPResolve(instance, REJECTED, error);
+        }
+    };
+
+    SynchroPromise = createClass({
+        constructor: function (executor) {
+            define(this, COMMITMENT_OBSERVE, describe([]));
+            define(this, COMMITMENT_CAPTURE, describe(false));
+            define(this, COMMITMENT_RESULT, describe(void 0));
+            define(this, COMMITMENT_STATUS, describe(PENDING));
+            try {
+                define(this, COMMITMENT_DISPOSE, describe(
+                    executor(
+                        SPFixator(this, RESOLVED),
+                        SPFixator(this, REJECTED)
+                    )
+                ));
+            } catch (error) {
+                SPResolve(this, REJECTED, error);
+            }
+        },
+        dispose: function () {
+            if (this[COMMITMENT_DISPOSE]) {
+                this[COMMITMENT_DISPOSE]();
+            }
+        },
+        "catch": function (onrejected) {
+            return this.then(null, onrejected);
+        },
+        then: function (onresolved, onrejected) {
+            var current = this;
+            var success = onresolved || function (value) { return value; };
+            var failure = onrejected || function (error) { return SynchroPromise.reject(error); };
+            var product = new SynchroPromise(function () { return current[COMMITMENT_DISPOSE]; });
+            current[COMMITMENT_CAPTURE] = true;
+            switch (current[COMMITMENT_STATUS]) {
+                case PENDING:
+                    current[COMMITMENT_OBSERVE].push(product, success, failure);
+                    break;
+                case RESOLVED:
+                    SPExecute(product, current[COMMITMENT_RESULT], success);
+                    break;
+                case REJECTED:
+                    SPExecute(product, current[COMMITMENT_RESULT], failure);
+                    break;
+            }
+            return product;
+        },
+        get result() {
+            return this[COMMITMENT_RESULT];
+        },
+        get status() {
+            return this[COMMITMENT_STATUS]
+        }
+    });
+    SynchroPromise.resolve = function (value) { return new SynchroPromise(function (resolve) { resolve(value); }); };
+    SynchroPromise.reject = function (error) { return new SynchroPromise(function (_, reject) { reject(error); }); };
+    SynchroPromise.ajax = function (request) {
+        return new SynchroPromise(function (resolve, reject) {
+            var xhrSuccess;
+            var xhrFailure;
+            var xhrLocation = request.url;
+            var XHR_SUCCESS_TYPE = "load";
+            var XHR_FAILURE_TYPE = "error";
+            if (request.jsonp) {
+                var xhrCallback = "Elf" + (Math.random() * 1E9 | 0);
+                var xhrHostNode = document.createElement("script");
+                var xhrHeadNode = document.querySelector("head");
+                var xhrAbnormal = function () {
+                    delete window[xhrCallback];
+                };
+                xhrSuccess = window[xhrCallback] = function (value) {
+                    resolve({
+                        status: 200,
+                        headers: {},
+                        text: function () { return isObject(value) ? stringify(value) : value; },
+                        json: function () { return value; }
+                    });
+                    xhrAbnormal();
+                    broadcast();
+                };
+                xhrFailure = function (error) {
+                    reject(error);
+                    xhrAbnormal();
+                    broadcast();
+                };
+                DOMAddListener(xhrHostNode, XHR_FAILURE_TYPE, xhrFailure);
+                DOMSetProperty(xhrHostNode, "type", "text/javascript");
+                DOMSetProperty(xhrHostNode, "src", xhrLocation);
+                DOMInsertChild(xhrHeadNode, xhrHostNode);
+                return function () {
+                    if (window[xhrCallback]) {
+                        window[xhrCallback] = xhrAbnormal;
+                    }
+                    DOMDelListener(xhrHostNode, XHR_FAILURE_TYPE, xhrFailure);
+                    DOMRemoveChild(xhrHostNode);
+                };
+            } else {
+                var xhrContent = "Content-Type";
+                var xhrPattern = "X-Requested-With";
+                var xhrFashion = request.method || "GET";
+                var xhrHeaders = request.headers || {};
+                var xhrRequest = new XMLHttpRequest();
+                xhrSuccess = function () {
+                    var result = xhrRequest.responseText;
+                    var status = xhrRequest.status === 1223 ? 200 : xhrRequest.status;
+                    if (status === 0) {
+                        status = result ? 200 : 0;
+                    }
+                    var headers = {};
+                    var content = trim(xhrRequest.getAllResponseHeaders() || "");
+                    if (content) {
+                        content.split("\n").forEach(function (i) {
+                            var x = ":";
+                            var l = trim(i).split(x);
+                            var m = trim(l.shift());
+                            var n = trim(l.join(x));
+                            headers[m] = n;
+                        });
+                    }
+                    if (200 <= status && status < 300) {
+                        resolve({
+                            status: status,
+                            headers: headers,
+                            text: function () { return result; },
+                            json: function () { return JSON.parse(result); }
+                        });
+                    } else {
+                        reject(xhrRequest);
+                    }
+                    broadcast();
+                };
+                xhrFailure = function () {
+                    reject(xhrRequest);
+                    broadcast();
+                };
+                xhrRequest.open(xhrFashion.toUpperCase(), xhrLocation, true);
+                DOMAddListener(xhrRequest, XHR_SUCCESS_TYPE, xhrSuccess);
+                DOMAddListener(xhrRequest, XHR_FAILURE_TYPE, xhrFailure);
+                if (!exists(xhrHeaders, xhrContent)) {
+                    xhrRequest.setRequestHeader(xhrContent, "application/x-www-form-urlencoded; charset=utf-8");
+                }
+                if (!exists(xhrHeaders, xhrPattern)) {
+                    xhrRequest.setRequestHeader(xhrPattern, "XMLHttpRequest");
+                }
+                for (var name in xhrHeaders) {
+                    xhrRequest.setRequestHeader(name, xhrHeaders[name]);
+                }
+                xhrRequest.send(request.body);
+                return function () {
+                    DOMDelListener(xhrRequest, XHR_SUCCESS_TYPE, xhrSuccess);
+                    DOMDelListener(xhrRequest, XHR_FAILURE_TYPE, xhrFailure);
+                    xhrRequest.abort();
                 };
             }
-        }
-    }
-    function TPLValue (value) {
-        return exports.$html_unescape(value);
-    }
-    function TPLDuple (start) {
-        var cdata = TPLCDATA(start);
-        if (cdata) {
-            return startsWith(html, "</" + cdata, start) && /[^-:\w]/.test(html.charAt(start + cdata.length + 2));
-        }
-        return TPLCommentStart(start)
-            || TPLOccludeStart(start)
-            || TPLElementStart(start);
-    }
-    function TPLPlain () {
-        return true;
-    }
-    function TPLCDATA () {
-        if (level > 0) {
-            var name = queue[level - 1].qname.value;
-            if (lower(name) === "style" ||
-                lower(name) === "script") {
-                return name;
+        });
+    };
+    SynchroPromise.race = function (array) {
+        return new SynchroPromise(function (resolve, reject) {
+            if (array.length) {
+                array.forEach(function (value) {
+                    SynchroPromise.resolve(value).then(resolve, reject);
+                });
+            } else {
+                resolve();
+            }
+        });
+    };
+    SynchroPromise.all = function (array) {
+        return new SynchroPromise(function (resolve, reject) {
+            var number = 0;
+            var length = array.length;
+            var result = new Array(length);
+            if (length) {
+                array.forEach(function (value, index) {
+                    SynchroPromise.resolve(value).then(function (value) {
+                        result[index] = value;
+                        if (++number === length) {
+                            resolve(result);
+                        }
+                    }, reject);
+                });
+            } else {
+                resolve(result);
+            }
+        });
+    };
+
+    //
+    //
+    //
+    exports.Promise = SynchroPromise;
+    exports.createClass = createClass;
+
+    exports.requestAnimationFrame = function (fn) {
+        return { dispose: cancelAnimationFrame.bind(null, requestAnimationFrame(observe(fn, tear(arguments, 1)))) };
+    };
+    exports.setInterval = function (fn, delay) {
+        return { dispose: clearInterval.bind(null, setInterval(observe(fn, tear(arguments, 2)), delay)) };
+    };
+    exports.setTimeout = function (fn, delay) {
+        return { dispose: clearTimeout.bind(null, setTimeout(observe(fn, tear(arguments, 2)), delay)) };
+    };
+
+    exports.Component = function (name, proto) {
+        return define(createClass(proto), DISPLAYING_COMPONENT, describe(name));
+    };
+    exports.Directive = function (name, proto) {
+        return define(createClass(proto), DISPLAYING_DIRECTIVE, describe(name));
+    };
+    exports.Transform = function (name, proto) {
+        return define(createClass(proto), DISPLAYING_TRANSFORM, describe(name));
+    };
+
+    exports.createEvent = function (type, bubbles, detail) {
+        return new SyntheticEvent({
+            type: type,
+            detail: detail,
+            bubbles: !!bubbles,
+            cancelable: false,
+            stopImmediatePropagation: NOOP,
+            stopPropagation: NOOP,
+            preventDefault: NOOP
+        });
+    };
+    exports.attachEvent = function (node, type, listener) {
+        GlobalMethodLauncher(node).attachEvent(type, listener);
+    };
+    exports.detachEvent = function (node, type, listener) {
+        GlobalMethodLauncher(node).detachEvent(type, listener);
+    };
+    exports.dispatchEvent = function (node, event) {
+        GlobalMethodLauncher(node).dispatchEvent(new SyntheticEvent(event, node));
+    };
+
+    exports.createElement = function (type, props) {
+        var natures = props || {};
+        var insider = flatten(tear(arguments, 2));
+        var element = {
+            ref: natures.ref,
+            key: natures.key,
+            cmd: natures.cmd || [],
+            type: type,
+            props: {},
+            owner: last(temporaryElementOwner)
+        };
+        for (var name in natures) {
+            if (name !== "ref" &&
+                name !== "key" &&
+                name !== "cmd" &&
+                isValid(natures[name])) {
+                element.props[name] = natures[name];
             }
         }
-    }
-    function TPLBlank (html) {
-        return html.search(REGEXP_TEMPLATE_WORD);
-    }
-    function TPLShave (html, value, start) {
-        var number = start || 0;
-        var length = html.length;
-        for (; number < length; number++) {
-            if (TPLJudge(html.charAt(number), value)) {
-                break;
+        if (isString(type)) {
+            if (isAllied(type, "input")) {
+                element.props.type = element.props.type || "text";
+            } else if (isAllied(type, "button")) {
+                element.props.type = element.props.type || "button";
             }
         }
-        return number;
-    }
-    function TPLRough (html, value, start, fn) {
-        var length = html.length;
-        var number = html.indexOf(value, start);
-        return number < 0
-            ? length : fn(number)
-            ? number : TPLRough(html, value, number + 1, fn);
-    }
-    function TPLExact (html, value, start, fn) {
-        var curly = 0;
-        var paren = 0;
-        var square = 0;
-        var inSingle = false;
-        var inDouble = false;
-        var number = start || 0;
-        var length = html.length;
-        var escape = "\\";
-        var p, n;
-        for (; number < length; number++) {
-            p = n;
-            n = html.charAt(number);
-            if (inSingle) {
-                if (n === "'" && p !== escape) {
-                    inSingle = false;
-                }
-                continue;
-            }
-            if (inDouble) {
-                if (n === '"' && p !== escape) {
-                    inDouble = false;
-                }
-                continue;
-            }
-            if (0 === curly &&
-                0 === paren &&
-                0 === square &&
-                TPLJudge(n, value)) {
-                if (fn(number)) {
-                    break;
-                }
-                continue;
-            }
-            switch (n) {
-                case "{":
-                    curly++;
-                    break;
-                case "}":
-                    curly--;
-                    break;
-                case "(":
-                    paren++;
-                    break;
-                case ")":
-                    paren--;
-                    break;
-                case "[":
-                    square++;
-                    break;
-                case "]":
-                    square--;
-                    break;
-                case "'":
-                    inSingle = true;
-                    break;
-                case '"':
-                    inDouble = true;
-                    break;
-            }
+        Object.freeze(define(element.props, "children", describe(insider)));
+        return element;
+    };
+    exports.redactElement = function (html) {
+        var preRownum = 0;
+        var preColnum = 0;
+        var colDiffer = 18;
+        var colScaler = 18;
+        var colResume = true;
+        var outScript = "with(this){return(";
+        var astObject = isObject(html) ? html : exports.$parse(html);
+        var sourceURI = astObject.filename;
+        var sourceDit = astObject.body;
+        var sourceMap = {
+            version: 3,
+            sources: [sourceURI],
+            mappings: ";AAAA"
+        };
+        var lineLength = exports.$lineLength;
+        var mapSupport = exports.btoa && exports.evlq && sourceURI;
+        var privatelyComponentDep = {};
+        var privatelyDirectiveDep = {};
+        var privatelyTransformDep = {};
+        var manufactor;
+        if (sourceDit) {
+            ASTElementParse(sourceDit);
+        } else {
+            ASTAppendScript("null");
         }
-        return number;
-    }
-    function TPLJudge (html, value) {
-        return value.test ? value.test(html) : value === html;
-    }
-    function ASTElementParse (node) {
-        if (node.label) {
-            if (node.attrs.iteration) {
-                if (node.level) {
-                    ASTIterateParse(node);
+        ASTAppendScript(")}");
+        manufactor = new Function("Elf", mapSupport ? outScript + "\n//# sourceMappingURL=data:application/json;chatset=utf-8;base64," + exports.btoa(stringify(sourceMap)) + "\n//# sourceURL=" + sourceURI + "!transpiled" : outScript);
+        flatten(tear(arguments, 1)).forEach(function (trustor) {
+            if (exists(trustor, DISPLAYING_COMPONENT)) {
+                privatelyComponentDep[trustor[DISPLAYING_COMPONENT]] = trustor;
+            }
+            if (exists(trustor, DISPLAYING_DIRECTIVE)) {
+                privatelyDirectiveDep[trustor[DISPLAYING_DIRECTIVE]] = trustor;
+            }
+            if (exists(trustor, DISPLAYING_TRANSFORM)) {
+                privatelyTransformDep[trustor[DISPLAYING_TRANSFORM]] = trustor;
+            }
+        });
+        return function () {
+            temporaryComponentDep.push(privatelyComponentDep);
+            temporaryDirectiveDep.push(privatelyDirectiveDep);
+            temporaryTransformDep.push(privatelyTransformDep);
+            try {
+                return manufactor.call(safeDomain(this || {}), exports);
+            } finally {
+                temporaryComponentDep.pop();
+                temporaryDirectiveDep.pop();
+                temporaryTransformDep.pop();
+            }
+        };
+        function ASTElementParse(node) {
+            if (node.nodeType === 1) {
+                if (node.iteration) {
+                    if (node.level) {
+                        ASTIterateParse(node);
+                    } else {
+                        wrong(new Error("Cannot use iteration on root node"));
+                    }
+                } else if (node.condition) {
+                    ASTTernaryParse(node);
                 } else {
-                    wrong(new Error("Cannot use iteration on root node"));
+                    ASTDefaultParse(node);
                 }
-            } else
-            if (node.attrs.condition) {
+            } else if (node.nodeType === 3) {
+                ASTContentParse(node);
+            }
+        }
+        function ASTDefaultParse(node) {
+            ASTAppendScript("Elf.createElement(Elf.$tag(");
+            ASTAppendSource(node.nodeName);
+            ASTAppendScript(stringify(node.nodeName.raw));
+            ASTAppendScript("),");
+            ASTNaturesParse(node);
+            if (node.children.length) {
+                ASTAppendScript(",");
+                ASTInsiderParse(node);
+            }
+            ASTAppendScript(")");
+        }
+        function ASTIterateParse(node) {
+            ASTAppendSource(node.iteration.keys);
+            ASTAppendScript("Elf.$map(");
+            ASTAppendSource(node.iteration.body);
+            ASTAppendScript(node.iteration.body.raw);
+            ASTAppendScript(",function(");
+            ASTAppendScript(node.iteration.keys.raw);
+            ASTAppendScript("){return(");
+            if (node.condition) {
                 ASTTernaryParse(node);
             } else {
                 ASTDefaultParse(node);
             }
-        } else {
-            ASTContentParse(node);
+            ASTAppendScript(")},this)");
         }
-    }
-    function ASTDefaultParse (node) {
-        ASTAppendScript("Elf.createElement(Elf.$tag(");
-        ASTAppendSource(node.qname);
-        ASTAppendScript(stringify(node.qname.value));
-        ASTAppendScript("),");
-        ASTNaturesParse(node);
-        if (node.nodes.length) {
-            ASTAppendScript(",");
-            ASTInsiderParse(node);
-        }
-        ASTAppendScript(")");
-    }
-    function ASTIterateParse (node) {
-        ASTAppendSource(node.attrs.iteration.keys);
-        ASTAppendScript("Elf.$map(");
-        ASTAppendSource(node.attrs.iteration.body);
-        ASTAppendScript(node.attrs.iteration.body.value);
-        ASTAppendScript(",function(");
-        ASTAppendScript(node.attrs.iteration.keys.value);
-        ASTAppendScript("){return(");
-        if (node.attrs.condition) {
-            ASTTernaryParse(node);
-        } else {
+        function ASTTernaryParse(node) {
+            ASTAppendScript("((");
+            ASTAppendSource(node.condition);
+            ASTAppendScript(node.condition.raw);
+            ASTAppendScript(")?");
             ASTDefaultParse(node);
+            ASTAppendScript(":null)");
         }
-        ASTAppendScript(")},this)");
-    }
-    function ASTTernaryParse (node) {
-        ASTAppendScript("((");
-        ASTAppendSource(node.attrs.condition);
-        ASTAppendScript(node.attrs.condition.value);
-        ASTAppendScript(")?");
-        ASTDefaultParse(node);
-        ASTAppendScript(":null)");
-    }
-    function ASTInsiderParse (node) {
-        ASTAppendScript("[");
-        node.nodes.forEach(function (node, numb) {
-            ASTAppendScript(numb > 0 ? "," : "");
-            ASTElementParse(node);
-        });
-        ASTAppendScript("]");
-    }
-    function ASTNaturesParse (node) {
-        ASTAppendScript("{");
-        node.attrs.otherwise.forEach(function (node, numb) {
-            ASTAppendScript(numb > 0 ? "," : "");
-            ASTAppendScript(stringify(node.token.value));
-            ASTAppendScript(":");
-            if (node.event) {
-                ASTAppendScript("function(event){");
-                ASTAppendSource(node.prime);
-                ASTAppendScript(node.prime.value);
-                ASTAppendScript("}.bind(this)");
-            } else
-            if (node.texts.length) {
-                if (node.token.value === "cmd") {
-                    ASTAppendScript("Elf.$cmd(");
-                    ASTContentParse(node);
-                    ASTAppendScript(")");
-                } else {
-                    ASTContentParse(node);
-                }
-            } else {
-                ASTAppendScript(stringify(""));
-            }
-        });
-        ASTAppendScript("}");
-    }
-    function ASTContentParse (node) {
-        node.texts.forEach(function (node, numb) {
-            ASTAppendScript(numb > 0 ? "+" : "");
-            if (node.rawer) {
-                ASTAppendSource(node);
-                ASTAppendScript(stringify(node.value));
-            } else {
-                ASTExpressParse(node);
-            }
-        });
-    }
-    function ASTExpressParse (node) {
-        ASTAppendSource(node.first);
-        ASTAppendScript("Elf.$fit(");
-        ASTAppendScript(node.first.value || "void 0");
-        node.pipes.forEach(function (node, numb) {
-            ASTAppendScript(",[");
-            ASTAppendSource(node.token);
-            ASTAppendScript(stringify(node.token.value));
-            node.flags.forEach(function (node, numb) {
-                ASTAppendScript(",");
-                ASTAppendSource(node);
-                ASTAppendScript(node.value);
+        function ASTInsiderParse(node) {
+            ASTAppendScript("[");
+            node.children.forEach(function (node, numb) {
+                ASTAppendScript(numb > 0 ? "," : "");
+                ASTElementParse(node);
             });
             ASTAppendScript("]");
+        }
+        function ASTNaturesParse(node) {
+            ASTAppendScript("{");
+            node.attributes.forEach(function (node, numb) {
+                ASTAppendScript(numb > 0 ? "," : "");
+                ASTAppendScript(stringify(node.name.raw));
+                ASTAppendScript(":");
+                if (node.incident) {
+                    ASTAppendScript("function(event){");
+                    ASTAppendSource(node.delegate);
+                    ASTAppendScript(node.delegate.raw);
+                    ASTAppendScript("}.bind(this)");
+                } else if (node.segments.length) {
+                    if (node.name.raw === "cmd") {
+                        ASTAppendScript("Elf.$cmd(");
+                        ASTContentParse(node);
+                        ASTAppendScript(")");
+                    } else {
+                        ASTContentParse(node);
+                    }
+                } else {
+                    ASTAppendScript(stringify(""));
+                }
+            });
+            ASTAppendScript("}");
+        }
+        function ASTContentParse(node) {
+            node.segments.forEach(function (node, numb) {
+                ASTAppendScript(numb > 0 ? "+" : "");
+                if (node.computed) {
+                    ASTExpressParse(node);
+                } else {
+                    ASTAppendSource(node.input);
+                    ASTAppendScript(stringify(node.input.raw));
+                }
+            });
+        }
+        function ASTExpressParse(node) {
+            ASTAppendSource(node.input);
+            ASTAppendScript("Elf.$fit(");
+            ASTAppendScript(node.input.raw || "void 0");
+            node.pipes.forEach(function (node, numb) {
+                ASTAppendScript(",[");
+                ASTAppendSource(node.name);
+                ASTAppendScript(stringify(node.name.raw));
+                node.arguments.forEach(function (node, numb) {
+                    ASTAppendScript(",");
+                    ASTAppendSource(node);
+                    ASTAppendScript(node.raw);
+                });
+                ASTAppendScript("]");
+            });
+            ASTAppendScript(")");
+        }
+        function ASTAppendScript(value) {
+            var length = value.length;
+            if (colScaler > lineLength - length) {
+                outScript += "\n";
+                colResume = true;
+                colScaler = 0;
+                colDiffer = 0;
+            }
+            colDiffer += length;
+            colScaler += length;
+            outScript += value;
+        }
+        function ASTAppendSource(value) {
+            if (mapSupport) {
+                var rownum = value.loc.rownum;
+                var colnum = value.loc.colnum;
+                sourceMap.mappings += (colResume ? ";" : ",") + exports.evlq([colDiffer, 0, rownum - preRownum, colnum - preColnum]);
+                preRownum = rownum;
+                preColnum = colnum;
+                colResume = false;
+                colDiffer = 0;
+            }
+        }
+    };
+    exports.forceUpdate = function () {
+        return broadcast();
+    };
+
+    exports.depend = function () {
+        flatten(tear(arguments)).forEach(function (trustor) {
+            if (exists(trustor, DISPLAYING_COMPONENT)) {
+                communityComponentDep[trustor[DISPLAYING_COMPONENT]] = trustor;
+            }
+            if (exists(trustor, DISPLAYING_DIRECTIVE)) {
+                communityDirectiveDep[trustor[DISPLAYING_DIRECTIVE]] = trustor;
+            }
+            if (exists(trustor, DISPLAYING_TRANSFORM)) {
+                communityTransformDep[trustor[DISPLAYING_TRANSFORM]] = trustor;
+            }
         });
-        ASTAppendScript(")");
-    }
-    function ASTAppendScript (value) {
-        var length = value.length;
-        if (totals > lineLength - length) {
-            script += "\n";
-            resume = true;
-            totals = 0;
-            number = 0;
+    };
+    exports.render = function (element, container, duplex) {
+        var monitor;
+        var collect = [];
+        var draught = MKDraught(element, GlobalMethodLauncher(container));
+        var product = {
+            forceUpdate: function () {
+                manufacture(draught.renewal(document, namespace, collect, element));
+            },
+            dispose: function () {
+                monitor.dispose();
+                draught.dispose();
+            },
+            duplex: !!duplex
+        };
+        var document = container.ownerDocument;
+        var namespace = container.namespaceURI;
+        if (container.isDefaultNamespace(namespace)) {
+            namespace = null;
         }
-        number += length;
-        totals += length;
-        script += value;
-    }
-    function ASTAppendSource (value) {
-        if (outputmaps) {
-            source.mappings += resume ? ";" : ",";
-            source.mappings += exports.evlq([number, 0, value.place.rownum - rownum, value.place.colnum - colnum]);
-            rownum = value.place.rownum;
-            colnum = value.place.colnum;
-            resume = false;
-            number = 0;
+        manufacture(draught.initial(document, namespace, collect));
+        return monitor = subscribe(product), product;
+        function manufacture(realtor) {
+            if (realtor.newly) {
+                while (container.firstChild) {
+                    DOMRemoveChild(container.firstChild);
+                }
+                DOMInsertChild(container, realtor.value);
+            }
+            clean(collect, function (fn) { fn(); });
         }
-    }
-};
-/**
- * Unescape html character.
- * @private The following methods or properties are used internally.
- * 
- * @param   {String} html 
- * @returns {String}
- */
-exports.$html_unescape = function (html) {
-    CODE || (CODE = DOMMakeElement("i"));
-    CODE.innerHTML = html;
-    return CODE.textContent;
-};
-/**
- * Event attribute prefix of template.
- * @private The following methods or properties are used internally.
- */
-exports.$eventStart = "on";
-/**
- * Maximum length of line that generate the code.
- * @private The following methods or properties are used internally.
- */
-exports.$lineLength = 0x8000;
-/**
- * JavaScript expression block of template.
- * @private The following methods or properties are used internally.
- */
-exports.$expression = ["{{", "}}"];
-/**
- * Condition attribute of template.
- * @private The following methods or properties are used internally.
- */
-exports.$condition  = "e-if";
-/**
- * Iteration attribute of template.
- * @private The following methods or properties are used internally.
- */
-exports.$iteration  = "e-for";
+    };
+    exports.assign = function (source) {
+        source = Object(source);
+        for (var i = 1; i < arguments.length; i++) {
+            var ns = arguments[i];
+            for (var name in ns) {
+                if (Object.prototype.hasOwnProperty.call(ns, name)) {
+                    source[name] = ns[name];
+                }
+            }
+        }
+        return source;
+    };
 
-//
-// Internal members access for plug-in.
-//
-exports["Global.listener"] = GlobalEventListener;
-exports["Global.renderer"] = DISPLAYING_RENDERER;
-exports["Global.launcher"] = MKManager;
+    exports.$tag = function (value) {
+        if (exists(last(temporaryComponentDep), value)) {
+            return last(temporaryComponentDep)[value];
+        }
+        if (exists(communityComponentDep, value)) {
+            return communityComponentDep[value];
+        }
+        return value;
+    };
+    exports.$cmd = function (value) {
+        return flatten(trim(value).split(REGEXP_SEPARATOR_CMD).map(function (value) {
+            if (exists(last(temporaryDirectiveDep), value)) {
+                return last(temporaryDirectiveDep)[value];
+            }
+            if (exists(communityDirectiveDep, value)) {
+                return communityDirectiveDep[value];
+            }
+            return wrong(new Error("Invalid directive " + value));
+        }));
+    };
+    exports.$fit = function (value) {
+        return tear(arguments, 1).reduce(function (init, item) {
+            if (exists(last(temporaryTransformDep), item[0])) {
+                return execute(MKUnitary(last(temporaryTransformDep)[item[0]]), init, item);
+            }
+            if (exists(communityTransformDep, item[0])) {
+                return execute(MKUnitary(communityTransformDep[item[0]]), init, item);
+            }
+            return wrong(new Error("Invalid transform " + item[0])), init;
+        }, value);
+        function execute(target, init, item) {
+            return target.transform.apply(target, [init].concat(tear(item, 1)));
+        }
+    };
+    exports.$map = function (value, callback, thisArg) {
+        if (isInheritedClass(value, SynchroPromise)) {
+            value = value[COMMITMENT_STATUS] === RESOLVED
+                ? value[COMMITMENT_RESULT]
+                : null;
+        }
+        if (Array.isArray(value)) {
+            return value.map(callback, thisArg);
+        }
+        var result = [];
+        for (var name in value) {
+            result.push(
+                callback.call(thisArg, value[name], name, value)
+            );
+        }
+        return result;
+    };
+    exports.$parse = function (html, filename) {
+        var start;
+        var level = 0;
+        var queue = [];
+        var lines = [];
+        var roots = [];
+        var rownum = 0;
+        var length = html.length;
+        var inStyleSheet = false;
+        var inJavaScript = false;
+        var docStatement = "";
+        var preFormatted = 0;
+        var expression = exports.$expression;
+        for (start = 0; start < length;) {
+            lines.push([start, start = TPLNewlineIndex(start)]);
+        }
+        for (start = 0; start < length;) {
+            if (TPLCommentStart(start)) {
+                TPLCommentParse(start, start = TPLCommentEnded(start));
+            } else if (TPLDoctypeStart(start)) {
+                TPLDoctypeParse(start, start = TPLDoctypeEnded(start));
+            }
+            if (TPLOccludeStart(start)) {
+                TPLOccludeParse(start, start = TPLOccludeEnded(start));
+            } else if (TPLElementStart(start)) {
+                TPLElementParse(start, start = TPLElementEnded(start));
+            } else {
+                //
+                TPLContentParse(start, start = TPLContentEnded(start));
+            }
+        }
+        if (roots.length > 1) {
+            wrong(new Error("Cannot use multiple root node"));
+        }
+        return {
+            body: roots[0],
+            doctype: docStatement,
+            filename: filename
+        };
+        function TPLCommentStart(start) {
+            return startsWith(html, "<!--", start);
+        }
+        function TPLDoctypeStart(start) {
+            return startsWith(html, "<!", start) && TPLMatch(/^doctype[\s>]/i, start + 2, 8);
+        }
+        function TPLOccludeStart(start) {
+            return startsWith(html, "</", start) && TPLMatch(REGEXP_TEMPLATE_NAME, start + 2, 1);
+        }
+        function TPLElementStart(start) {
+            return startsWith(html, "<", start) && TPLMatch(REGEXP_TEMPLATE_NAME, start + 1, 1);
+        }
+        function TPLCommentEnded(start) {
+            return Math.min(length, TPLRough(html, "-->", start + 4, TPLPlain) + 3);
+        }
+        function TPLDoctypeEnded(start) {
+            return Math.min(length, TPLRough(html, ">", start + 9, TPLPlain) + 1);
+        }
+        function TPLOccludeEnded(start) {
+            return Math.min(length, TPLRough(html, ">", start + 3, TPLPlain) + 1);
+        }
+        function TPLElementEnded(start) {
+            return Math.min(length, TPLExact(html, ">", start + 2, TPLPlain) + 1);
+        }
+        function TPLContentEnded(start) {
+            return Math.min(length, TPLRough(html, "<", start, TPLDuple));
+        }
+        function TPLNewlineIndex(start) {
+            return Math.min(length, TPLRough(html, "\n", start, TPLPlain) + 1);
+        }
+        function TPLCommentParse(start, ended) {
+            console.warn(stringify(tear(html, start, ended)) + " will be dispensed");
+        }
+        function TPLDoctypeParse(start, ended) {
+            docStatement = tear(html, start, ended);
+        }
+        function TPLOccludeParse(start, ended) {
+            var nodeName = TPLNameParse(start + 2, tear(html, start + 2, ended - 1));
+            if (preFormatted && isAllied(nodeName.raw, "pre")) {
+                preFormatted--;
+            }
+            if (inStyleSheet && isAllied(nodeName.raw, "style")) {
+                inStyleSheet = false;
+            }
+            if (inJavaScript && isAllied(nodeName.raw, "script")) {
+                inJavaScript = false;
+            }
+            if (!exists(htmlElementSolitaries, lower(nodeName.raw))) {
+                while (level) {
+                    if (queue[--level].nodeName.raw === nodeName.raw) {
+                        break;
+                    }
+                }
+            }
+        }
+        function TPLElementParse(start, ended) {
+            var nodeName = TPLNameParse(start + 1, tear(html, start + 1, ended - 1));
+            var shutting = !(html.charAt(ended - 2) === "/" || exists(htmlElementSolitaries, lower(nodeName.raw)));
+            if (shutting) {
+                if (isAllied(nodeName.raw, "pre")) {
+                    preFormatted++;
+                }
+                if (isAllied(nodeName.raw, "style")) {
+                    inStyleSheet = true;
+                } else if (isAllied(nodeName.raw, "script")) {
+                    inJavaScript = true;
+                }
+            }
+            var attrOffset = start + 1 + nodeName.raw.length;
+            var attributes = TPLAttrParse(attrOffset, tear(html, attrOffset, ended - 1));
+            TPLStore({
+                level: level,
+                nodeType: 1,
+                nodeName: nodeName,
+                attributes: attributes.otherwise,
+                condition: attributes.condition,
+                iteration: attributes.iteration,
+                children: []
+            }, shutting);
+        }
+        function TPLContentParse(start, ended) {
+            if (start < ended) {
+                var index = 0;
+                var value = tear(html, start, ended);
+                if (level === 0 || (exports.$trimBlank && preFormatted === 0)) {
+                    index = TPLBlank(value);
+                    value = trim(value);
+                }
+                if (index >= 0) {
+                    TPLStore({
+                        level: level,
+                        nodeType: 3,
+                        segments: inStyleSheet || inJavaScript ? [{
+                            computed: false,
+                            input: TPLTuple(start, value, true)
+                        }] : TPLTextParse(start, value)
+                    });
+                }
+            }
+        }
+        function TPLNameParse(start, value) {
+            var match = value.match(REGEXP_TEMPLATE_NAME);
+            return TPLTuple(start + match.index, match[0], true);
+        }
+        function TPLAttrParse(start, value) {
+            var match;
+            var token;
+            var texts;
+            var index;
+            var iteration;
+            var condition;
+            var otherwise = [];
+            for (;
+                match = value.match(REGEXP_TEMPLATE_ATTR);
+                value = tear(value, match.index + match[0].length),
+                start = start + match[0].length) {
+                token = match[1];
+                texts = match[3] || match[4] || match[5] || "";
+                start = start + match.index;
+                index = start + token.length;
+                if (isString(match[2])) {
+                    index += match[2].length;
+                }
+                if (isString(match[3]) ||
+                    isString(match[4])) {
+                    index += 1;
+                }
+                if (token === exports.$iteration) {
+                    iteration = TPLEachParse(index, texts);
+                } else if (token === exports.$condition) {
+                    condition = TPLWhenParse(index, texts);
+                } else if (isEventAttribute(token)) {
+                    otherwise.push({
+                        name: TPLTuple(start, token, true),
+                        delegate: TPLTuple(index, texts),
+                        incident: true
+                    });
+                } else {
+                    otherwise.push({
+                        name: TPLTuple(start, token, true),
+                        segments: TPLTextParse(index, texts),
+                        incident: false
+                    });
+                }
+            }
+            return {
+                iteration: iteration,
+                condition: condition,
+                otherwise: otherwise
+            };
+        }
+        function TPLEachParse(start, value) {
+            var match = value.match(REGEXP_TEMPLATE_EACH);
+            if (match) {
+                return {
+                    keys: TPLTuple(start + match.index, match[1]),
+                    body: TPLTuple(start + match.index + match[1].length + match[2].length, match[3])
+                };
+            }
+            wrong(new Error("Invalid iteration expression " + value));
+        }
+        function TPLWhenParse(start, value) {
+            var index = TPLBlank(value);
+            if (index >= 0) {
+                return TPLTuple(start + index, trim(value));
+            }
+        }
+        function TPLTextParse(start, value) {
+            var texts = [];
+            var number = 0;
+            var length = value.length;
+            var prenum = expression[0].length;
+            var sufnum = expression[1].length;
+            var incept = 0;
+            var finish = 0 - sufnum;
+            for (;
+                (incept = value.indexOf(expression[0], finish + sufnum)) >= 0 &&
+                (finish = value.indexOf(expression[1], incept + prenum)) >= 0
+                ; number = finish + sufnum) {
+                if (number < incept) {
+                    TPLConst(start + number,
+                        tear(value, number, incept));
+                }
+                if (incept < finish - prenum) {
+                    TPLTrend(start + incept + prenum,
+                        tear(value, incept + prenum, finish));
+                }
+            }
+            if (number < length) {
+                TPLConst(start + number,
+                    tear(value, number, length));
+            }
+            return texts;
+            function TPLConst(start, value) {
+                if (value) {
+                    texts.push({
+                        computed: false,
+                        input: TPLTuple(start, value)
+                    });
+                }
+            }
+            function TPLTrend(start, value) {
+                var input;
+                var pipes = [];
+                var number = 0;
+                var length = value.length;
+                for (; number < length; number++) {
+                    if (number === 0) {
+                        TPLInput(start + number,
+                            tear(value, number, number = TPLUprightIndex(number)));
+                    } else {
+                        TPLPipes(start + number,
+                            tear(value, number, number = TPLUprightIndex(number)));
+                    }
+                }
+                if (input) {
+                    texts.push({
+                        computed: true,
+                        input: input,
+                        pipes: pipes
+                    });
+                }
+                function TPLUprightIndex(start) {
+                    return Math.min(length, TPLExact(value, REGEXP_SEPARATOR_FIT, TPLShave(value, REGEXP_TEMPLATE_WORD, start), TPLAlone));
+                }
+                function TPLInput(start, value) {
+                    var index = TPLBlank(value);
+                    if (index >= 0) {
+                        input = TPLTuple(start + index, trim(value));
+                    }
+                }
+                function TPLPipes(start, value) {
+                    var token;
+                    var flags = [];
+                    var number = 0;
+                    var length = value.length;
+                    for (; number < length; number++) {
+                        if (number === 0) {
+                            TPLToken(start + number,
+                                tear(value, number, number = TPLSpacingIndex(number)));
+                        } else {
+                            TPLFlags(start + number,
+                                tear(value, number, number = TPLSpacingIndex(number)));
+                        }
+                    }
+                    if (token) {
+                        pipes.push({
+                            name: token,
+                            arguments: flags
+                        });
+                    }
+                    function TPLSpacingIndex(start) {
+                        return Math.min(length, TPLExact(value, REGEXP_SEPARATOR_ARG, TPLShave(value, REGEXP_TEMPLATE_WORD, start), TPLPlain));
+                    }
+                    function TPLToken(start, value) {
+                        var index = TPLBlank(value);
+                        if (index >= 0) {
+                            token = TPLTuple(start + index, trim(value));
+                        }
+                    }
+                    function TPLFlags(start, value) {
+                        var index = TPLBlank(value);
+                        if (index >= 0) {
+                            flags.push(
+                                TPLTuple(start + index, trim(value))
+                            );
+                        }
+                    }
+                }
+            }
+            function TPLAlone(start) {
+                return !TPLJudge(value.charAt(start + 1), REGEXP_SEPARATOR_FIT)
+                    && !TPLJudge(value.charAt(start - 1), REGEXP_SEPARATOR_FIT);
+            }
+        }
+        function TPLStore(value, shutting) {
+            queue[level] = value;
+            if (level) {
+                queue[level - 1].children.push(value);
+            } else {
+                roots.push(value);
+            }
+            if (shutting) {
+                level++;
+            }
+        }
+        function TPLMatch(regex, start, length) {
+            return regex.test(tear(html, start, start + length));
+        }
+        function TPLTuple(start, value, ignore) {
+            var colnum = 0;
+            var length = lines.length;
+            for (; rownum < length; rownum++) {
+                if (start >= lines[rownum][0] &&
+                    start < lines[rownum][1]) {
+                    colnum = start - lines[rownum][0];
+                    break;
+                }
+            }
+            return {
+                loc: {
+                    rownum: rownum,
+                    colnum: colnum
+                },
+                raw: ignore ? value : value.replace(REGEXP_UNESCAPE_CHAR, function (_, $1, $2, $3) {
+                    if ($1) { return htmlUnescapedMappings[$1] || "&" + $1 + ";"; }
+                    if ($2) { return String.fromCharCode(parseInt($2, 10)); }
+                    if ($3) { return String.fromCharCode(parseInt($3, 16)); }
+                    return "";
+                })
+            };
+        }
+        function TPLDuple(start) {
+            if (inStyleSheet) {
+                return startsWith(html, "</", start) && TPLMatch(/^style[\s>]/i, start + 2, 6);
+            }
+            if (inJavaScript) {
+                return startsWith(html, "</", start) && TPLMatch(/^script[\s>]/i, start + 2, 7);
+            }
+            return TPLCommentStart(start)
+                || TPLDoctypeStart(start)
+                || TPLOccludeStart(start)
+                || TPLElementStart(start);
+        }
+        function TPLPlain() {
+            return true;
+        }
+        function TPLBlank(html) {
+            return html.search(REGEXP_TEMPLATE_WORD);
+        }
+        function TPLShave(html, value, start) {
+            var number = start || 0;
+            var length = html.length;
+            for (; number < length; number++) {
+                if (TPLJudge(html.charAt(number), value)) {
+                    break;
+                }
+            }
+            return number;
+        }
+        function TPLRough(html, value, start, fn) {
+            var length = html.length;
+            var number = html.indexOf(value, start);
+            return number < 0
+                ? length : fn(number)
+                    ? number : TPLRough(html, value, number + 1, fn);
+        }
+        function TPLExact(html, value, start, fn) {
+            var curly = 0;
+            var paren = 0;
+            var square = 0;
+            var inSingle = false;
+            var inDouble = false;
+            var number = start || 0;
+            var length = html.length;
+            var escape = "\\";
+            var p, n;
+            for (; number < length; number++) {
+                p = n;
+                n = html.charAt(number);
+                if (inSingle) {
+                    if (n === "'" && p !== escape) {
+                        inSingle = false;
+                    }
+                    continue;
+                }
+                if (inDouble) {
+                    if (n === '"' && p !== escape) {
+                        inDouble = false;
+                    }
+                    continue;
+                }
+                if (0 === curly &&
+                    0 === paren &&
+                    0 === square &&
+                    TPLJudge(n, value)) {
+                    if (fn(number)) {
+                        break;
+                    }
+                    continue;
+                }
+                switch (n) {
+                    case "{":
+                        curly++;
+                        break;
+                    case "}":
+                        curly--;
+                        break;
+                    case "(":
+                        paren++;
+                        break;
+                    case ")":
+                        paren--;
+                        break;
+                    case "[":
+                        square++;
+                        break;
+                    case "]":
+                        square--;
+                        break;
+                    case "'":
+                        inSingle = true;
+                        break;
+                    case '"':
+                        inDouble = true;
+                        break;
+                }
+            }
+            return number;
+        }
+        function TPLJudge(html, value) {
+            return value.test ? value.test(html) : value === html;
+        }
+    };
 
-}));
+    exports.$safeScope = true;
+    exports.$trimBlank = true;
+    exports.$condition = "e-if";
+    exports.$iteration = "e-for";
+    exports.$expression = ["{{", "}}"];
+    exports.$lineLength = 32768;
+    exports.$eventStart = "on";
+
+    exports._GLOBAL_METHOD_LAUNCHER_ = GlobalMethodLauncher;
+    exports._GLOBAL_METHOD_LISTENER_ = GlobalMethodListener;
+    exports._GLOBAL_SYMBOL_RENDERER_ = DISPLAYING_RENDERER;
+
+}(
+    typeof exports !== "undefined" ? exports : this.Elf = {},
+    typeof Promise !== "undefined" ? Promise.resolve(0) : { then: setTimeout.bind(null) },
+    typeof history === "undefined"
+));

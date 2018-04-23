@@ -1,0 +1,17 @@
+<nav class="nav">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-5 col-xs-9 text-nowrap vertial-middle">APPLICATION NAME</div>
+            <div class="col-sm-7 col-xs-3 text-right">
+                <input class="menu-input hidden-sm" type="checkbox" id="menu">
+                <label class="menu-label hidden-sm" for="menu"></label>
+                <label class="menu-shade hidden-sm" for="menu"></label>
+                <ul class="menu">
+                    <li><router-link class="{{ props.name === 'index' ? 'hover' : null }}" href="/index.html">Index</router-link></li>
+                    <li><router-link class="{{ props.name === 'about' ? 'hover' : null }}" href="/about.html">About</router-link></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <hr>
+</nav>

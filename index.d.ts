@@ -1,1249 +1,1246 @@
-/**
- * 
- * 
- * https://www.elfjs.org
- * 
- * @copyright 2018 Wu Hu. All Rights Reserved.
- * 
- * @version 1.3.2
- * @license MIT
- * 
- */
+// Type definitions for elfjs v2.0
+// Project: https://www.elfjs.org/
+// Definitions by: Wu Hu <https://github.com/kind-n>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+// TypeScript Version: 2.6
 
 
-///////////////////////////////////
-/// Typings
-///////////////////////////////////
-declare module "elfjs" {
-    export = Elf;
+export as namespace Elf;
+
+export class Promise<T> implements Disposable {
+    static all <R1, R2, R3, R4, R5, R6, R7, R8, R9> (values: [
+        R1 | Promise<R1>,
+        R2 | Promise<R2>,
+        R3 | Promise<R3>,
+        R4 | Promise<R4>,
+        R5 | Promise<R5>,
+        R6 | Promise<R6>,
+        R7 | Promise<R7>,
+        R8 | Promise<R8>,
+        R9 | Promise<R9>
+    ]): Promise<[R1, R2, R3, R4, R5, R6, R7, R8, R9]>;
+    static all <R1, R2, R3, R4, R5, R6, R7, R8> (values: [
+        R1 | Promise<R1>,
+        R2 | Promise<R2>,
+        R3 | Promise<R3>,
+        R4 | Promise<R4>,
+        R5 | Promise<R5>,
+        R6 | Promise<R6>,
+        R7 | Promise<R7>,
+        R8 | Promise<R8>
+    ]): Promise<[R1, R2, R3, R4, R5, R6, R7, R8]>;
+    static all <R1, R2, R3, R4, R5, R6, R7> (values: [
+        R1 | Promise<R1>,
+        R2 | Promise<R2>,
+        R3 | Promise<R3>,
+        R4 | Promise<R4>,
+        R5 | Promise<R5>,
+        R6 | Promise<R6>,
+        R7 | Promise<R7>
+    ]): Promise<[R1, R2, R3, R4, R5, R6, R7]>;
+    static all <R1, R2, R3, R4, R5, R6> (values: [
+        R1 | Promise<R1>,
+        R2 | Promise<R2>,
+        R3 | Promise<R3>,
+        R4 | Promise<R4>,
+        R5 | Promise<R5>,
+        R6 | Promise<R6>
+    ]): Promise<[R1, R2, R3, R4, R5, R6]>;
+    static all <R1, R2, R3, R4, R5> (values: [
+        R1 | Promise<R1>,
+        R2 | Promise<R2>,
+        R3 | Promise<R3>,
+        R4 | Promise<R4>,
+        R5 | Promise<R5>
+    ]): Promise<[R1, R2, R3, R4, R5]>;
+    static all <R1, R2, R3, R4> (values: [
+        R1 | Promise<R1>,
+        R2 | Promise<R2>,
+        R3 | Promise<R3>,
+        R4 | Promise<R4>
+    ]): Promise<[R1, R2, R3, R4]>;
+    static all <R1, R2, R3> (values: [
+        R1 | Promise<R1>,
+        R2 | Promise<R2>,
+        R3 | Promise<R3>
+    ]): Promise<[R1, R2, R3]>;
+    static all <R1, R2> (values: [
+        R1 | Promise<R1>,
+        R2 | Promise<R2>
+    ]): Promise<[R1, R2]>;
+    static all  <R> (values: R[] | Promise<R>[]): Promise<R[]>;
+    static race <R> (values: R[] | Promise<R>[]): Promise<R>;
+    static ajax (request: Request): Promise<Response>;
+    static reject (error: any): Promise<void>;
+    static resolve <R> (value: R): Promise<R>;
+
+    readonly result: any;
+    readonly status: "pending" | "resolved" | "rejected";
+
+    constructor (executor: ((resolve: ((value?: T) => void), reject: ((error?: any) => void)) => Function | void));
+
+    then <R1, R2> (onresolved: ((value: T) => R1 | Promise<R1>), onrejected?: ((error: any) => R2 | Promise<R2>)): Promise<R1 | R2>;
+    catch <R> (onrejected: (error: any) => R | Promise<R>): Promise<T | R>;
+    dispose (): void;
 }
 
-//
-// elf
-//
-declare namespace Elf {
+export function assign <T1, T2, T3, T4> (source1: T1, source2: T2, source3: T3, source4: T4): T1 & T2 & T3 & T4;
+export function assign <T1, T2, T3> (source1: T1, source2: T2, source3: T3): T1 & T2 & T3;
+export function assign <T1, T2> (source1: T1, source2: T2): T1 & T2;
+export function assign (source: any, ...sources: any[]): any;
 
-    export class Promise <T> implements Elf.Disposable {
-        static all <R1, R2, R3, R4, R5, R6, R7, R8, R9> (values: [
-            R1 | Elf.Promise<R1>,
-            R2 | Elf.Promise<R2>,
-            R3 | Elf.Promise<R3>,
-            R4 | Elf.Promise<R4>,
-            R5 | Elf.Promise<R5>,
-            R6 | Elf.Promise<R6>,
-            R7 | Elf.Promise<R7>,
-            R8 | Elf.Promise<R8>,
-            R9 | Elf.Promise<R9>
-        ]): Elf.Promise<[R1, R2, R3, R4, R5, R6, R7, R8, R9]>;
-        static all <R1, R2, R3, R4, R5, R6, R7, R8> (values: [
-            R1 | Elf.Promise<R1>,
-            R2 | Elf.Promise<R2>,
-            R3 | Elf.Promise<R3>,
-            R4 | Elf.Promise<R4>,
-            R5 | Elf.Promise<R5>,
-            R6 | Elf.Promise<R6>,
-            R7 | Elf.Promise<R7>,
-            R8 | Elf.Promise<R8>
-        ]): Elf.Promise<[R1, R2, R3, R4, R5, R6, R7, R8]>;
-        static all <R1, R2, R3, R4, R5, R6, R7> (values: [
-            R1 | Elf.Promise<R1>,
-            R2 | Elf.Promise<R2>,
-            R3 | Elf.Promise<R3>,
-            R4 | Elf.Promise<R4>,
-            R5 | Elf.Promise<R5>,
-            R6 | Elf.Promise<R6>,
-            R7 | Elf.Promise<R7>
-        ]): Elf.Promise<[R1, R2, R3, R4, R5, R6, R7]>;
-        static all <R1, R2, R3, R4, R5> (values: [
-            R1 | Elf.Promise<R1>,
-            R2 | Elf.Promise<R2>,
-            R3 | Elf.Promise<R3>,
-            R4 | Elf.Promise<R4>,
-            R5 | Elf.Promise<R5>
-        ]): Elf.Promise<[R1, R2, R3, R4, R5]>;
-        static all <R1, R2, R3, R4> (values: [
-            R1 | Elf.Promise<R1>,
-            R2 | Elf.Promise<R2>,
-            R3 | Elf.Promise<R3>,
-            R4 | Elf.Promise<R4>
-        ]): Elf.Promise<[R1, R2, R3, R4]>;
-        static all <R1, R2, R3> (values: [
-            R1 | Elf.Promise<R1>,
-            R2 | Elf.Promise<R2>,
-            R3 | Elf.Promise<R3>
-        ]): Elf.Promise<[R1, R2, R3]>;
-        static all <R1, R2> (values: [
-            R1 | Elf.Promise<R1>,
-            R2 | Elf.Promise<R2>
-        ]): Elf.Promise<[R1, R2]>;
-        static all  <R> (values: R[] | Elf.Promise<R>[]): Elf.Promise<R[]>;
-        static race <R> (values: R[] | Elf.Promise<R>[]): Elf.Promise<R>;
-        static ajax (request: Elf.Request): Elf.Promise<Elf.Response>;
-        static resolve <R> (value: R): Elf.Promise<R>;
-        static reject (error: any): Elf.Promise<void>;
+export function createClass <T> (proto: T): Class<T>;
 
-        readonly result?: any;
-        readonly status?: string;
+export function requestAnimationFrame <T1, T2, T3, T4> (fn: ((event: Event<any>, arg1: T1, arg2: T2, arg3: T3, arg4: T4) => void), arg1: T1, arg2: T2, arg3: T3, arg4: T4): Disposable;
+export function requestAnimationFrame <T1, T2, T3> (fn: ((event: Event<any>, arg1: T1, arg2: T2, arg3: T3) => void), arg1: T1, arg2: T2, arg3: T3): Disposable;
+export function requestAnimationFrame <T1, T2> (fn: ((event: Event<any>, arg1: T1, arg2: T2) => void), arg1: T1, arg2: T2): Disposable;
+export function requestAnimationFrame <T> (fn: ((event: Event<any>, ...args: T[]) => void), ...args: T[]): Disposable;
 
-        constructor (executor: ((resolve: ((value: T | Elf.Promise<T>) => void), reject: ((error: any) => void)) => Function | void));
+export function setInterval <T1, T2, T3, T4> (fn: ((event: Event<any>, arg1: T1, arg2: T2, arg3: T3, arg4: T4) => void), delay: number, arg1: T1, arg2: T2, arg3: T3, arg4: T4): Disposable;
+export function setInterval <T1, T2, T3> (fn: ((event: Event<any>, arg1: T1, arg2: T2, arg3: T3) => void), delay: number, arg1: T1, arg2: T2, arg3: T3): Disposable;
+export function setInterval <T1, T2> (fn: ((event: Event<any>, arg1: T1, arg2: T2) => void), delay: number, arg1: T1, arg2: T2): Disposable;
+export function setInterval <T> (fn: ((event: Event<any>, ...args: T[]) => void), delay?: number, ...args: T[]): Disposable;
 
-        then <R1, R2> (onresolved?: ((value: T) => R1 | Elf.Promise<R1>), onrejected?: ((error: any) => R2 | Elf.Promise<R2>)): Elf.Promise<R1 | R2>;
-        catch <R> (onrejected?: ((error: any) => R | Elf.Promise<R>)): Elf.Promise<R | T>;
-        dispose (): void;
-    }
+export function setTimeout <T1, T2, T3, T4> (fn: ((event: Event<any>, arg1: T1, arg2: T2, arg3: T3, arg4: T4) => void), delay: number, arg1: T1, arg2: T2, arg3: T3, arg4: T4): Disposable;
+export function setTimeout <T1, T2, T3> (fn: ((event: Event<any>, arg1: T1, arg2: T2, arg3: T3) => void), delay: number, arg1: T1, arg2: T2, arg3: T3): Disposable;
+export function setTimeout <T1, T2> (fn: ((event: Event<any>, arg1: T1, arg2: T2) => void), delay: number, arg1: T1, arg2: T2): Disposable;
+export function setTimeout <T> (fn: ((event: Event<any>, ...args: T[]) => void), delay?: number, ...args: T[]): Disposable;
 
-    export function setTimeout  (handler: ((event: Elf.Event<void>, ...args: any[]) => void), delay?: number, ...args: any[]): Elf.Disposable;
-    export function setInterval (handler: ((event: Elf.Event<void>, ...args: any[]) => void), delay?: number, ...args: any[]): Elf.Disposable;
-    export function requestAnimationFrame (handler: ((event: Elf.Event<void>, ...args: any[]) => void), ...args: any[]): Elf.Disposable;
+export function Component <T extends Partial<any>> (name: string, proto: T & IComponent): Class<T & IComponent>;
+export function Directive <T extends Partial<any>> (name: string, proto: T & IDirective): Class<T & IDirective>;
+export function Transform <T extends Partial<any>> (name: string, proto: T & ITransform): Class<T & ITransform>;
 
-    export function createClass   <T> (proto: T): Elf.Class<T>;
+export function createEvent   <T extends IComponent | HTMLElement | Document | Window> (type: string, bubbles?: boolean, detail?: any): Event<T>;
+export function attachEvent   <T extends IComponent | HTMLElement | Document | Window> (node: T, type: string, listener: EventListenerOrEventListenerObject<T>): void;
+export function detachEvent   <T extends IComponent | HTMLElement | Document | Window> (node: T, type: string, listener: EventListenerOrEventListenerObject<T>): void;
+export function dispatchEvent <T extends IComponent | HTMLElement | Document | Window> (node: T, event: Event<T>): void;
 
-    export function createEvent   <T extends HTMLElement | JSX.ElementClass> (type: string, bubbles?: boolean, value?: any): Elf.Event<T>;
-    export function attachEvent   <T extends HTMLElement | JSX.ElementClass> (node: T, type: string, listener: Elf.EventListenerOrEventListenerObject<T>): void;
-    export function detachEvent   <T extends HTMLElement | JSX.ElementClass> (node: T, type: string, listener: Elf.EventListenerOrEventListenerObject<T>): void;
-    export function dispatchEvent <T extends HTMLElement | JSX.ElementClass> (node: T, event: Elf.Event<T>): void;
+export function createElement (type: string | ComponentConstructor, props?: any, ...children: any[]): JSX.Element;
+export function redactElement (temp: string | AbstractSyntaxTree, ...depends: (ComponentConstructor | DirectiveConstructor | TransformConstructor)[]): () => JSX.Element;
 
-    export function createElement (type: string | Elf.Class<JSX.ElementClass>, props?: any, ...children: any[]): JSX.Element;
-    export function redactElement (temp: string | Function, ...depends: any[]): () => JSX.Element;
+export function forceUpdate (): boolean;
+export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Individual;
+export function depend (...depends: (ComponentConstructor | DirectiveConstructor | TransformConstructor)[]): void;
 
-    export function forceUpdate (): boolean;
-
-    export function Transform <T extends Elf.ITransform> (name: string, proto: T): Elf.Class<T>;
-    export function Directive <T extends Elf.IDirective> (name: string, proto: T): Elf.Class<T>;
-    export function Component <T extends Elf.IComponent> (name: string, proto: T): Elf.Class<T>;
-
-    export function depend (...depends: any[]): void;
-    export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Elf.Individual;
-    export function assign (target: any, ...sources: any[]): any;
-
-    export interface Promise<T> extends Elf.Disposable {
-        
-    }
-
-    export interface Provide {
-        dirname?: string;
-        depends?: string[];
-        trustor?: any;
-        exports?: any;
-    }
-
-    export interface Request {
-        url: string;
-        body?: string;
-        headers?: any;
-        method?: "GET" | "PUT" | "POST" | "HEAD" | "PATCH" | "DELETE" | "OPTIONS";
-        jsonp?: boolean;
-    }
-
-    export interface Response {
-        status: number;
-        headers: any;
-        text(): string;
-        json(): any;
-    }
-
-    export interface DOMProps {
-        key?: string;
-        ref?: string;
-        cmd?: any[];
-    }
-
-    export interface ILifeCycle {
-        onInitial? (...args: any[]): void;
-        onDispose? (...args: any[]): void;
-    }
-
-    export interface ITransform {
-        transform (...args: any[]): any;
-    }
-
-    export interface IDirective extends Elf.ILifeCycle {
-
-    }
-
-    export interface IComponent extends Elf.ILifeCycle {
-        readonly refs?: any;
-        readonly props?: any;
-        render (): JSX.Element;
-    }
-
-    export interface Individual extends Elf.Disposable {
-        readonly duplex: boolean;
-        forceUpdate (): void;
-    }
-
-    export interface Disposable {
-        dispose (): void;
-    }
-
-    export interface Class <T> extends Function {
-        new (...args: any[]): T;
-        readonly prototype: T;
-    }
-
-    export interface Event <T> {
-        readonly type: string;
-        readonly bubbles: boolean;
-        readonly cancelable: boolean;
-        readonly cancelBubble: boolean;
-        readonly cancelEntire: boolean;
-        readonly defaultPrevented: boolean;
-        readonly refershPrevented: boolean;
-        readonly currentTarget: T;
-        readonly target: EventTarget;
-        readonly detail: any;
-        preventDefault ()         : void;
-        preventRefresh ()         : void;
-        stopPropagation()         : void;
-        stopImmediatePropagation(): void;
-    }
-    export interface EventListener <T> {
-        (event: Elf.Event<T>): void;
-    }
-    export interface EventListenerObject <T> {
-        handleEvent(event: Elf.Event<T>): void;
-    }
-    export type EventListenerOrEventListenerObject <T> = EventListener<T> | EventListenerObject<T>;
+interface Request {
+    readonly url: string;
+    readonly body?: string;
+    readonly headers?: any;
+    readonly method?: "GET" | "PUT" | "POST" | "HEAD" | "PATCH" | "DELETE" | "OPTIONS";
+    readonly jsonp?: boolean;
 }
-
-//
-// elf-loader
-//
-declare namespace Elf {
-
-    export var Compiler: CompilerConstructor;
-
-    export function set (name: string, value: any): void;
-    export function config (options: Elf.Options): void;
-    export function require <T> (modname: string): Elf.Promise<T>;
-
-    export interface CompilerConstructor {
-        [extension: string]: CompilerMethod;
-    }
-
-    export interface Options {
-        baseURL?: string;
-        mapping?: object;
-        routing?: (url: string) => string;
-        defaultExtension?: string;
-    }
-
-    export type CompilerMethod = (value: string, filename: string, rawname: string) => Elf.Provide | Elf.Promise<Elf.Provide>;
+interface Response {
+    readonly status: number;
+    readonly headers: any;
+    text(): string;
+    json(): any;
 }
+interface IComponent extends ILifeCycle {
+    readonly props?: any;
+    readonly state?: any;
+    readonly refs?: any;
+    onInitial? (): void;
+    onDispose? (): void;
+    render (): JSX.Element;
+}
+interface IDirective extends ILifeCycle {
+    onInitial? (product: IComponent | HTMLElement, props: any): void;
+    onDispose? (product: IComponent | HTMLElement, props: any): void;
+}
+interface ITransform {
+    transform (...args: any[]): any;
+}
+interface ILifeCycle {
+    onInitial? (...args: any[]): void;
+    onDispose? (...args: any[]): void;
+}
+interface Individual extends Disposable {
+    forceUpdate (): void;
+}
+interface Disposable {
+    dispose (): void;
+}
+interface ComponentConstructor extends Class<IComponent> {
 
-//
-// jsx
-//
-declare namespace JSX {
+}
+interface DirectiveConstructor extends Class<IDirective> {
 
-    export interface Element {
-        readonly type: string | Elf.Class<JSX.ElementClass>;
-        readonly owner: JSX.ElementClass;
-        readonly props: any;
-        readonly ref: string;
-        readonly key: string;
-        readonly cmd: any[];
+}
+interface TransformConstructor extends Class<ITransform> {
+
+}
+interface AbstractSyntaxTree {
+    readonly doctype: string;
+    readonly filename: string;
+    readonly body: AbstractSyntaxElement;
+}
+interface AbstractSyntaxElement {
+    readonly nodeType: number;
+    readonly nodeName?: AbstractSyntaxResult;
+    readonly children?: AbstractSyntaxElement[];
+    readonly segments?: AbstractSyntaxSegment[];
+    readonly attributes?: AbstractSyntaxAttribute[];
+    readonly condition?: AbstractSyntaxResult;
+    readonly iteration?: {
+        readonly keys: AbstractSyntaxResult;
+        readonly body: AbstractSyntaxResult;
     }
+}
+interface AbstractSyntaxSegment {
+    readonly computed: boolean;
+    readonly input: AbstractSyntaxResult;
+    readonly pipes?: AbstractSyntaxPiping[];
+}
+interface AbstractSyntaxAttribute {
+    readonly incident: boolean;
+    readonly name: AbstractSyntaxResult;
+    readonly delegate?: AbstractSyntaxResult;
+    readonly segments?: AbstractSyntaxSegment[];
+}
+interface AbstractSyntaxPiping {
+    readonly name: AbstractSyntaxResult;
+    readonly arguments: AbstractSyntaxResult[];
+}
+interface AbstractSyntaxResult {
+    readonly raw: string;
+    readonly loc: {
+        readonly rownum: number;
+        readonly colnum: number;
+    };
+}
+interface Class<T> {
+    new (...args: any[]): T;
+}
+interface Event<T> {
+    readonly type: string;
+    readonly bubbles: boolean;
+    readonly cancelable: boolean;
+    readonly cancelBubble: boolean;
+    readonly cancelEntire: boolean;
+    readonly defaultPrevented: boolean;
+    readonly refershPrevented: boolean;
+    readonly currentTarget: T;
+    readonly target: EventTarget;
+    readonly detail: any;
+    stopImmediatePropagation (): void;
+    stopPropagation (): void;
+    preventDefault (): void;
+    preventRefresh (): void;
+}
+interface EventListener<T> {
+    (this: T, event: Event<T>): void;
+}
+interface EventListenerObject<T> {
+    handleEvent (event: Event<T>): void;
+}
+type EventListenerOrEventListenerObject<T> = EventListener<T> | EventListenerObject<T>;
 
-    export interface ElementClass extends Elf.IComponent { }
 
-    export interface ElementAttributesProperty { props: {} }
+declare global {
+    namespace JSX {
+        interface Props {
+            cmd?: any[];
+            key?: string;
+            ref?: string;
+        }
+        interface Element {
+            readonly cmd: any[];
+            readonly key: string;
+            readonly ref: string;
+            readonly type: string | ComponentConstructor;
+            readonly owner: IComponent;
+            readonly props: any;
+        }
+        interface ElementClass extends IComponent { }
+        interface ElementAttributesProperty { props: {} }
+        interface IntrinsicAttributes      extends Props { }
+        interface IntrinsicClassAttributes extends Props { }
 
-    export interface IntrinsicAttributes      extends Elf.DOMProps { }
+        interface IntrinsicElements {
+            // HTML Element
+            a                          : DOMProps<HTMLAnchorElement>;
+            abbr                       : DOMProps<HTMLElement>;
+            acronym                    : DOMProps<HTMLElement>;
+            address                    : DOMProps<HTMLElement>;
+            applet                     : DOMProps<HTMLAppletElement>;
+            area                       : DOMProps<HTMLAreaElement>;
+            article                    : DOMProps<HTMLElement>;
+            aside                      : DOMProps<HTMLElement>;
+            audio                      : DOMProps<HTMLAudioElement>;
+            b                          : DOMProps<HTMLElement>;
+            base                       : DOMProps<HTMLBaseElement>;
+            basefont                   : DOMProps<HTMLBaseFontElement>;
+            bdi                        : DOMProps<HTMLElement>;
+            bdo                        : DOMProps<HTMLElement>;
+            bgsound                    : DOMProps<HTMLElement>;
+            big                        : DOMProps<HTMLElement>;
+            blink                      : DOMProps<HTMLElement>;
+            blockquote                 : DOMProps<HTMLElement>;
+            body                       : DOMProps<HTMLBodyElement>;
+            br                         : DOMProps<HTMLBRElement>;
+            button                     : DOMProps<HTMLButtonElement>;
+            canvas                     : DOMProps<HTMLCanvasElement>;
+            caption                    : DOMProps<HTMLElement>;
+            center                     : DOMProps<HTMLElement>;
+            cite                       : DOMProps<HTMLElement>;
+            code                       : DOMProps<HTMLElement>;
+            col                        : DOMProps<HTMLTableColElement>;
+            colgroup                   : DOMProps<HTMLTableColElement>;
+            content                    : DOMProps<HTMLElement>;
+            data                       : DOMProps<HTMLElement>;
+            datalist                   : DOMProps<HTMLDataListElement>;
+            dd                         : DOMProps<HTMLElement>;
+            del                        : DOMProps<HTMLElement>;
+            details                    : DOMProps<HTMLElement>;
+            dfn                        : DOMProps<HTMLElement>;
+            dir                        : DOMProps<HTMLElement>;
+            div                        : DOMProps<HTMLDivElement>;
+            dl                         : DOMProps<HTMLDListElement>;
+            dt                         : DOMProps<HTMLElement>;
+            em                         : DOMProps<HTMLElement>;
+            embed                      : DOMProps<HTMLEmbedElement>;
+            fieldset                   : DOMProps<HTMLFieldSetElement>;
+            figcaption                 : DOMProps<HTMLElement>;
+            figure                     : DOMProps<HTMLElement>;
+            font                       : DOMProps<HTMLFontElement>;
+            footer                     : DOMProps<HTMLElement>;
+            form                       : DOMProps<HTMLFormElement>;
+            frame                      : DOMProps<HTMLFrameElement>;
+            frameset                   : DOMProps<HTMLElement>;
+            h1                         : DOMProps<HTMLHeadingElement>;
+            h2                         : DOMProps<HTMLHeadingElement>;
+            h3                         : DOMProps<HTMLHeadingElement>;
+            h4                         : DOMProps<HTMLHeadingElement>;
+            h5                         : DOMProps<HTMLHeadingElement>;
+            h6                         : DOMProps<HTMLHeadingElement>;
+            head                       : DOMProps<HTMLHeadElement>;
+            header                     : DOMProps<HTMLElement>;
+            hgroup                     : DOMProps<HTMLElement>;
+            hr                         : DOMProps<HTMLHRElement>;
+            html                       : DOMProps<HTMLHtmlElement>;
+            i                          : DOMProps<HTMLElement>;
+            iframe                     : DOMProps<HTMLIFrameElement>;
+            img                        : DOMProps<HTMLImageElement>;
+            input                      : DOMProps<HTMLInputElement>;
+            ins                        : DOMProps<HTMLModElement>;
+            isindex                    : DOMProps<HTMLElement>;
+            kbd                        : DOMProps<HTMLElement>;
+            keygen                     : DOMProps<HTMLElement>;
+            label                      : DOMProps<HTMLLabelElement>;
+            legend                     : DOMProps<HTMLLegendElement>;
+            li                         : DOMProps<HTMLLIElement>;
+            link                       : DOMProps<HTMLLinkElement>;
+            listing                    : DOMProps<HTMLElement>;
+            main                       : DOMProps<HTMLElement>;
+            map                        : DOMProps<HTMLMapElement>;
+            mark                       : DOMProps<HTMLElement>;
+            marquee                    : DOMProps<HTMLMarqueeElement>;
+            menu                       : DOMProps<HTMLElement>;
+            menuitem                   : DOMProps<HTMLElement>;
+            meta                       : DOMProps<HTMLMetaElement>;
+            meter                      : DOMProps<HTMLElement>;
+            nav                        : DOMProps<HTMLElement>;
+            nobr                       : DOMProps<HTMLElement>;
+            noframes                   : DOMProps<HTMLElement>;
+            noscript                   : DOMProps<HTMLElement>;
+            object                     : DOMProps<HTMLObjectElement>;
+            ol                         : DOMProps<HTMLOListElement>;
+            optgroup                   : DOMProps<HTMLOptGroupElement>;
+            option                     : DOMProps<HTMLOptionElement>;
+            output                     : DOMProps<HTMLElement>;
+            p                          : DOMProps<HTMLParagraphElement>;
+            param                      : DOMProps<HTMLParamElement>;
+            plaintext                  : DOMProps<HTMLElement>;
+            pre                        : DOMProps<HTMLPreElement>;
+            progress                   : DOMProps<HTMLProgressElement>;
+            q                          : DOMProps<HTMLQuoteElement>;
+            rp                         : DOMProps<HTMLElement>;
+            rt                         : DOMProps<HTMLElement>;
+            ruby                       : DOMProps<HTMLElement>;
+            s                          : DOMProps<HTMLElement>;
+            samp                       : DOMProps<HTMLElement>;
+            script                     : DOMProps<HTMLScriptElement>;
+            section                    : DOMProps<HTMLElement>;
+            select                     : DOMProps<HTMLSelectElement>;
+            shadow                     : DOMProps<HTMLElement>;
+            small                      : DOMProps<HTMLElement>;
+            source                     : DOMProps<HTMLSourceElement>;
+            spacer                     : DOMProps<HTMLElement>;
+            span                       : DOMProps<HTMLSpanElement>;
+            strike                     : DOMProps<HTMLElement>;
+            strong                     : DOMProps<HTMLElement>;
+            style                      : DOMProps<HTMLStyleElement>;
+            sub                        : DOMProps<HTMLElement>;
+            summary                    : DOMProps<HTMLElement>;
+            sup                        : DOMProps<HTMLElement>;
+            table                      : DOMProps<HTMLTableElement>;
+            tbody                      : DOMProps<HTMLTableSectionElement>;
+            td                         : DOMProps<HTMLTableDataCellElement>;
+            template                   : DOMProps<HTMLTemplateElement>;
+            textarea                   : DOMProps<HTMLTextAreaElement>;
+            tfoot                      : DOMProps<HTMLTableSectionElement>;
+            th                         : DOMProps<HTMLTableHeaderCellElement>;
+            thead                      : DOMProps<HTMLTableSectionElement>;
+            time                       : DOMProps<HTMLElement>;
+            title                      : DOMProps<HTMLTitleElement>;
+            tr                         : DOMProps<HTMLTableRowElement>;
+            track                      : DOMProps<HTMLTrackElement>;
+            tt                         : DOMProps<HTMLElement>;
+            u                          : DOMProps<HTMLElement>;
+            ul                         : DOMProps<HTMLUListElement>;
+            var                        : DOMProps<HTMLElement>;
+            video                      : DOMProps<HTMLVideoElement>;
+            wbr                        : DOMProps<HTMLElement>;
+            xmp                        : DOMProps<HTMLElement>;
+    
+            // SVG Element
+            altGlyph                   : SVGProps;
+            altGlyphDef                : SVGProps;
+            altGlyphItem               : SVGProps;
+            animate                    : SVGProps;
+            animateColor               : SVGProps;
+            animateMotion              : SVGProps;
+            animateTransform           : SVGProps;
+            circle                     : SVGProps;
+            clipPath                   : SVGProps;
+            colorProfile               : SVGProps;
+            cursor                     : SVGProps;
+            defs                       : SVGProps;
+            desc                       : SVGProps;
+            ellipse                    : SVGProps;
+            feBlend                    : SVGProps;
+            feColorMatrix              : SVGProps;
+            feComponentTransfer        : SVGProps;
+            feComposite                : SVGProps;
+            feConvolveMatrix           : SVGProps;
+            feDiffuseLighting          : SVGProps;
+            feDisplacementMap          : SVGProps;
+            feDistantLight             : SVGProps;
+            feFlood                    : SVGProps;
+            feFuncA                    : SVGProps;
+            feFuncB                    : SVGProps;
+            feFuncG                    : SVGProps;
+            feFuncR                    : SVGProps;
+            feGaussianBlur             : SVGProps;
+            feImage                    : SVGProps;
+            feMerge                    : SVGProps;
+            feMergeNode                : SVGProps;
+            feMorphology               : SVGProps;
+            feOffset                   : SVGProps;
+            fePointLight               : SVGProps;
+            feSpecularLighting         : SVGProps;
+            feSpotLight                : SVGProps;
+            feTile                     : SVGProps;
+            feTurbulence               : SVGProps;
+            filter                     : SVGProps;
+            fontFace                   : SVGProps;
+            fontFaceFormat             : SVGProps;
+            fontFaceName               : SVGProps;
+            fontFaceSrc                : SVGProps;
+            fontFaceUri                : SVGProps;
+            foreignObject              : SVGProps;
+            g                          : SVGProps;
+            glyph                      : SVGProps;
+            glyphRef                   : SVGProps;
+            hkern                      : SVGProps;
+            image                      : SVGProps;
+            line                       : SVGProps;
+            linearGradient             : SVGProps;
+            marker                     : SVGProps;
+            mask                       : SVGProps;
+            metadata                   : SVGProps;
+            missingGlyph               : SVGProps;
+            mpath                      : SVGProps;
+            path                       : SVGProps;
+            pattern                    : SVGProps;
+            polygon                    : SVGProps;
+            polyline                   : SVGProps;
+            radialGradient             : SVGProps;
+            rect                       : SVGProps;
+            set                        : SVGProps;
+            stop                       : SVGProps;
+            svg                        : SVGProps;
+            switch                     : SVGProps;
+            symbol                     : SVGProps;
+            text                       : SVGProps;
+            textPath                   : SVGProps;
+            tref                       : SVGProps;
+            tspan                      : SVGProps;
+            use                        : SVGProps;
+            view                       : SVGProps;
+            vkern                      : SVGProps;
+    
+            // MathML Element
+            math                       : MathMLProps;
+            maction                    : MathMLProps;
+            maligngroup                : MathMLProps;
+            malignmark                 : MathMLProps;
+            menclose                   : MathMLProps;
+            merror                     : MathMLProps;
+            mfenced                    : MathMLProps;
+            mfrac                      : MathMLProps;
+            mglyph                     : MathMLProps;
+            mi                         : MathMLProps;
+            mlabeledtr                 : MathMLProps;
+            mlongdiv                   : MathMLProps;
+            mmultiscripts              : MathMLProps;
+            mn                         : MathMLProps;
+            mo                         : MathMLProps;
+            mover                      : MathMLProps;
+            mpadded                    : MathMLProps;
+            mphantom                   : MathMLProps;
+            mroot                      : MathMLProps;
+            mrow                       : MathMLProps;
+            ms                         : MathMLProps;
+            mscarries                  : MathMLProps;
+            mscarry                    : MathMLProps;
+            msgroup                    : MathMLProps;
+            mstack                     : MathMLProps;
+            msline                     : MathMLProps;
+            mspace                     : MathMLProps;
+            msqrt                      : MathMLProps;
+            msrow                      : MathMLProps;
+            mstyle                     : MathMLProps;
+            msub                       : MathMLProps;
+            msup                       : MathMLProps;
+            msubsup                    : MathMLProps;
+            mtable                     : MathMLProps;
+            mtd                        : MathMLProps;
+            mtext                      : MathMLProps;
+            mtr                        : MathMLProps;
+            munder                     : MathMLProps;
+            munderover                 : MathMLProps;
+            semantics                  : MathMLProps;
+            annotation                 : MathMLProps;
+            annotationXml              : MathMLProps;
+        }
+    
+        export interface CSSProps {
+            alignContent?              : any;
+            alignItems?                : any;
+            alignSelf?                 : any;
+            alignmentAdjust?           : any;
+            alignmentBaseline?         : any;
+            animationDelay?            : any;
+            animationDirection?        : any;
+            animationIterationCount?   : any;
+            animationName?             : any;
+            animationPlayState?        : any;
+            appearance?                : any;
+            backfaceVisibility?        : any;
+            background?                : any;
+            backgroundAttachment?      : "scroll" | "fixed" | "local";
+            backgroundBlendMode?       : any;
+            backgroundColor?           : any;
+            backgroundComposite?       : any;
+            backgroundImage?           : any;
+            backgroundOrigin?          : any;
+            backgroundPosition?        : any;
+            backgroundRepeat?          : any;
+            baselineShift?             : any;
+            behavior?                  : any;
+            border?                    : any;
+            borderBottom?              : any;
+            borderBottomColor?         : any;
+            borderBottomLeftRadius?    : any;
+            borderBottomRightRadius?   : any;
+            borderBottomStyle?         : any;
+            borderBottomWidth?         : any;
+            borderCollapse?            : any;
+            borderColor?               : any;
+            borderCornerShape?         : any;
+            borderImageSource?         : any;
+            borderImageWidth?          : any;
+            borderLeft?                : any;
+            borderLeftColor?           : any;
+            borderLeftStyle?           : any;
+            borderLeftWidth?           : any;
+            borderRight?               : any;
+            borderRightColor?          : any;
+            borderRightStyle?          : any;
+            borderRightWidth?          : any;
+            borderSpacing?             : any;
+            borderStyle?               : any;
+            borderTop?                 : any;
+            borderTopColor?            : any;
+            borderTopLeftRadius?       : any;
+            borderTopRightRadius?      : any;
+            borderTopStyle?            : any;
+            borderTopWidth?            : any;
+            borderWidth?               : any;
+            bottom?                    : any;
+            boxAlign?                  : any;
+            boxDecorationBreak?        : any;
+            boxDirection?              : any;
+            boxLineProgression?        : any;
+            boxLines?                  : any;
+            boxOrdinalGroup?           : any;
+            boxFlex?                   : number;
+            boxFlexGroup?              : number;
+            breakAfter?                : any;
+            breakBefore?               : any;
+            breakInside?               : any;
+            clear?                     : any;
+            clip?                      : any;
+            clipRule?                  : any;
+            color?                     : any;
+            columnCount?               : number;
+            columnFill?                : any;
+            columnGap?                 : any;
+            columnRule?                : any;
+            columnRuleColor?           : any;
+            columnRuleWidth?           : any;
+            columnSpan?                : any;
+            columnWidth?               : any;
+            columns?                   : any;
+            counterIncrement?          : any;
+            counterReset?              : any;
+            cue?                       : any;
+            cueAfter?                  : any;
+            cursor?                    : any;
+            direction?                 : any;
+            display?                   : any;
+            fill?                      : any;
+            fillOpacity?               : number;
+            fillRule?                  : any;
+            filter?                    : any;
+            flex?                      : number | string;
+            flexAlign?                 : any;
+            flexBasis?                 : any;
+            flexDirection?             : any;
+            flexFlow?                  : any;
+            flexGrow?                  : number;
+            flexItemAlign?             : any;
+            flexLinePack?              : any;
+            flexOrder?                 : any;
+            flexShrink?                : number;
+            float?                     : any;
+            flowFrom?                  : any;
+            font?                      : any;
+            fontFamily?                : any;
+            fontKerning?               : any;
+            fontSize?                  : number | string;
+            fontSizeAdjust?            : any;
+            fontStretch?               : any;
+            fontStyle?                 : any;
+            fontSynthesis?             : any;
+            fontVariant?               : any;
+            fontVariantAlternates?     : any;
+            fontWeight?                : "normal" | "bold" | "lighter" | "bolder" | number;
+            gridArea?                  : any;
+            gridColumn?                : any;
+            gridColumnEnd?             : any;
+            gridColumnStart?           : any;
+            gridRow?                   : any;
+            gridRowEnd?                : any;
+            gridRowPosition?           : any;
+            gridRowSpan?               : any;
+            gridTemplateAreas?         : any;
+            gridTemplateColumns?       : any;
+            gridTemplateRows?          : any;
+            height?                    : any;
+            hyphenateLimitChars?       : any;
+            hyphenateLimitLines?       : any;
+            hyphenateLimitZone?        : any;
+            hyphens?                   : any;
+            imeMode?                   : any;
+            layoutGrid?                : any;
+            layoutGridChar?            : any;
+            layoutGridLine?            : any;
+            layoutGridMode?            : any;
+            layoutGridType?            : any;
+            left?                      : any;
+            letterSpacing?             : any;
+            lineBreak?                 : any;
+            lineClamp?                 : number;
+            lineHeight?                : number | string;
+            listStyle?                 : any;
+            listStyleImage?            : any;
+            listStylePosition?         : any;
+            listStyleType?             : any;
+            margin?                    : any;
+            marginBottom?              : any;
+            marginLeft?                : any;
+            marginRight?               : any;
+            marginTop?                 : any;
+            marqueeDirection?          : any;
+            marqueeStyle?              : any;
+            mask?                      : any;
+            maskBorder?                : any;
+            maskBorderRepeat?          : any;
+            maskBorderSlice?           : any;
+            maskBorderSource?          : any;
+            maskBorderWidth?           : any;
+            maskClip?                  : any;
+            maskOrigin?                : any;
+            maxFontSize?               : any;
+            maxHeight?                 : any;
+            maxWidth?                  : any;
+            minHeight?                 : any;
+            minWidth?                  : any;
+            opacity?                   : number;
+            order?                     : number;
+            orphans?                   : number;
+            outline?                   : any;
+            outlineColor?              : any;
+            outlineOffset?             : any;
+            overflow?                  : any;
+            overflowStyle?             : any;
+            overflowX?                 : any;
+            overflowY?                 : any;
+            padding?                   : any;
+            paddingBottom?             : any;
+            paddingLeft?               : any;
+            paddingRight?              : any;
+            paddingTop?                : any;
+            pageBreakAfter?            : any;
+            pageBreakBefore?           : any;
+            pageBreakInside?           : any;
+            pause?                     : any;
+            pauseAfter?                : any;
+            pauseBefore?               : any;
+            perspective?               : any;
+            perspectiveOrigin?         : any;
+            pointerEvents?             : any;
+            position?                  : any;
+            punctuationTrim?           : any;
+            quotes?                    : any;
+            regionFragment?            : any;
+            restAfter?                 : any;
+            restBefore?                : any;
+            right?                     : any;
+            rubyAlign?                 : any;
+            rubyPosition?              : any;
+            shapeImageThreshold?       : any;
+            shapeInside?               : any;
+            shapeMargin?               : any;
+            shapeOutside?              : any;
+            speak?                     : any;
+            speakAs?                   : any;
+            strokeOpacity?             : number;
+            strokeWidth?               : number;
+            tabSize?                   : any;
+            tableLayout?               : any;
+            textAlign?                 : any;
+            textAlignLast?             : any;
+            textDecoration?            : any;
+            textDecorationColor?       : any;
+            textDecorationLine?        : any;
+            textDecorationLineThrough? : any;
+            textDecorationNone?        : any;
+            textDecorationOverline?    : any;
+            textDecorationSkip?        : any;
+            textDecorationStyle?       : any;
+            textDecorationUnderline?   : any;
+            textEmphasis?              : any;
+            textEmphasisColor?         : any;
+            textEmphasisStyle?         : any;
+            textHeight?                : any;
+            textIndent?                : any;
+            textJustifyTrim?           : any;
+            textKashidaSpace?          : any;
+            textLineThrough?           : any;
+            textLineThroughColor?      : any;
+            textLineThroughMode?       : any;
+            textLineThroughStyle?      : any;
+            textLineThroughWidth?      : any;
+            textOverflow?              : any;
+            textOverline?              : any;
+            textOverlineColor?         : any;
+            textOverlineMode?          : any;
+            textOverlineStyle?         : any;
+            textOverlineWidth?         : any;
+            textRendering?             : any;
+            textScript?                : any;
+            textShadow?                : any;
+            textTransform?             : any;
+            textUnderlinePosition?     : any;
+            textUnderlineStyle?        : any;
+            top?                       : any;
+            touchAction?               : any;
+            transform?                 : any;
+            transformOrigin?           : any;
+            transformOriginZ?          : any;
+            transformStyle?            : any;
+            transition?                : any;
+            transitionDelay?           : any;
+            transitionDuration?        : any;
+            transitionProperty?        : any;
+            transitionTimingFunction?  : any;
+            unicodeBidi?               : any;
+            unicodeRange?              : any;
+            userFocus?                 : any;
+            userInput?                 : any;
+            verticalAlign?             : any;
+            visibility?                : any;
+            voiceBalance?              : any;
+            voiceDuration?             : any;
+            voiceFamily?               : any;
+            voicePitch?                : any;
+            voiceRange?                : any;
+            voiceRate?                 : any;
+            voiceStress?               : any;
+            voiceVolume?               : any;
+            whiteSpace?                : any;
+            whiteSpaceTreatment?       : any;
+            widows?                    : number;
+            width?                     : any;
+            wordBreak?                 : any;
+            wordSpacing?               : any;
+            wordWrap?                  : any;
+            wrapFlow?                  : any;
+            wrapMargin?                : any;
+            wrapOption?                : any;
+            writingMode?               : any;
+            zIndex?                    : "auto" | number;
+            zoom?                      : "auto" | number;
+            [key: string]              : any;
+        }
+    
+        export interface SVGProps {
+            clipPath?                  : string;
+            cx?                        : number | string;
+            cy?                        : number | string;
+            d?                         : string;
+            dx?                        : number | string;
+            dy?                        : number | string;
+            fill?                      : string;
+            fillOpacity?               : number | string;
+            fontFamily?                : string;
+            fontSize?                  : number | string;
+            fx?                        : number | string;
+            fy?                        : number | string;
+            gradientTransform?         : string;
+            gradientUnits?             : string;
+            markerEnd?                 : string;
+            markerMid?                 : string;
+            markerStart?               : string;
+            offset?                    : number | string;
+            opacity?                   : number | string;
+            patternContentUnits?       : string;
+            patternUnits?              : string;
+            points?                    : string;
+            preserveAspectRatio?       : string;
+            r?                         : number | string;
+            rx?                        : number | string;
+            ry?                        : number | string;
+            spreadMethod?              : string;
+            stopColor?                 : string;
+            stopOpacity?               : number | string;
+            stroke?                    : string;
+            strokeDasharray?           : string;
+            strokeLinecap?             : string;
+            strokeMiterlimit?          : string;
+            strokeOpacity?             : number | string;
+            strokeWidth?               : number | string;
+            textAnchor?                : string;
+            transform?                 : string;
+            version?                   : string;
+            viewBox?                   : string;
+            x1?                        : number | string;
+            x2?                        : number | string;
+            x?                         : number | string;
+            xlinkActuate?              : string;
+            xlinkArcrole?              : string;
+            xlinkHref?                 : string;
+            xlinkRole?                 : string;
+            xlinkShow?                 : string;
+            xlinkTitle?                : string;
+            xlinkType?                 : string;
+            xmlBase?                   : string;
+            xmlLang?                   : string;
+            xmlSpace?                  : string;
+            y1?                        : number | string;
+            y2?                        : number | string;
+            y?                         : number | string;
+            [key: string]              : any;
+        }
+    
+        export interface MathMLProps {
+            accent?                    : any;
+            accentunder?               : any;
+            actiontype?                : any;
+            align?                     : any;
+            alignmentscope?            : any;
+            altimg?                    : any;
+            altimgWidth?               : any;
+            altimgHeight?              : any;
+            altimgValign?              : any;
+            alttext?                   : any;
+            bevelled?                  : any;
+            charalign?                 : any;
+            close?                     : any;
+            columnalign?               : any;
+            columnlines?               : any;
+            columnspacing?             : any;
+            columnspan?                : any;
+            columnwidth?               : any;
+            crossout?                  : any;
+            decimalpoint?              : any;
+            denomalign?                : any;
+            depth?                     : any;
+            dir?                       : any;
+            display?                   : any;
+            displaystyle?              : any;
+            edge?                      : any;
+            equalcolumns?              : any;
+            equalrows?                 : any;
+            fence?                     : any;
+            form?                      : any;
+            frame?                     : any;
+            framespacing?              : any;
+            groupalign?                : any;
+            height?                    : any;
+            href?                      : any;
+            id?                        : any;
+            indentalign?               : any;
+            indentalignfirst?          : any;
+            indentalignlast?           : any;
+            indentshift?               : any;
+            indentshiftfirst?          : any;
+            indentshiftlast?           : any;
+            indenttarget?              : any;
+            infixlinebreakstyle?       : any;
+            largeop?                   : any;
+            length?                    : any;
+            linebreak?                 : any;
+            linebreakmultchar?         : any;
+            linebreakstyle?            : any;
+            lineleading?               : any;
+            linethickness?             : any;
+            location?                  : any;
+            longdivstyle?              : any;
+            lspace?                    : any;
+            lquote?                    : any;
+            mathbackground?            : any;
+            mathcolor?                 : any;
+            mathsize?                  : any;
+            mathvariant?               : any;
+            maxsize?                   : any;
+            minlabelspacing?           : any;
+            minsize?                   : any;
+            movablelimits?             : any;
+            notation?                  : any;
+            numalign?                  : any;
+            open?                      : any;
+            overflow?                  : any;
+            position?                  : any;
+            rowalign?                  : any;
+            rowlines?                  : any;
+            rowspacing?                : any;
+            rowspan?                   : any;
+            rspace?                    : any;
+            rquote?                    : any;
+            scriptlevel?               : any;
+            scriptminsize?             : any;
+            scriptsizemultiplier?      : any;
+            selection?                 : any;
+            separator?                 : any;
+            separators?                : any;
+            shift?                     : any;
+            side?                      : any;
+            src?                       : any;
+            stackalign?                : any;
+            stretchy?                  : any;
+            subscriptshift?            : any;
+            supscriptshift?            : any;
+            symmetric?                 : any;
+            voffset?                   : any;
+            width?                     : any;
+            xlinkHref?                 : any;
+            xmlns?                     : any;
+            [key: string]              : any;
+        }
+        interface DOMProps<T> extends DOMEvent<T>, Props {
+            accept?                    : string;
+            acceptCharset?             : string;
+            accesskey?                 : string;
+            action?                    : string;
+            allowFullScreen?           : boolean;
+            allowTransparency?         : boolean;
+            align?                     : string;
+            alt?                       : string;
+            async?                     : boolean;
+            autocomplete?              : "on" | "off";
+            autofocus?                 : boolean;
+            autoplay?                  : boolean;
+            autosave?                  : boolean;
+            bgcolor?                   : string;
+            border?                    : string;
+            capture?                   : boolean;
+            cellpadding?               : number | string;
+            cellspacing?               : number | string;
+            challenge?                 : string;
+            charset?                   : string;
+            checked?                   : boolean;
+            cite?                      : string;
+            classid?                   : string;
+            className?                 : string | object;
+            code?                      : string;
+            codebase?                  : string;
+            color?                     : string;
+            cols?                      : number;
+            colspan?                   : number;
+            content?                   : string;
+            contenteditable?           : boolean;
+            contextmenu?               : string;
+            controls?                  : boolean;
+            coords?                    : string;
+            crossorigin?               : "anonymous" | "use-credentials";
+            data?                      : string;
+            datetime?                  : string;
+            default?                   : boolean;
+            defer?                     : boolean;
+            dir?                       : string;
+            dirname?                   : string;
+            disabled?                  : boolean;
+            download?                  : any;
+            draggable?                 : boolean;
+            dropzone?                  : boolean;
+            enctype?                   : string;
+            form?                      : string;
+            formaction?                : string;
+            headers?                   : string;
+            height?                    : string | 0;
+            hidden?                    : boolean;
+            high?                      : number;
+            href?                      : string;
+            hreflang?                  : string;
+            htmlFor?                   : string;
+            httpEquiv?                 : string;
+            icon?                      : string;
+            id?                        : string;
+            isMap?                     : boolean;
+            itemprop?                  : string;
+            keytype?                   : string;
+            kind?                      : string;
+            label?                     : string;
+            lang?                      : string;
+            language?                  : string;
+            list?                      : string;
+            loop?                      : boolean;
+            low?                       : number;
+            manifest?                  : string;
+            max?                       : string | number;
+            maxlength?                 : number;
+            media?                     : string;
+            method?                    : string;
+            min?                       : string | number;
+            multiple?                  : boolean;
+            muted?                     : boolean;
+            name?                      : string;
+            novalidate?                : boolean;
+            open?                      : boolean;
+            optimum?                   : number;
+            pattern?                   : string;
+            ping?                      : string;
+            placeholder?               : string;
+            poster?                    : string;
+            preload?                   : string;
+            radiogroup?                : string;
+            readonly?                  : boolean;
+            rel?                       : string;
+            required?                  : boolean;
+            reversed?                  : boolean;
+            rows?                      : number;
+            rowspan?                   : number;
+            sandbox?                   : string;
+            scope?                     : string;
+            scoped?                    : string;
+            seamless?                  : boolean;
+            selected?                  : boolean;
+            shape?                     : string;
+            size?                      : number;
+            sizes?                     : string;
+            span?                      : number;
+            spellcheck?                : boolean;
+            src?                       : string;
+            srcdoc?                    : string;
+            srclang?                   : string;
+            srcset?                    : string;
+            start?                     : number;
+            step?                      : string | number;
+            style?                     : string | CSSProps;
+            summary?                   : string;
+            tabindex?                  : number;
+            target?                    : string;
+            title?                     : string;
+            type?                      : string;
+            usemap?                    : string;
+            value?                     : string | number;
+            width?                     : string | number;
+            wrap?                      : string;
+            [key: string]              : any;
+        }
+        interface DOMEvent<T> {
+            
+            // Composition Events
+            onCompositionEnd?          : Listener<CompositionEvent<T>>;
+            onCompositionStart?        : Listener<CompositionEvent<T>>;
+            onCompositionUpdate?       : Listener<CompositionEvent<T>>;
+    
+            // Transition Events
+            onTransitionEnd?           : Listener<TransitionEvent<T>>;
+    
+            // Animation Events
+            onAnimationStart?          : Listener<AnimationEvent<T>>;
+            onAnimationEnd?            : Listener<AnimationEvent<T>>;
+            onAnimationIteration?      : Listener<AnimationEvent<T>>;
+            
+            // Clipboard Events
+            onCopy?                    : Listener<ClipboardEvent<T>>;
+            onCut?                     : Listener<ClipboardEvent<T>>;
+            onPaste?                   : Listener<ClipboardEvent<T>>;
+    
+            // Selection Events
+            onSelect?                  : Listener<Event<T>>;
+    
+            // Keyboard Events
+            onKeyDown?                 : Listener<KeyboardEvent<T>>;
+            onKeyPress?                : Listener<KeyboardEvent<T>>;
+            onKeyUp?                   : Listener<KeyboardEvent<T>>;
+    
+            // Image Events
+            onLoad?                    : Listener<Event<T>>;
+            onError?                   : Listener<Event<T>>; // also a Media Event
+            // Media Events
+            onAbort?                   : Listener<Event<T>>;
+            onCanPlay?                 : Listener<Event<T>>;
+            onCanPlayThrough?          : Listener<Event<T>>;
+            onDurationChange?          : Listener<Event<T>>;
+            onEmptied?                 : Listener<Event<T>>;
+            onEncrypted?               : Listener<Event<T>>;
+            onEnded?                   : Listener<Event<T>>;
+            onLoadedData?              : Listener<Event<T>>;
+            onLoadedMetadata?          : Listener<Event<T>>;
+            onLoadStart?               : Listener<Event<T>>;
+            onPause?                   : Listener<Event<T>>;
+            onPlay?                    : Listener<Event<T>>;
+            onPlaying?                 : Listener<Event<T>>;
+            onProgress?                : Listener<Event<T>>;
+            onRateChange?              : Listener<Event<T>>;
+            onSeeked?                  : Listener<Event<T>>;
+            onSeeking?                 : Listener<Event<T>>;
+            onStalled?                 : Listener<Event<T>>;
+            onSuspend?                 : Listener<Event<T>>;
+            onTimeUpdate?              : Listener<Event<T>>;
+            onVolumeChange?            : Listener<Event<T>>;
+            onWaiting?                 : Listener<Event<T>>;
+    
+            // Focus Events
+            onFocus?                   : Listener<FocusEvent<T>>;
+            onBlur?                    : Listener<FocusEvent<T>>;
+    
+            // MouseEvents
+            onClick?                   : Listener<MouseEvent<T>>;
+            onContextMenu?             : Listener<MouseEvent<T>>;
+            onDoubleClick?             : Listener<MouseEvent<T>>;
+            onMouseDown?               : Listener<MouseEvent<T>>;
+            onMouseEnter?              : Listener<MouseEvent<T>>;
+            onMouseLeave?              : Listener<MouseEvent<T>>;
+            onMouseMove?               : Listener<MouseEvent<T>>;
+            onMouseOut?                : Listener<MouseEvent<T>>;
+            onMouseOver?               : Listener<MouseEvent<T>>;
+            onMouseUp?                 : Listener<MouseEvent<T>>;
+    
+            // Wheel Events
+            onWheel?                   : Listener<WheelEvent<T>>;
+    
+            // Touch Events
+            onTouchCancel?             : Listener<TouchEvent<T>>;
+            onTouchEnd?                : Listener<TouchEvent<T>>;
+            onTouchMove?               : Listener<TouchEvent<T>>;
+            onTouchStart?              : Listener<TouchEvent<T>>;
+    
+            // Drag Event
+            onDrag?                    : Listener<DragEvent<T>>;
+            onDragEnd?                 : Listener<DragEvent<T>>;
+            onDragEnter?               : Listener<DragEvent<T>>;
+            onDragExit?                : Listener<DragEvent<T>>;
+            onDragLeave?               : Listener<DragEvent<T>>;
+            onDragOver?                : Listener<DragEvent<T>>;
+            onDragStart?               : Listener<DragEvent<T>>;
+            onDrop?                    : Listener<DragEvent<T>>;
+    
+            // Form Events
+            onChange?                  : Listener<FormEvent<T>>;
+            onInput?                   : Listener<FormEvent<T>>;
+            onSubmit?                  : Listener<FormEvent<T>>;
+    
+            // UI Events
+            onScroll?                  : Listener<UIEvent<T>>;
+        }
+        interface CompositionEvent<T> extends Event<T> {
+            readonly data              : string;
+        }
+        interface TransitionEvent<T> extends Event<T> {
+            readonly propertyName      : string;
+            readonly elapsedTime       : number;
+        }
+        interface AnimationEvent<T> extends Event<T> {
+            readonly animationName     : string;
+            readonly elapsedTime       : number;
+        }
+        interface ClipboardEvent<T> extends Event<T> {
+            readonly clipboardData     : DataTransfer;
+        }
+        interface KeyboardEvent<T> extends Event<T> {
+            readonly altKey            : boolean;
+            readonly charCode          : number;
+            readonly ctrlKey           : boolean;
+            readonly key               : string;
+            readonly keyCode           : number;
+            readonly locale            : string;
+            readonly location          : number;
+            readonly metaKey           : boolean;
+            readonly repeat            : boolean;
+            readonly shiftKey          : boolean;
+            readonly which             : number;
+        }
+        interface FocusEvent <T> extends Event<T> {
+            readonly relatedTarget     : EventTarget;
+        }
+        interface TouchEvent <T> extends Event<T> {
+            readonly altKey            : boolean;
+            readonly changedTouches    : TouchList;
+            readonly ctrlKey           : boolean;
+            readonly metaKey           : boolean;
+            readonly shiftKey          : boolean;
+            readonly targetTouches     : TouchList;
+            readonly touches           : TouchList;
+        }
+        interface MouseEvent <T> extends Event<T> {
+            readonly altKey            : boolean;
+            readonly button            : number;
+            readonly buttons           : number;
+            readonly clientX           : number;
+            readonly clientY           : number;
+            readonly ctrlKey           : boolean;
+            readonly metaKey           : boolean;
+            readonly pageX             : number;
+            readonly pageY             : number;
+            readonly relatedTarget     : EventTarget;
+            readonly screenX           : number;
+            readonly screenY           : number;
+            readonly shiftKey          : boolean;
+        }
+        interface WheelEvent <T> extends MouseEvent<T> {
+            readonly deltaMode         : number;
+            readonly deltaX            : number;
+            readonly deltaY            : number;
+            readonly deltaZ            : number;
+        }
+        interface DragEvent <T> extends MouseEvent<T> {
+            readonly dataTransfer      : DataTransfer;
+        }
+        interface FormEvent <T> extends Event<T> {
 
-    export interface IntrinsicClassAttributes extends Elf.DOMProps { }
-
-    export interface IntrinsicElements {
-        // HTML Element
-        a                          : JSX.DOMProps<HTMLAnchorElement>;
-        abbr                       : JSX.DOMProps<HTMLElement>;
-        acronym                    : JSX.DOMProps<HTMLElement>;
-        address                    : JSX.DOMProps<HTMLElement>;
-        applet                     : JSX.DOMProps<HTMLAppletElement>;
-        area                       : JSX.DOMProps<HTMLAreaElement>;
-        article                    : JSX.DOMProps<HTMLElement>;
-        aside                      : JSX.DOMProps<HTMLElement>;
-        audio                      : JSX.DOMProps<HTMLAudioElement>;
-        b                          : JSX.DOMProps<HTMLElement>;
-        base                       : JSX.DOMProps<HTMLBaseElement>;
-        basefont                   : JSX.DOMProps<HTMLBaseFontElement>;
-        bdi                        : JSX.DOMProps<HTMLElement>;
-        bdo                        : JSX.DOMProps<HTMLElement>;
-        bgsound                    : JSX.DOMProps<HTMLElement>;
-        big                        : JSX.DOMProps<HTMLElement>;
-        blink                      : JSX.DOMProps<HTMLElement>;
-        blockquote                 : JSX.DOMProps<HTMLElement>;
-        body                       : JSX.DOMProps<HTMLBodyElement>;
-        br                         : JSX.DOMProps<HTMLBRElement>;
-        button                     : JSX.DOMProps<HTMLButtonElement>;
-        canvas                     : JSX.DOMProps<HTMLCanvasElement>;
-        caption                    : JSX.DOMProps<HTMLElement>;
-        center                     : JSX.DOMProps<HTMLElement>;
-        cite                       : JSX.DOMProps<HTMLElement>;
-        code                       : JSX.DOMProps<HTMLElement>;
-        col                        : JSX.DOMProps<HTMLTableColElement>;
-        colgroup                   : JSX.DOMProps<HTMLTableColElement>;
-        content                    : JSX.DOMProps<HTMLElement>;
-        data                       : JSX.DOMProps<HTMLElement>;
-        datalist                   : JSX.DOMProps<HTMLDataListElement>;
-        dd                         : JSX.DOMProps<HTMLElement>;
-        del                        : JSX.DOMProps<HTMLElement>;
-        details                    : JSX.DOMProps<HTMLElement>;
-        dfn                        : JSX.DOMProps<HTMLElement>;
-        dir                        : JSX.DOMProps<HTMLElement>;
-        div                        : JSX.DOMProps<HTMLDivElement>;
-        dl                         : JSX.DOMProps<HTMLDListElement>;
-        dt                         : JSX.DOMProps<HTMLElement>;
-        em                         : JSX.DOMProps<HTMLElement>;
-        embed                      : JSX.DOMProps<HTMLEmbedElement>;
-        fieldset                   : JSX.DOMProps<HTMLFieldSetElement>;
-        figcaption                 : JSX.DOMProps<HTMLElement>;
-        figure                     : JSX.DOMProps<HTMLElement>;
-        font                       : JSX.DOMProps<HTMLFontElement>;
-        footer                     : JSX.DOMProps<HTMLElement>;
-        form                       : JSX.DOMProps<HTMLFormElement>;
-        frame                      : JSX.DOMProps<HTMLFrameElement>;
-        frameset                   : JSX.DOMProps<HTMLElement>;
-        h1                         : JSX.DOMProps<HTMLHeadingElement>;
-        h2                         : JSX.DOMProps<HTMLHeadingElement>;
-        h3                         : JSX.DOMProps<HTMLHeadingElement>;
-        h4                         : JSX.DOMProps<HTMLHeadingElement>;
-        h5                         : JSX.DOMProps<HTMLHeadingElement>;
-        h6                         : JSX.DOMProps<HTMLHeadingElement>;
-        head                       : JSX.DOMProps<HTMLHeadElement>;
-        header                     : JSX.DOMProps<HTMLElement>;
-        hgroup                     : JSX.DOMProps<HTMLElement>;
-        hr                         : JSX.DOMProps<HTMLHRElement>;
-        html                       : JSX.DOMProps<HTMLHtmlElement>;
-        i                          : JSX.DOMProps<HTMLElement>;
-        iframe                     : JSX.DOMProps<HTMLIFrameElement>;
-        img                        : JSX.DOMProps<HTMLImageElement>;
-        input                      : JSX.DOMProps<HTMLInputElement>;
-        ins                        : JSX.DOMProps<HTMLModElement>;
-        isindex                    : JSX.DOMProps<HTMLElement>;
-        kbd                        : JSX.DOMProps<HTMLElement>;
-        keygen                     : JSX.DOMProps<HTMLElement>;
-        label                      : JSX.DOMProps<HTMLLabelElement>;
-        legend                     : JSX.DOMProps<HTMLLegendElement>;
-        li                         : JSX.DOMProps<HTMLLIElement>;
-        link                       : JSX.DOMProps<HTMLLinkElement>;
-        listing                    : JSX.DOMProps<HTMLElement>;
-        main                       : JSX.DOMProps<HTMLElement>;
-        map                        : JSX.DOMProps<HTMLMapElement>;
-        mark                       : JSX.DOMProps<HTMLElement>;
-        marquee                    : JSX.DOMProps<HTMLMarqueeElement>;
-        menu                       : JSX.DOMProps<HTMLElement>;
-        menuitem                   : JSX.DOMProps<HTMLElement>;
-        meta                       : JSX.DOMProps<HTMLMetaElement>;
-        meter                      : JSX.DOMProps<HTMLElement>;
-        nav                        : JSX.DOMProps<HTMLElement>;
-        nobr                       : JSX.DOMProps<HTMLElement>;
-        noframes                   : JSX.DOMProps<HTMLElement>;
-        noscript                   : JSX.DOMProps<HTMLElement>;
-        object                     : JSX.DOMProps<HTMLObjectElement>;
-        ol                         : JSX.DOMProps<HTMLOListElement>;
-        optgroup                   : JSX.DOMProps<HTMLOptGroupElement>;
-        option                     : JSX.DOMProps<HTMLOptionElement>;
-        output                     : JSX.DOMProps<HTMLElement>;
-        p                          : JSX.DOMProps<HTMLParagraphElement>;
-        param                      : JSX.DOMProps<HTMLParamElement>;
-        plaintext                  : JSX.DOMProps<HTMLElement>;
-        pre                        : JSX.DOMProps<HTMLPreElement>;
-        progress                   : JSX.DOMProps<HTMLProgressElement>;
-        q                          : JSX.DOMProps<HTMLQuoteElement>;
-        rp                         : JSX.DOMProps<HTMLElement>;
-        rt                         : JSX.DOMProps<HTMLElement>;
-        ruby                       : JSX.DOMProps<HTMLElement>;
-        s                          : JSX.DOMProps<HTMLElement>;
-        samp                       : JSX.DOMProps<HTMLElement>;
-        script                     : JSX.DOMProps<HTMLScriptElement>;
-        section                    : JSX.DOMProps<HTMLElement>;
-        select                     : JSX.DOMProps<HTMLSelectElement>;
-        shadow                     : JSX.DOMProps<HTMLElement>;
-        small                      : JSX.DOMProps<HTMLElement>;
-        source                     : JSX.DOMProps<HTMLSourceElement>;
-        spacer                     : JSX.DOMProps<HTMLElement>;
-        span                       : JSX.DOMProps<HTMLSpanElement>;
-        strike                     : JSX.DOMProps<HTMLElement>;
-        strong                     : JSX.DOMProps<HTMLElement>;
-        style                      : JSX.DOMProps<HTMLStyleElement>;
-        sub                        : JSX.DOMProps<HTMLElement>;
-        summary                    : JSX.DOMProps<HTMLElement>;
-        sup                        : JSX.DOMProps<HTMLElement>;
-        table                      : JSX.DOMProps<HTMLTableElement>;
-        tbody                      : JSX.DOMProps<HTMLTableSectionElement>;
-        td                         : JSX.DOMProps<HTMLTableDataCellElement>;
-        template                   : JSX.DOMProps<HTMLTemplateElement>;
-        textarea                   : JSX.DOMProps<HTMLTextAreaElement>;
-        tfoot                      : JSX.DOMProps<HTMLTableSectionElement>;
-        th                         : JSX.DOMProps<HTMLTableHeaderCellElement>;
-        thead                      : JSX.DOMProps<HTMLTableSectionElement>;
-        time                       : JSX.DOMProps<HTMLElement>;
-        title                      : JSX.DOMProps<HTMLTitleElement>;
-        tr                         : JSX.DOMProps<HTMLTableRowElement>;
-        track                      : JSX.DOMProps<HTMLTrackElement>;
-        tt                         : JSX.DOMProps<HTMLElement>;
-        u                          : JSX.DOMProps<HTMLElement>;
-        ul                         : JSX.DOMProps<HTMLUListElement>;
-        var                        : JSX.DOMProps<HTMLElement>;
-        video                      : JSX.DOMProps<HTMLVideoElement>;
-        wbr                        : JSX.DOMProps<HTMLElement>;
-        xmp                        : JSX.DOMProps<HTMLElement>;
-
-        // SVG Element
-        altGlyph                   : JSX.SVGProps;
-        altGlyphDef                : JSX.SVGProps;
-        altGlyphItem               : JSX.SVGProps;
-        animate                    : JSX.SVGProps;
-        animateColor               : JSX.SVGProps;
-        animateMotion              : JSX.SVGProps;
-        animateTransform           : JSX.SVGProps;
-        circle                     : JSX.SVGProps;
-        clipPath                   : JSX.SVGProps;
-        colorProfile               : JSX.SVGProps;
-        cursor                     : JSX.SVGProps;
-        defs                       : JSX.SVGProps;
-        desc                       : JSX.SVGProps;
-        ellipse                    : JSX.SVGProps;
-        feBlend                    : JSX.SVGProps;
-        feColorMatrix              : JSX.SVGProps;
-        feComponentTransfer        : JSX.SVGProps;
-        feComposite                : JSX.SVGProps;
-        feConvolveMatrix           : JSX.SVGProps;
-        feDiffuseLighting          : JSX.SVGProps;
-        feDisplacementMap          : JSX.SVGProps;
-        feDistantLight             : JSX.SVGProps;
-        feFlood                    : JSX.SVGProps;
-        feFuncA                    : JSX.SVGProps;
-        feFuncB                    : JSX.SVGProps;
-        feFuncG                    : JSX.SVGProps;
-        feFuncR                    : JSX.SVGProps;
-        feGaussianBlur             : JSX.SVGProps;
-        feImage                    : JSX.SVGProps;
-        feMerge                    : JSX.SVGProps;
-        feMergeNode                : JSX.SVGProps;
-        feMorphology               : JSX.SVGProps;
-        feOffset                   : JSX.SVGProps;
-        fePointLight               : JSX.SVGProps;
-        feSpecularLighting         : JSX.SVGProps;
-        feSpotLight                : JSX.SVGProps;
-        feTile                     : JSX.SVGProps;
-        feTurbulence               : JSX.SVGProps;
-        filter                     : JSX.SVGProps;
-        fontFace                   : JSX.SVGProps;
-        fontFaceFormat             : JSX.SVGProps;
-        fontFaceName               : JSX.SVGProps;
-        fontFaceSrc                : JSX.SVGProps;
-        fontFaceUri                : JSX.SVGProps;
-        foreignObject              : JSX.SVGProps;
-        g                          : JSX.SVGProps;
-        glyph                      : JSX.SVGProps;
-        glyphRef                   : JSX.SVGProps;
-        hkern                      : JSX.SVGProps;
-        image                      : JSX.SVGProps;
-        line                       : JSX.SVGProps;
-        linearGradient             : JSX.SVGProps;
-        marker                     : JSX.SVGProps;
-        mask                       : JSX.SVGProps;
-        metadata                   : JSX.SVGProps;
-        missingGlyph               : JSX.SVGProps;
-        mpath                      : JSX.SVGProps;
-        path                       : JSX.SVGProps;
-        pattern                    : JSX.SVGProps;
-        polygon                    : JSX.SVGProps;
-        polyline                   : JSX.SVGProps;
-        radialGradient             : JSX.SVGProps;
-        rect                       : JSX.SVGProps;
-        set                        : JSX.SVGProps;
-        stop                       : JSX.SVGProps;
-        svg                        : JSX.SVGProps;
-        switch                     : JSX.SVGProps;
-        symbol                     : JSX.SVGProps;
-        text                       : JSX.SVGProps;
-        textPath                   : JSX.SVGProps;
-        tref                       : JSX.SVGProps;
-        tspan                      : JSX.SVGProps;
-        use                        : JSX.SVGProps;
-        view                       : JSX.SVGProps;
-        vkern                      : JSX.SVGProps;
-
-        // MathML Element
-        math                       : JSX.MathMLProps;
-        maction                    : JSX.MathMLProps;
-        maligngroup                : JSX.MathMLProps;
-        malignmark                 : JSX.MathMLProps;
-        menclose                   : JSX.MathMLProps;
-        merror                     : JSX.MathMLProps;
-        mfenced                    : JSX.MathMLProps;
-        mfrac                      : JSX.MathMLProps;
-        mglyph                     : JSX.MathMLProps;
-        mi                         : JSX.MathMLProps;
-        mlabeledtr                 : JSX.MathMLProps;
-        mlongdiv                   : JSX.MathMLProps;
-        mmultiscripts              : JSX.MathMLProps;
-        mn                         : JSX.MathMLProps;
-        mo                         : JSX.MathMLProps;
-        mover                      : JSX.MathMLProps;
-        mpadded                    : JSX.MathMLProps;
-        mphantom                   : JSX.MathMLProps;
-        mroot                      : JSX.MathMLProps;
-        mrow                       : JSX.MathMLProps;
-        ms                         : JSX.MathMLProps;
-        mscarries                  : JSX.MathMLProps;
-        mscarry                    : JSX.MathMLProps;
-        msgroup                    : JSX.MathMLProps;
-        mstack                     : JSX.MathMLProps;
-        msline                     : JSX.MathMLProps;
-        mspace                     : JSX.MathMLProps;
-        msqrt                      : JSX.MathMLProps;
-        msrow                      : JSX.MathMLProps;
-        mstyle                     : JSX.MathMLProps;
-        msub                       : JSX.MathMLProps;
-        msup                       : JSX.MathMLProps;
-        msubsup                    : JSX.MathMLProps;
-        mtable                     : JSX.MathMLProps;
-        mtd                        : JSX.MathMLProps;
-        mtext                      : JSX.MathMLProps;
-        mtr                        : JSX.MathMLProps;
-        munder                     : JSX.MathMLProps;
-        munderover                 : JSX.MathMLProps;
-        semantics                  : JSX.MathMLProps;
-        annotation                 : JSX.MathMLProps;
-        annotationXml              : JSX.MathMLProps;
+        }
+        interface UIEvent <T> extends Event<T> {
+            readonly detail            : number;
+        }
+        type Listener<T> = ({
+            handleEvent (event: T): void;
+        } & Partial<any>) | ((event: T) => void);
     }
-
-    export interface CSSProps {
-        alignContent?              : any;
-        alignItems?                : any;
-        alignSelf?                 : any;
-        alignmentAdjust?           : any;
-        alignmentBaseline?         : any;
-        animationDelay?            : any;
-        animationDirection?        : any;
-        animationIterationCount?   : any;
-        animationName?             : any;
-        animationPlayState?        : any;
-        appearance?                : any;
-        backfaceVisibility?        : any;
-        background?                : any;
-        backgroundAttachment?      : "scroll" | "fixed" | "local";
-        backgroundBlendMode?       : any;
-        backgroundColor?           : any;
-        backgroundComposite?       : any;
-        backgroundImage?           : any;
-        backgroundOrigin?          : any;
-        backgroundPosition?        : any;
-        backgroundRepeat?          : any;
-        baselineShift?             : any;
-        behavior?                  : any;
-        border?                    : any;
-        borderBottom?              : any;
-        borderBottomColor?         : any;
-        borderBottomLeftRadius?    : any;
-        borderBottomRightRadius?   : any;
-        borderBottomStyle?         : any;
-        borderBottomWidth?         : any;
-        borderCollapse?            : any;
-        borderColor?               : any;
-        borderCornerShape?         : any;
-        borderImageSource?         : any;
-        borderImageWidth?          : any;
-        borderLeft?                : any;
-        borderLeftColor?           : any;
-        borderLeftStyle?           : any;
-        borderLeftWidth?           : any;
-        borderRight?               : any;
-        borderRightColor?          : any;
-        borderRightStyle?          : any;
-        borderRightWidth?          : any;
-        borderSpacing?             : any;
-        borderStyle?               : any;
-        borderTop?                 : any;
-        borderTopColor?            : any;
-        borderTopLeftRadius?       : any;
-        borderTopRightRadius?      : any;
-        borderTopStyle?            : any;
-        borderTopWidth?            : any;
-        borderWidth?               : any;
-        bottom?                    : any;
-        boxAlign?                  : any;
-        boxDecorationBreak?        : any;
-        boxDirection?              : any;
-        boxLineProgression?        : any;
-        boxLines?                  : any;
-        boxOrdinalGroup?           : any;
-        boxFlex?                   : number;
-        boxFlexGroup?              : number;
-        breakAfter?                : any;
-        breakBefore?               : any;
-        breakInside?               : any;
-        clear?                     : any;
-        clip?                      : any;
-        clipRule?                  : any;
-        color?                     : any;
-        columnCount?               : number;
-        columnFill?                : any;
-        columnGap?                 : any;
-        columnRule?                : any;
-        columnRuleColor?           : any;
-        columnRuleWidth?           : any;
-        columnSpan?                : any;
-        columnWidth?               : any;
-        columns?                   : any;
-        counterIncrement?          : any;
-        counterReset?              : any;
-        cue?                       : any;
-        cueAfter?                  : any;
-        cursor?                    : any;
-        direction?                 : any;
-        display?                   : any;
-        fill?                      : any;
-        fillOpacity?               : number;
-        fillRule?                  : any;
-        filter?                    : any;
-        flex?                      : number | string;
-        flexAlign?                 : any;
-        flexBasis?                 : any;
-        flexDirection?             : any;
-        flexFlow?                  : any;
-        flexGrow?                  : number;
-        flexItemAlign?             : any;
-        flexLinePack?              : any;
-        flexOrder?                 : any;
-        flexShrink?                : number;
-        float?                     : any;
-        flowFrom?                  : any;
-        font?                      : any;
-        fontFamily?                : any;
-        fontKerning?               : any;
-        fontSize?                  : number | string;
-        fontSizeAdjust?            : any;
-        fontStretch?               : any;
-        fontStyle?                 : any;
-        fontSynthesis?             : any;
-        fontVariant?               : any;
-        fontVariantAlternates?     : any;
-        fontWeight?                : "normal" | "bold" | "lighter" | "bolder" | number;
-        gridArea?                  : any;
-        gridColumn?                : any;
-        gridColumnEnd?             : any;
-        gridColumnStart?           : any;
-        gridRow?                   : any;
-        gridRowEnd?                : any;
-        gridRowPosition?           : any;
-        gridRowSpan?               : any;
-        gridTemplateAreas?         : any;
-        gridTemplateColumns?       : any;
-        gridTemplateRows?          : any;
-        height?                    : any;
-        hyphenateLimitChars?       : any;
-        hyphenateLimitLines?       : any;
-        hyphenateLimitZone?        : any;
-        hyphens?                   : any;
-        imeMode?                   : any;
-        layoutGrid?                : any;
-        layoutGridChar?            : any;
-        layoutGridLine?            : any;
-        layoutGridMode?            : any;
-        layoutGridType?            : any;
-        left?                      : any;
-        letterSpacing?             : any;
-        lineBreak?                 : any;
-        lineClamp?                 : number;
-        lineHeight?                : number | string;
-        listStyle?                 : any;
-        listStyleImage?            : any;
-        listStylePosition?         : any;
-        listStyleType?             : any;
-        margin?                    : any;
-        marginBottom?              : any;
-        marginLeft?                : any;
-        marginRight?               : any;
-        marginTop?                 : any;
-        marqueeDirection?          : any;
-        marqueeStyle?              : any;
-        mask?                      : any;
-        maskBorder?                : any;
-        maskBorderRepeat?          : any;
-        maskBorderSlice?           : any;
-        maskBorderSource?          : any;
-        maskBorderWidth?           : any;
-        maskClip?                  : any;
-        maskOrigin?                : any;
-        maxFontSize?               : any;
-        maxHeight?                 : any;
-        maxWidth?                  : any;
-        minHeight?                 : any;
-        minWidth?                  : any;
-        opacity?                   : number;
-        order?                     : number;
-        orphans?                   : number;
-        outline?                   : any;
-        outlineColor?              : any;
-        outlineOffset?             : any;
-        overflow?                  : any;
-        overflowStyle?             : any;
-        overflowX?                 : any;
-        overflowY?                 : any;
-        padding?                   : any;
-        paddingBottom?             : any;
-        paddingLeft?               : any;
-        paddingRight?              : any;
-        paddingTop?                : any;
-        pageBreakAfter?            : any;
-        pageBreakBefore?           : any;
-        pageBreakInside?           : any;
-        pause?                     : any;
-        pauseAfter?                : any;
-        pauseBefore?               : any;
-        perspective?               : any;
-        perspectiveOrigin?         : any;
-        pointerEvents?             : any;
-        position?                  : any;
-        punctuationTrim?           : any;
-        quotes?                    : any;
-        regionFragment?            : any;
-        restAfter?                 : any;
-        restBefore?                : any;
-        right?                     : any;
-        rubyAlign?                 : any;
-        rubyPosition?              : any;
-        shapeImageThreshold?       : any;
-        shapeInside?               : any;
-        shapeMargin?               : any;
-        shapeOutside?              : any;
-        speak?                     : any;
-        speakAs?                   : any;
-        strokeOpacity?             : number;
-        strokeWidth?               : number;
-        tabSize?                   : any;
-        tableLayout?               : any;
-        textAlign?                 : any;
-        textAlignLast?             : any;
-        textDecoration?            : any;
-        textDecorationColor?       : any;
-        textDecorationLine?        : any;
-        textDecorationLineThrough? : any;
-        textDecorationNone?        : any;
-        textDecorationOverline?    : any;
-        textDecorationSkip?        : any;
-        textDecorationStyle?       : any;
-        textDecorationUnderline?   : any;
-        textEmphasis?              : any;
-        textEmphasisColor?         : any;
-        textEmphasisStyle?         : any;
-        textHeight?                : any;
-        textIndent?                : any;
-        textJustifyTrim?           : any;
-        textKashidaSpace?          : any;
-        textLineThrough?           : any;
-        textLineThroughColor?      : any;
-        textLineThroughMode?       : any;
-        textLineThroughStyle?      : any;
-        textLineThroughWidth?      : any;
-        textOverflow?              : any;
-        textOverline?              : any;
-        textOverlineColor?         : any;
-        textOverlineMode?          : any;
-        textOverlineStyle?         : any;
-        textOverlineWidth?         : any;
-        textRendering?             : any;
-        textScript?                : any;
-        textShadow?                : any;
-        textTransform?             : any;
-        textUnderlinePosition?     : any;
-        textUnderlineStyle?        : any;
-        top?                       : any;
-        touchAction?               : any;
-        transform?                 : any;
-        transformOrigin?           : any;
-        transformOriginZ?          : any;
-        transformStyle?            : any;
-        transition?                : any;
-        transitionDelay?           : any;
-        transitionDuration?        : any;
-        transitionProperty?        : any;
-        transitionTimingFunction?  : any;
-        unicodeBidi?               : any;
-        unicodeRange?              : any;
-        userFocus?                 : any;
-        userInput?                 : any;
-        verticalAlign?             : any;
-        visibility?                : any;
-        voiceBalance?              : any;
-        voiceDuration?             : any;
-        voiceFamily?               : any;
-        voicePitch?                : any;
-        voiceRange?                : any;
-        voiceRate?                 : any;
-        voiceStress?               : any;
-        voiceVolume?               : any;
-        whiteSpace?                : any;
-        whiteSpaceTreatment?       : any;
-        widows?                    : number;
-        width?                     : any;
-        wordBreak?                 : any;
-        wordSpacing?               : any;
-        wordWrap?                  : any;
-        wrapFlow?                  : any;
-        wrapMargin?                : any;
-        wrapOption?                : any;
-        writingMode?               : any;
-        zIndex?                    : "auto" | number;
-        zoom?                      : "auto" | number;
-        [key: string]              : any;
-    }
-
-    export interface SVGProps {
-        clipPath?                  : string;
-        cx?                        : number | string;
-        cy?                        : number | string;
-        d?                         : string;
-        dx?                        : number | string;
-        dy?                        : number | string;
-        fill?                      : string;
-        fillOpacity?               : number | string;
-        fontFamily?                : string;
-        fontSize?                  : number | string;
-        fx?                        : number | string;
-        fy?                        : number | string;
-        gradientTransform?         : string;
-        gradientUnits?             : string;
-        markerEnd?                 : string;
-        markerMid?                 : string;
-        markerStart?               : string;
-        offset?                    : number | string;
-        opacity?                   : number | string;
-        patternContentUnits?       : string;
-        patternUnits?              : string;
-        points?                    : string;
-        preserveAspectRatio?       : string;
-        r?                         : number | string;
-        rx?                        : number | string;
-        ry?                        : number | string;
-        spreadMethod?              : string;
-        stopColor?                 : string;
-        stopOpacity?               : number | string;
-        stroke?                    : string;
-        strokeDasharray?           : string;
-        strokeLinecap?             : string;
-        strokeMiterlimit?          : string;
-        strokeOpacity?             : number | string;
-        strokeWidth?               : number | string;
-        textAnchor?                : string;
-        transform?                 : string;
-        version?                   : string;
-        viewBox?                   : string;
-        x1?                        : number | string;
-        x2?                        : number | string;
-        x?                         : number | string;
-        xlinkActuate?              : string;
-        xlinkArcrole?              : string;
-        xlinkHref?                 : string;
-        xlinkRole?                 : string;
-        xlinkShow?                 : string;
-        xlinkTitle?                : string;
-        xlinkType?                 : string;
-        xmlBase?                   : string;
-        xmlLang?                   : string;
-        xmlSpace?                  : string;
-        y1?                        : number | string;
-        y2?                        : number | string;
-        y?                         : number | string;
-        [key: string]              : any;
-    }
-
-    export interface MathMLProps {
-        accent?                    : any;
-        accentunder?               : any;
-        actiontype?                : any;
-        align?                     : any;
-        alignmentscope?            : any;
-        altimg?                    : any;
-        altimgWidth?               : any;
-        altimgHeight?              : any;
-        altimgValign?              : any;
-        alttext?                   : any;
-        bevelled?                  : any;
-        charalign?                 : any;
-        close?                     : any;
-        columnalign?               : any;
-        columnlines?               : any;
-        columnspacing?             : any;
-        columnspan?                : any;
-        columnwidth?               : any;
-        crossout?                  : any;
-        decimalpoint?              : any;
-        denomalign?                : any;
-        depth?                     : any;
-        dir?                       : any;
-        display?                   : any;
-        displaystyle?              : any;
-        edge?                      : any;
-        equalcolumns?              : any;
-        equalrows?                 : any;
-        fence?                     : any;
-        form?                      : any;
-        frame?                     : any;
-        framespacing?              : any;
-        groupalign?                : any;
-        height?                    : any;
-        href?                      : any;
-        id?                        : any;
-        indentalign?               : any;
-        indentalignfirst?          : any;
-        indentalignlast?           : any;
-        indentshift?               : any;
-        indentshiftfirst?          : any;
-        indentshiftlast?           : any;
-        indenttarget?              : any;
-        infixlinebreakstyle?       : any;
-        largeop?                   : any;
-        length?                    : any;
-        linebreak?                 : any;
-        linebreakmultchar?         : any;
-        linebreakstyle?            : any;
-        lineleading?               : any;
-        linethickness?             : any;
-        location?                  : any;
-        longdivstyle?              : any;
-        lspace?                    : any;
-        lquote?                    : any;
-        mathbackground?            : any;
-        mathcolor?                 : any;
-        mathsize?                  : any;
-        mathvariant?               : any;
-        maxsize?                   : any;
-        minlabelspacing?           : any;
-        minsize?                   : any;
-        movablelimits?             : any;
-        notation?                  : any;
-        numalign?                  : any;
-        open?                      : any;
-        overflow?                  : any;
-        position?                  : any;
-        rowalign?                  : any;
-        rowlines?                  : any;
-        rowspacing?                : any;
-        rowspan?                   : any;
-        rspace?                    : any;
-        rquote?                    : any;
-        scriptlevel?               : any;
-        scriptminsize?             : any;
-        scriptsizemultiplier?      : any;
-        selection?                 : any;
-        separator?                 : any;
-        separators?                : any;
-        shift?                     : any;
-        side?                      : any;
-        src?                       : any;
-        stackalign?                : any;
-        stretchy?                  : any;
-        subscriptshift?            : any;
-        supscriptshift?            : any;
-        symmetric?                 : any;
-        voffset?                   : any;
-        width?                     : any;
-        xlinkHref?                 : any;
-        xmlns?                     : any;
-        [key: string]              : any;
-    }
-
-    export interface DOMProps <T> extends JSX.DOMEvent<T>, Elf.DOMProps {
-        accept?                    : string;
-        acceptCharset?             : string;
-        accesskey?                 : string;
-        action?                    : string;
-        allowFullScreen?           : boolean;
-        allowTransparency?         : boolean;
-        align?                     : string;
-        alt?                       : string;
-        async?                     : boolean;
-        autocomplete?              : "on" | "off";
-        autofocus?                 : boolean;
-        autoplay?                  : boolean;
-        autosave?                  : boolean;
-        bgcolor?                   : string;
-        border?                    : string;
-        capture?                   : boolean;
-        cellpadding?               : number | string;
-        cellspacing?               : number | string;
-        challenge?                 : string;
-        charset?                   : string;
-        checked?                   : boolean;
-        cite?                      : string;
-        classid?                   : string;
-        className?                 : string;
-        code?                      : string;
-        codebase?                  : string;
-        color?                     : string;
-        cols?                      : number;
-        colspan?                   : number;
-        content?                   : string;
-        contenteditable?           : boolean;
-        contextmenu?               : string;
-        controls?                  : boolean;
-        coords?                    : string;
-        crossorigin?               : "anonymous" | "use-credentials";
-        data?                      : string;
-        datetime?                  : string;
-        default?                   : boolean;
-        defer?                     : boolean;
-        dir?                       : string;
-        dirname?                   : string;
-        disabled?                  : boolean;
-        download?                  : any;
-        draggable?                 : boolean;
-        dropzone?                  : boolean;
-        enctype?                   : string;
-        form?                      : string;
-        formaction?                : string;
-        headers?                   : string;
-        height?                    : string | 0;
-        hidden?                    : boolean;
-        high?                      : number;
-        href?                      : string;
-        hreflang?                  : string;
-        htmlFor?                   : string;
-        httpEquiv?                 : string;
-        icon?                      : string;
-        id?                        : string;
-        isMap?                     : boolean;
-        itemprop?                  : string;
-        keytype?                   : string;
-        kind?                      : string;
-        label?                     : string;
-        lang?                      : string;
-        language?                  : string;
-        list?                      : string;
-        loop?                      : boolean;
-        low?                       : number;
-        manifest?                  : string;
-        max?                       : string | number;
-        maxlength?                 : number;
-        media?                     : string;
-        method?                    : string;
-        min?                       : string | number;
-        multiple?                  : boolean;
-        muted?                     : boolean;
-        name?                      : string;
-        novalidate?                : boolean;
-        open?                      : boolean;
-        optimum?                   : number;
-        pattern?                   : string;
-        ping?                      : string;
-        placeholder?               : string;
-        poster?                    : string;
-        preload?                   : string;
-        radiogroup?                : string;
-        readonly?                  : boolean;
-        rel?                       : string;
-        required?                  : boolean;
-        reversed?                  : boolean;
-        rows?                      : number;
-        rowspan?                   : number;
-        sandbox?                   : string;
-        scope?                     : string;
-        scoped?                    : string;
-        seamless?                  : boolean;
-        selected?                  : boolean;
-        shape?                     : string;
-        size?                      : number;
-        sizes?                     : string;
-        span?                      : number;
-        spellcheck?                : boolean;
-        src?                       : string;
-        srcdoc?                    : string;
-        srclang?                   : string;
-        srcset?                    : string;
-        start?                     : number;
-        step?                      : string | number;
-        style?                     : JSX.CSSProps;
-        summary?                   : string;
-        tabindex?                  : number;
-        target?                    : string;
-        title?                     : string;
-        type?                      : string;
-        usemap?                    : string;
-        value?                     : string | number;
-        width?                     : string | number;
-        wrap?                      : string;
-        [key: string]              : any;
-    }
-
-    export interface DOMEvent <T> {
-        
-        // Composition Events
-        onCompositionEnd?          : JSX.Listener<JSX.CompositionEvent<T>>;
-        onCompositionStart?        : JSX.Listener<JSX.CompositionEvent<T>>;
-        onCompositionUpdate?       : JSX.Listener<JSX.CompositionEvent<T>>;
-
-        // Transition Events
-        onTransitionEnd?           : JSX.Listener<JSX.TransitionEvent<T>>;
-
-        // Animation Events
-        onAnimationStart?          : JSX.Listener<JSX.AnimationEvent<T>>;
-        onAnimationEnd?            : JSX.Listener<JSX.AnimationEvent<T>>;
-        onAnimationIteration?      : JSX.Listener<JSX.AnimationEvent<T>>;
-        
-        // Clipboard Events
-        onCopy?                    : JSX.Listener<JSX.ClipboardEvent<T>>;
-        onCut?                     : JSX.Listener<JSX.ClipboardEvent<T>>;
-        onPaste?                   : JSX.Listener<JSX.ClipboardEvent<T>>;
-
-        // Selection Events
-        onSelect?                  : JSX.Listener<JSX.Event<T>>;
-
-        // Keyboard Events
-        onKeyDown?                 : JSX.Listener<JSX.KeyboardEvent<T>>;
-        onKeyPress?                : JSX.Listener<JSX.KeyboardEvent<T>>;
-        onKeyUp?                   : JSX.Listener<JSX.KeyboardEvent<T>>;
-
-        // Image Events
-        onLoad?                    : JSX.Listener<JSX.Event<T>>;
-        onError?                   : JSX.Listener<JSX.Event<T>>; // also a Media Event
-
-        // Media Events
-        onAbort?                   : JSX.Listener<JSX.Event<T>>;
-        onCanPlay?                 : JSX.Listener<JSX.Event<T>>;
-        onCanPlayThrough?          : JSX.Listener<JSX.Event<T>>;
-        onDurationChange?          : JSX.Listener<JSX.Event<T>>;
-        onEmptied?                 : JSX.Listener<JSX.Event<T>>;
-        onEncrypted?               : JSX.Listener<JSX.Event<T>>;
-        onEnded?                   : JSX.Listener<JSX.Event<T>>;
-        onLoadedData?              : JSX.Listener<JSX.Event<T>>;
-        onLoadedMetadata?          : JSX.Listener<JSX.Event<T>>;
-        onLoadStart?               : JSX.Listener<JSX.Event<T>>;
-        onPause?                   : JSX.Listener<JSX.Event<T>>;
-        onPlay?                    : JSX.Listener<JSX.Event<T>>;
-        onPlaying?                 : JSX.Listener<JSX.Event<T>>;
-        onProgress?                : JSX.Listener<JSX.Event<T>>;
-        onRateChange?              : JSX.Listener<JSX.Event<T>>;
-        onSeeked?                  : JSX.Listener<JSX.Event<T>>;
-        onSeeking?                 : JSX.Listener<JSX.Event<T>>;
-        onStalled?                 : JSX.Listener<JSX.Event<T>>;
-        onSuspend?                 : JSX.Listener<JSX.Event<T>>;
-        onTimeUpdate?              : JSX.Listener<JSX.Event<T>>;
-        onVolumeChange?            : JSX.Listener<JSX.Event<T>>;
-        onWaiting?                 : JSX.Listener<JSX.Event<T>>;
-
-        // Focus Events
-        onFocus?                   : JSX.Listener<JSX.FocusEvent<T>>;
-        onBlur?                    : JSX.Listener<JSX.FocusEvent<T>>;
-
-        // MouseEvents
-        onClick?                   : JSX.Listener<JSX.MouseEvent<T>>;
-        onContextMenu?             : JSX.Listener<JSX.MouseEvent<T>>;
-        onDoubleClick?             : JSX.Listener<JSX.MouseEvent<T>>;
-        onMouseDown?               : JSX.Listener<JSX.MouseEvent<T>>;
-        onMouseEnter?              : JSX.Listener<JSX.MouseEvent<T>>;
-        onMouseLeave?              : JSX.Listener<JSX.MouseEvent<T>>;
-        onMouseMove?               : JSX.Listener<JSX.MouseEvent<T>>;
-        onMouseOut?                : JSX.Listener<JSX.MouseEvent<T>>;
-        onMouseOver?               : JSX.Listener<JSX.MouseEvent<T>>;
-        onMouseUp?                 : JSX.Listener<JSX.MouseEvent<T>>;
-
-        // Wheel Events
-        onWheel?                   : JSX.Listener<JSX.WheelEvent<T>>;
-
-        // Touch Events
-        onTouchCancel?             : JSX.Listener<JSX.TouchEvent<T>>;
-        onTouchEnd?                : JSX.Listener<JSX.TouchEvent<T>>;
-        onTouchMove?               : JSX.Listener<JSX.TouchEvent<T>>;
-        onTouchStart?              : JSX.Listener<JSX.TouchEvent<T>>;
-
-        // Drag Event
-        onDrag?                    : JSX.Listener<JSX.DragEvent<T>>;
-        onDragEnd?                 : JSX.Listener<JSX.DragEvent<T>>;
-        onDragEnter?               : JSX.Listener<JSX.DragEvent<T>>;
-        onDragExit?                : JSX.Listener<JSX.DragEvent<T>>;
-        onDragLeave?               : JSX.Listener<JSX.DragEvent<T>>;
-        onDragOver?                : JSX.Listener<JSX.DragEvent<T>>;
-        onDragStart?               : JSX.Listener<JSX.DragEvent<T>>;
-        onDrop?                    : JSX.Listener<JSX.DragEvent<T>>;
-
-        // Form Events
-        onChange?                  : JSX.Listener<JSX.FormEvent<T>>;
-        onInput?                   : JSX.Listener<JSX.FormEvent<T>>;
-        onSubmit?                  : JSX.Listener<JSX.FormEvent<T>>;
-
-        // UI Events
-        onScroll?                  : JSX.Listener<JSX.UIEvent<T>>;
-    }
-
-    export interface CompositionEvent <T> extends JSX.Event<T> {
-        readonly data              : string;
-    }
-    export interface TransitionEvent <T> extends JSX.Event<T> {
-        readonly propertyName      : string;
-        readonly elapsedTime       : number;
-    }
-    export interface AnimationEvent <T> extends JSX.Event<T> {
-        readonly animationName     : string;
-        readonly elapsedTime       : number;
-    }
-    export interface ClipboardEvent <T> extends JSX.Event<T> {
-        readonly clipboardData     : DataTransfer;
-    }
-    export interface KeyboardEvent <T> extends JSX.Event<T> {
-        readonly altKey            : boolean;
-        readonly charCode          : number;
-        readonly ctrlKey           : boolean;
-        readonly key               : string;
-        readonly keyCode           : number;
-        readonly locale            : string;
-        readonly location          : number;
-        readonly metaKey           : boolean;
-        readonly repeat            : boolean;
-        readonly shiftKey          : boolean;
-        readonly which             : number;
-    }
-    export interface FocusEvent <T> extends JSX.Event<T> {
-        readonly relatedTarget     : EventTarget;
-    }
-    export interface TouchEvent <T> extends JSX.Event<T> {
-        readonly altKey            : boolean;
-        readonly changedTouches    : TouchList;
-        readonly ctrlKey           : boolean;
-        readonly metaKey           : boolean;
-        readonly shiftKey          : boolean;
-        readonly targetTouches     : TouchList;
-        readonly touches           : TouchList;
-    }
-    export interface MouseEvent <T> extends JSX.Event<T> {
-        readonly altKey            : boolean;
-        readonly button            : number;
-        readonly buttons           : number;
-        readonly clientX           : number;
-        readonly clientY           : number;
-        readonly ctrlKey           : boolean;
-        readonly metaKey           : boolean;
-        readonly pageX             : number;
-        readonly pageY             : number;
-        readonly relatedTarget     : EventTarget;
-        readonly screenX           : number;
-        readonly screenY           : number;
-        readonly shiftKey          : boolean;
-    }
-    export interface WheelEvent <T> extends JSX.MouseEvent<T> {
-        readonly deltaMode         : number;
-        readonly deltaX            : number;
-        readonly deltaY            : number;
-        readonly deltaZ            : number;
-    }
-    export interface DragEvent <T> extends JSX.MouseEvent<T> {
-        readonly dataTransfer      : DataTransfer;
-    }
-    export interface FormEvent <T> extends JSX.Event<T> {
-
-    }
-    export interface UIEvent <T> extends JSX.Event<T> {
-        readonly detail            : number;
-    }
-    export interface Event <T> extends Elf.Event<T> {
-        readonly eventPhase        : number;
-        readonly timeStamp         : number;
-    }
-
-    export type Listener <T> = (event: T) => void;
 }
