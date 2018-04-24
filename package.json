@@ -1,6 +1,6 @@
 {
     "name": "elfjs",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "homepage": "https://www.elfjs.org",
     "description": "A very concise modern javascript framework.",
     "dependencies": {

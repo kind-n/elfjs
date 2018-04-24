@@ -328,12 +328,15 @@ var FServer = (function () {
                 }
                 if ((start >= length) ||
                     (ended >= length) ||
-                    (ended > start)) {
+                    (start > ended)) {
                     res.statusCode = 416;
                     res.setHeader("Content-Range", "bytes */" + length);
                     res.end("Requested Range Not Satisfiable");
                     return;
                 }
+                // Max size 32KB
+                ended = Math.min(ended, start + 0x8000 - 1);
+
                 res.statusCode = 206;
                 res.setHeader("Accept-Ranges", "bytes");
                 res.setHeader("Cache-Control", "no-cache");
