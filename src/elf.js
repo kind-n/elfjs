@@ -4,7 +4,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.0.0
+ * @version 2.0.2
  * @license MIT
  * 
  */
@@ -46,7 +46,7 @@
             isObject(hoary)) {
             for (var name in value) {
                 if (!exists(hoary, name)) { return false; }
-                if (!exists(value[name], hoary[name])) { return false; }
+                if (!equals(value[name], hoary[name])) { return false; }
             }
             for (var name in hoary) {
                 if (!exists(value, name)) { return false; }
