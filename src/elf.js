@@ -1538,7 +1538,6 @@
                 };
             } else {
                 var xhrContent = "Content-Type";
-                var xhrPattern = "X-Requested-With";
                 var xhrFashion = request.method || "GET";
                 var xhrHeaders = request.headers || {};
                 var xhrRequest = new XMLHttpRequest();
@@ -1580,9 +1579,6 @@
                 DOMAddListener(xhrRequest, XHR_FAILURE_TYPE, xhrFailure);
                 if (!exists(xhrHeaders, xhrContent)) {
                     xhrRequest.setRequestHeader(xhrContent, "application/x-www-form-urlencoded; charset=utf-8");
-                }
-                if (!exists(xhrHeaders, xhrPattern)) {
-                    xhrRequest.setRequestHeader(xhrPattern, "XMLHttpRequest");
                 }
                 for (var name in xhrHeaders) {
                     xhrRequest.setRequestHeader(name, xhrHeaders[name]);
