@@ -639,7 +639,7 @@
                 intrude(this.M(type), listener) && manager.connate && DOMAddListener(manager.product, type, GlobalMethodListener);
             },
             detachEvent: function (type, listener) {
-                extrude(this.M(type), listener) && manager.connate && DOMAddListener(manager.product, type, GlobalMethodListener);
+                extrude(this.M(type), listener) && manager.connate && DOMDelListener(manager.product, type, GlobalMethodListener);
             },
             replace: function (type, listenerPair) {
                 var events = this.M(type);
