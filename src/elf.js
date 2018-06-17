@@ -4,7 +4,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.0.4
+ * @version 2.0.5
  * @license MIT
  * 
  */
@@ -1006,12 +1006,13 @@
     var VMModReference = NODE_ENV ? NOOP : function (element, product, updated) {
         if (element.ref !== updated.ref ||
             element.owner !== updated.owner) {
-            VMDelReference(element);
+            VMDelReference(element, product);
             VMSetReference(updated, product);
         }
     };
-    var VMDelReference = NODE_ENV ? NOOP : function (element) {
-        if (element.owner && element.ref) {
+    var VMDelReference = NODE_ENV ? NOOP : function (element, product) {
+        if (element.owner && element.ref &&
+            element.owner.refs[element.ref] === product) {
             delete element.owner.refs[element.ref];
         }
     };
@@ -1137,7 +1138,7 @@
             var element = manager.element;
 
             VMDelDirective(behests, product, element.props);
-            VMDelReference(element);
+            VMDelReference(element, product);
             VMDelLifeCycle(product);
 
             manager.emitter.dispose();
@@ -1241,7 +1242,7 @@
 
             VMDelOffspring(members);
             VMDelDirective(behests, product, element.props);
-            VMDelReference(element);
+            VMDelReference(element, product);
 
             manager.emitter.dispose();
 
