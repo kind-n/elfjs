@@ -4,7 +4,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.0.5
+ * @version 2.0.6
  * @license MIT
  * 
  */
@@ -2308,10 +2308,10 @@
                         }
                     }
                 }
-            }
-            function TPLAlone(start) {
-                return !TPLJudge(value.charAt(start + 1), REGEXP_SEPARATOR_FIT)
-                    && !TPLJudge(value.charAt(start - 1), REGEXP_SEPARATOR_FIT);
+                function TPLAlone(start) {
+                    return !TPLJudge(value.charAt(start + 1), REGEXP_SEPARATOR_FIT)
+                        && !TPLJudge(value.charAt(start - 1), REGEXP_SEPARATOR_FIT);
+                }
             }
         }
         function TPLStore(value, shutting) {
