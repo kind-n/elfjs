@@ -4,7 +4,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.0.6
+ * @version 2.0.7
  * @license MIT
  * 
  */
@@ -1581,6 +1581,9 @@
                 if (!exists(xhrHeaders, xhrContent)) {
                     xhrRequest.setRequestHeader(xhrContent, "application/x-www-form-urlencoded; charset=utf-8");
                 }
+                for (var name in exports.$xhrFields) {
+                    xhrRequest[name] = exports.$xhrFields[name];
+                }
                 for (var name in xhrHeaders) {
                     xhrRequest.setRequestHeader(name, xhrHeaders[name]);
                 }
@@ -2454,6 +2457,7 @@
         }
     };
 
+    exports.$xhrFields = {};
     exports.$safeScope = true;
     exports.$trimBlank = true;
     exports.$condition = "e-if";
