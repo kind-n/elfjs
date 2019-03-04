@@ -4,13 +4,13 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.0.7
+ * @version 2.1.0
  * @license MIT
  * 
  */
 "use strict";
 
-!(function (exports, Threads, NODE_ENV) {
+! (function (exports, Threads, NODE_ENV) {
 
     function trim(value) {
         return value.trim();
@@ -148,6 +148,9 @@
         }
         return true;
     }
+    function assertEvent(value) {
+        return isValid(value) && (isFunction(value) || isFunction(value.handleEvent)) || wrong(new Error("Invalid event listener"));
+    }
     function createClass(proto) {
         return (function (constructor) {
             return constructor.prototype = proto, constructor;
@@ -175,6 +178,9 @@
     }
     function isAllied(value, lowerCase) {
         return value.length === lowerCase.length && lower(value) === lowerCase;
+    }
+    function isFunction(value) {
+        return typeof value === "function";
     }
     function isEventAttribute(value) {
         return startsWith(value, exports.$eventStart);
@@ -255,13 +261,15 @@
     function GlobalMethodLauncher(value) {
         return value[DISPLAYING_RENDERER] || (value[DISPLAYING_RENDERER] = new LibertyManager(value));
     }
-    function NOOP() { }
 
-    var PENDING = "pending";
+    function NOOP () {}
+
+    var PENDING  = "pending";
     var RESOLVED = "resolved";
     var REJECTED = "rejected";
-
+    
     var LIFE_CYCLE_INITIAL = "onInitial";
+    var LIFE_CYCLE_RENEWAL = "onRenewal";
     var LIFE_CYCLE_DISPOSE = "onDispose";
 
     var REGEXP_TEMPLATE_WORD = /\S/;
@@ -278,6 +286,12 @@
     var isUnoccupied = true;
     var svgNamespace = "http://www.w3.org/2000/svg";
     var mmlNamespace = "http://www.w3.org/1998/Math/MathML";
+
+    var ajaxAttributeDefaults = {
+        timeout: 0,
+        responseType: "",
+        withCredentials: false
+    };
     var htmlAttributeMappings = {
         // prop mappings.
         autoFocus: "autofocus",
@@ -681,10 +695,10 @@
     var MKDraught = function (element, parent) {
         return isValid(element)
             ? isObject(element)
-                ? isString(element.type)
-                    ? new ElementManager(parent, element)
-                    : new ComplexManager(parent, element)
-                : new ContentManager(parent, element)
+            ? isString(element.type)
+            ? new ElementManager(parent, element)
+            : new ComplexManager(parent, element)
+            : new ContentManager(parent, element)
             : new CommentManager(parent);
     };
     var MKVariety = function (natures, ancient) {
@@ -970,6 +984,9 @@
                 }
                 deposit.push(dictate);
             } else {
+                if (behests[sn][LIFE_CYCLE_RENEWAL]) {
+                    collect.push(behests[sn][LIFE_CYCLE_RENEWAL].bind(dictate, product, natures));
+                }
                 deposit.push(behests[sn]);
             }
         }
@@ -1021,6 +1038,11 @@
             collect.push(product[LIFE_CYCLE_INITIAL].bind(product));
         }
     };
+    var VMModLifeCycle = NODE_ENV ? NOOP : function (product, collect) {
+        if (product[LIFE_CYCLE_RENEWAL]) {
+            collect.push(product[LIFE_CYCLE_RENEWAL].bind(product));
+        }
+    }
     var VMDelLifeCycle = NODE_ENV ? NOOP : function (product) {
         if (product[LIFE_CYCLE_DISPOSE]) {
             product[LIFE_CYCLE_DISPOSE]();
@@ -1126,8 +1148,9 @@
             }
 
             VMModAttribute(variety, manager);
-            VMModDirective(behests, product, natures, command, collect);
             VMModReference(element, product, updated);
+            VMModDirective(behests, product, natures, command, collect);
+            VMModLifeCycle(product, collect);
 
             return realtor;
         },
@@ -1227,9 +1250,9 @@
             variety = MKVariety(natures, element.props);
 
             VMModAttribute(variety, manager);
+            VMModReference(element, product, updated);
             VMModOffspring(members, product, manager, insider, document, namespace, collect);
             VMModDirective(behests, product, natures, command, collect);
-            VMModReference(element, product, updated);
 
             return MKRealtor(product, false);
         },
@@ -1308,7 +1331,6 @@
         }
     });
 
-
     var SyntheticEvent;
 
     SyntheticEvent = createClass({
@@ -1381,7 +1403,6 @@
         }
     });
 
-
     var SynchroPromise;
 
     var SPFixator = function (instance, status) {
@@ -1406,7 +1427,7 @@
                 result[COMMITMENT_CAPTURE] = true;
                 instance[COMMITMENT_STATUS] = result[COMMITMENT_STATUS];
                 instance[COMMITMENT_RESULT] = result[COMMITMENT_RESULT];
-            } else if (result && typeof result.then === "function") {
+            } else if (result && isFunction(result.then)) {
                 result.then(
                     SPFixator(instance, RESOLVED),
                     SPFixator(instance, REJECTED)
@@ -1511,12 +1532,13 @@
                 var xhrAbnormal = function () {
                     delete window[xhrCallback];
                 };
-                xhrSuccess = window[xhrCallback] = function (value) {
+                xhrSuccess = window[xhrCallback] = function (result) {
                     resolve({
                         status: 200,
                         headers: {},
-                        text: function () { return isObject(value) ? stringify(value) : value; },
-                        json: function () { return value; }
+                        data: function () { return result },
+                        text: function () { return isString(result) ? result : stringify(result); },
+                        json: function () { return isString(result) ? JSON.parse(result) : result; }
                     });
                     xhrAbnormal();
                     broadcast();
@@ -1543,7 +1565,7 @@
                 var xhrHeaders = request.headers || {};
                 var xhrRequest = new XMLHttpRequest();
                 xhrSuccess = function () {
-                    var result = xhrRequest.responseText;
+                    var result = xhrRequest.response || xhrRequest.responseText;
                     var status = xhrRequest.status === 1223 ? 200 : xhrRequest.status;
                     if (status === 0) {
                         status = result ? 200 : 0;
@@ -1563,8 +1585,9 @@
                         resolve({
                             status: status,
                             headers: headers,
-                            text: function () { return result; },
-                            json: function () { return JSON.parse(result); }
+                            data: function () { return result },
+                            text: function () { return isString(result) ? result : stringify(result); },
+                            json: function () { return isString(result) ? JSON.parse(result) : result; }
                         });
                     } else {
                         reject(xhrRequest);
@@ -1581,8 +1604,8 @@
                 if (!exists(xhrHeaders, xhrContent)) {
                     xhrRequest.setRequestHeader(xhrContent, "application/x-www-form-urlencoded; charset=utf-8");
                 }
-                for (var name in exports.$xhrFields) {
-                    xhrRequest[name] = exports.$xhrFields[name];
+                for (var name in ajaxAttributeDefaults) {
+                    xhrRequest[name] = exists(request, name) ? request[name] : exists(exports.$xhrFields, name) ? exports.$xhrFields[name] : ajaxAttributeDefaults[name];
                 }
                 for (var name in xhrHeaders) {
                     xhrRequest.setRequestHeader(name, xhrHeaders[name]);
@@ -1627,6 +1650,7 @@
         });
     };
 
+
     //
     //
     //
@@ -1665,10 +1689,10 @@
         });
     };
     exports.attachEvent = function (node, type, listener) {
-        GlobalMethodLauncher(node).attachEvent(type, listener);
+        assertEvent(listener) && GlobalMethodLauncher(node).attachEvent(type, listener);
     };
     exports.detachEvent = function (node, type, listener) {
-        GlobalMethodLauncher(node).detachEvent(type, listener);
+        assertEvent(listener) && GlobalMethodLauncher(node).detachEvent(type, listener);
     };
     exports.dispatchEvent = function (node, event) {
         GlobalMethodLauncher(node).dispatchEvent(new SyntheticEvent(event, node));
@@ -2103,8 +2127,7 @@
             if (shutting) {
                 if (isAllied(nodeName.raw, "pre")) {
                     preFormatted++;
-                }
-                if (isAllied(nodeName.raw, "style")) {
+                } else if (isAllied(nodeName.raw, "style")) {
                     inStyleSheet = true;
                 } else if (isAllied(nodeName.raw, "script")) {
                     inJavaScript = true;
@@ -2387,7 +2410,7 @@
             var number = html.indexOf(value, start);
             return number < 0
                 ? length : fn(number)
-                    ? number : TPLRough(html, value, number + 1, fn);
+                ? number : TPLRough(html, value, number + 1, fn);
         }
         function TPLExact(html, value, start, fn) {
             var curly = 0;
@@ -2470,7 +2493,7 @@
     exports._GLOBAL_METHOD_LISTENER_ = GlobalMethodListener;
     exports._GLOBAL_SYMBOL_RENDERER_ = DISPLAYING_RENDERER;
 
-}(
+} (
     typeof exports !== "undefined" ? exports : this.Elf = {},
     typeof Promise !== "undefined" ? Promise.resolve(0) : { then: setTimeout.bind(null) },
     typeof history === "undefined"

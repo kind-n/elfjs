@@ -1,4 +1,4 @@
-// Type definitions for elfjs v2.0
+// Type definitions for elfjs v2.1
 // Project: https://www.elfjs.org/
 // Definitions by: Wu Hu <https://github.com/kind-n>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -124,27 +124,33 @@ export function depend (...depends: (ComponentConstructor | DirectiveConstructor
 
 interface Request {
     readonly url: string;
-    readonly body?: string;
-    readonly headers?: any;
+    readonly body?: Document | BodyInit | null;
     readonly method?: "GET" | "PUT" | "POST" | "HEAD" | "PATCH" | "DELETE" | "OPTIONS";
+    readonly timeout?: number;
+    readonly headers?: { [key: string]: string; };
+    readonly responseType?: XMLHttpRequestResponseType;
+    readonly withCredentials?: boolean;
     readonly jsonp?: boolean;
 }
 interface Response {
     readonly status: number;
-    readonly headers: any;
+    readonly headers: { [key: string]: string; };
+    json(): object;
     text(): string;
-    json(): any;
+    data(): any;
 }
 interface IComponent extends ILifeCycle {
     readonly props?: any;
     readonly state?: any;
     readonly refs?: any;
     onInitial? (): void;
+    onRenewal? (): void;
     onDispose? (): void;
     render (): JSX.Element;
 }
 interface IDirective extends ILifeCycle {
     onInitial? (product: IComponent | HTMLElement, props: any): void;
+    onRenewal? (product: IComponent | HTMLElement, props: any): void;
     onDispose? (product: IComponent | HTMLElement, props: any): void;
 }
 interface ITransform {
@@ -152,6 +158,7 @@ interface ITransform {
 }
 interface ILifeCycle {
     onInitial? (...args: any[]): void;
+    onRenewal? (...args: any[]): void;
     onDispose? (...args: any[]): void;
 }
 interface Individual extends Disposable {
