@@ -4,7 +4,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.1.1
+ * @version 2.1.2
  * @license MIT
  * 
  */
@@ -1848,7 +1848,7 @@
                     ASTAppendScript("function(event){");
                     ASTAppendSource(node.delegate);
                     ASTAppendScript(node.delegate.raw);
-                    ASTAppendScript("}.bind(this)");
+                    ASTAppendScript("}");
                 } else if (node.segments.length) {
                     if (node.name.raw === "cmd") {
                         ASTAppendScript("Elf.$cmd(");
