@@ -4,7 +4,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.1.0
+ * @version 2.1.1
  * @license MIT
  * 
  */
@@ -1820,7 +1820,7 @@
             } else {
                 ASTDefaultParse(node);
             }
-            ASTAppendScript(")},this)");
+            ASTAppendScript(")})");
         }
         function ASTTernaryParse(node) {
             ASTAppendScript("((");
