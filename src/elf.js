@@ -4,7 +4,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.1.2
+ * @version 2.1.3
  * @license MIT
  * 
  */
@@ -1602,7 +1602,9 @@
                 DOMAddListener(xhrRequest, XHR_SUCCESS_TYPE, xhrSuccess);
                 DOMAddListener(xhrRequest, XHR_FAILURE_TYPE, xhrFailure);
                 if (!exists(xhrHeaders, xhrContent)) {
-                    xhrRequest.setRequestHeader(xhrContent, "application/x-www-form-urlencoded; charset=utf-8");
+                    if (!(request.body instanceof FormData)) {
+                        xhrRequest.setRequestHeader(xhrContent, "application/x-www-form-urlencoded; charset=utf-8");
+                    }
                 }
                 for (var name in ajaxAttributeDefaults) {
                     xhrRequest[name] = exists(request, name) ? request[name] : exists(exports.$xhrFields, name) ? exports.$xhrFields[name] : ajaxAttributeDefaults[name];
