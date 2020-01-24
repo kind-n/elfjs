@@ -1,4 +1,4 @@
-// Type definitions for elfjs v2.1
+// Type definitions for elfjs v2.2
 // Project: https://www.elfjs.org/
 // Definitions by: Wu Hu <https://github.com/kind-n>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -119,6 +119,7 @@ export function createElement (type: string | ComponentConstructor, props?: any,
 export function redactElement (temp: string | AbstractSyntaxTree, ...depends: (ComponentConstructor | DirectiveConstructor | TransformConstructor)[]): () => JSX.Element;
 
 export function forceUpdate (): boolean;
+export function nextTick (fn: (() => void)): void;
 export function render (element: JSX.Element, container: HTMLElement, duplex?: boolean): Individual;
 export function depend (...depends: (ComponentConstructor | DirectiveConstructor | TransformConstructor)[]): void;
 

@@ -4,7 +4,7 @@
  * 
  * @copyright 2018 Wu Hu. All Rights Reserved.
  * 
- * @version 2.1.3
+ * @version 2.2.0
  * @license MIT
  * 
  */
@@ -120,6 +120,10 @@
                     collectivity.forEach(function (i) {
                         i.duplex && i.forceUpdate();
                     });
+                    accumulation.slice(0).forEach(function (i) {
+                        i.call(null);
+                    });
+                    accumulation = [];
                 } finally {
                     isUnoccupied = true;
                 }
@@ -282,6 +286,7 @@
     var REGEXP_SEPARATOR_ARG = /\s/;
     var REGEXP_SEPARATOR_FIT = /\|/;
 
+    var accumulation = [];
     var collectivity = [];
     var isUnoccupied = true;
     var svgNamespace = "http://www.w3.org/2000/svg";
@@ -1919,6 +1924,13 @@
     };
     exports.forceUpdate = function () {
         return broadcast();
+    };
+    exports.nextTick = function (fn) {
+        if (isFunction(fn)) {
+            accumulation.push(fn);
+        } else {
+            throw new Error("Invalid parameter");
+        }
     };
 
     exports.depend = function () {
